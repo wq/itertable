@@ -6,10 +6,8 @@ from lxml import etree
 
 class XmlIO(IO):
     "wq.io.XmlIO: load XML documents for use in wq.io"
-    
-    @property
-    def itemtag(self):
-        raise NotImplementedError
+
+    itemtag = None
 
     def load(self):
         root = etree.parse(self.file)

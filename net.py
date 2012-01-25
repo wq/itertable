@@ -1,4 +1,4 @@
-from wq.io import IO
+from wq.io.base import IO
 from httplib2 import Http
 from StringIO import StringIO
 from urllib import urlencode
