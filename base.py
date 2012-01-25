@@ -1,8 +1,9 @@
-from collections import MutableMapping, MutableSequence
+from collections import MutableMapping, MutableSequence, namedtuple
+import re
 
 class IO(MutableMapping, MutableSequence):
     "wq.io.IO: Base class for generic resource management"
-    
+
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.refresh()
@@ -21,44 +22,100 @@ class IO(MutableMapping, MutableSequence):
         # self.data = some_parse_method(self.file)
         raise NotImplementedError
 
-    # If load() method creates self.data as a mutable mapped sequence
-    # the methods below will automatically work.
+    @property
+    def field_names(self):
+        "Returns a list of fields to expect for individual items"
+        raise NotImplementedError
 
-    # Otherwise, they should be overridden.
+    @property
+    def key_field(self):
+        "Assign a key_field to use the resource as a Map"
+        return None
+
+    @property
+    def field_name_map(self):
+        #FIXME: check for duplicates
+        if not hasattr(self, '_field_name_map'):
+            field_names = self.field_names
+            #Support specifying field_names as string (like namedtuple does)
+            if isinstance(field_names, basestring):
+                field_names = field_names.replace(',',' ').split()
+            self._field_name_map = {re.sub(r'\W', '', field.lower()): field for field in field_names}
+        return self._field_name_map
+
+    @property
+    def item_class(self):
+        "Returns a class to use for individual items"
+
+        if not hasattr(self, '_item_class'):
+           cls = namedtuple(self.__class__.__name__ + 'Item', self.field_name_map.keys())
+           self._item_class = cls
+
+        return self._item_class
+
+    @property
+    def item_prototype(self):
+        if not hasattr(self, '_item_prototype'):
+            vals = {field: None for field in self.field_name_map}
+            self._item_prototype = self.item_class(**vals)
+        return self._item_prototype
+
+    def create_item(self, **kwargs):
+        return self.item_prototype._replace(**kwargs)
+
+    # Default implementations of to/fromtuple assume self.data contains dict-like objects
+    def totuple(self, item):
+        "Convert a single record from the data source to an item_class object"
+        mitem = { field: item[name] 
+                  for field, name in self.field_name_map.items() 
+                  if name in item }
+        return self.create_item(**mitem)
+
+    def fromtuple(self, t):
+        "Convert a single record from the item_class object to the data source format"
+        return {self.field_name_map[key]: getattr(t, key) for key in self.field_name_map}
+    
+    def generate_key(self, t):
+        "Create a key for an item without one"
+        raise NotImplementedError
+
+    # Default implementation of collection methods assume
+    # self.data is a sequence containing dict-like objects
 
     def __len__(self):
-        if not hasattr(self, 'data'):
-            raise NotImplementedError
-        else:
-            return len(self.data)
+        return len(self.data)
 
     def __getitem__(self, key):
-        if not hasattr(self, 'data'):
-            raise NotImplementedError
+        if self.key_field is None:
+           return self.totuple(self.data[key])
         else:
-            return self.data[key]
+           for item in self.data:
+               t = self.totuple(item)
+               if getattr(t, self.key_field) == key:
+                   return t
+        return KeyError
 
-    def __setitem__(self, key, item):
-        if not hasattr(self, 'data'):
-            raise NotImplementedError
+    def __setitem__(self, key, t):
+        if self.key_field is None:
+            self.data[key] = self.fromtuple(t)
         else:
-            self.data[key] = item
+            raise NotImplementedError
 
     def __delitem__(self, key):
-        if not hasattr(self, 'data'):
-            raise NotImplementedError
-        else:
+        if self.key_field is None:
             del self.data[key]
-
-    def insert(self, item):
-        if not hasattr(self, 'data'):
-            raise NotImplementedError
         else:
-            self.data.insert(key)
-
-    def __iter__(self, key):
-        if not hasattr(self, 'data'):
             raise NotImplementedError
-        else:
-            for item in self.data:
-                yield item
+
+    def insert(self, t):
+        if self.key_field is not None and not hasattr(t, self.key_field):
+            setattr(t, self.itemkey, self.generate_key(t))
+        self.data.append(self.fromtuple(t))
+
+    def __iter__(self):
+        for item in self.data:
+            t = self.totuple(item)
+            if self.key_field is None:
+                yield t
+            else:
+                yield getattr(t, self.key_field)

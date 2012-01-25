@@ -1,11 +1,11 @@
-from wq.io import XmlIO, NetIO
+from wq.io import XmlNetIO
 from lxml import etree
 
 # AssemblaIO
 # a python implementation of
 # http://www.assembla.com/spaces/breakoutdocs/wiki/Assembla_REST_API
 
-class AssemblaIO(NetIO, XmlIO):
+class AssemblaIO(XmlNetIO):
     "Base class for accessing Assembla REST API"
 
     # NetIO headers
@@ -23,8 +23,8 @@ class AssemblaIO(NetIO, XmlIO):
 class UserIO(AssemblaIO):
 
     # XmlIO hints
-    itemtag = "user"
-    itemkey = "login"
+    itemtag   = "user"
+    key_field = "login"
 
     # NetIO url 
     @property
@@ -34,8 +34,9 @@ class UserIO(AssemblaIO):
 class TicketIO(AssemblaIO):
 
     # XmlIO hints
-    itemtag  = "ticket"
-    itemkey  = "number"
+    itemtag     = "ticket"
+    field_names = "assigned-to-id completed-date component-id created-on description from-support id importance is-story milestone-id notification-list number priority reporter-id space-id status status-name story-importance summary updated-at working-hours working-hour estimate total-estimate invested-hours assigned-to reporter user-comment"
+    key_field   = "number"
 
     # Cache of CommentIO objects   
     comments = {}
@@ -53,7 +54,7 @@ class TicketIO(AssemblaIO):
         url = self.url + '/' + key
         self.PUT(
             url  = url,
-            body = etree.tostring(self.toxml(item))
+            body = etree.tostring(self.fromtuple(item))
         )
         self.refresh()
 
@@ -67,29 +68,20 @@ class TicketIO(AssemblaIO):
     # Post new tickets directly to Assembla (!)
     def append(self, item):
         self.POST(
-           body = etree.tostring(self.toxml(item)),
+           body = etree.tostring(self.fromtuple(item)),
         )
         self.refresh()
 
-    # Include comments accessor in ticket
-    def todict(self, el):
-        ticket = super(TicketIO, self).todict(el)
-        tnum   = ticket[self.itemkey]
+    def fromtuple(self, t):
+        nosave = {field: None for field in ('workinghour', 'statusname', 'id', 'reporterid', 'fromsupport', 'investedhours')}
+        t = t._replace(**nosave)
+        return super(TicketIO, self).fromtuple(t)
 
-        # Lazy load when ticket is requested
+    def get_comments(self, tnum):
         if tnum not in self.comments:
             self.comments[tnum] = CommentIO(space = self.space, username = self.username,
                                             password = self.password, ticket = tnum)
-
-        ticket['comments'] = self.comments[tnum]
-
-        return ticket
-
-    # Remove un-serializable comments accessor
-    def toxml(self, ticket):
-        if 'comments' in ticket:
-            del ticket['comments']
-        return super(TicketIO, self).toxml(ticket)
+        return self.comments[tnum]
 
 class CommentIO(AssemblaIO):
     # XmlIO hints
@@ -108,7 +100,7 @@ class CommentIO(AssemblaIO):
     def append(self, item):
         ticket  = etree.Element('ticket');
         comment = etree.SubElement(ticket, 'user-comment')
-        comment.text = item['comment']
+        comment.text = item.comment
 
         url = super(CommentIO, self).url + '/tickets/' + self.ticket
         self.PUT(

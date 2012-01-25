@@ -1,65 +1,42 @@
 from wq.io.base import IO
+from wq.io.file import FileIO
+from wq.io.net  import NetIO
+
 from lxml import etree
 
 class XmlIO(IO):
     "wq.io.XmlIO: load XML documents for use in wq.io"
-
-    xml = None
-
-    def load(self):
-        self.xml = etree.parse(self.file)
-
+    
     @property
     def itemtag(self):
         raise NotImplementedError
-    
-    @property
-    def itemkey(self):
-        return None
-    
-    @property
-    def root(self):
-        return self.xml.getroot()
+
+    def load(self):
+        root = etree.parse(self.file)
+        self.data = root.findall(self.itemtag)
 
     @property
-    def itemlist(self):
-        return self.root.findall(self.itemtag)
+    def field_names(self):
+        "Attempt to infer field names from first item in XML"
+        if not self.data:
+            raise NotImplementedError
+        return [e.tag for e in self.data[0]]
 
-    def __len__(self):
-        return len(self.itemlist)
+    def totuple(self, el):
+        d = {e.tag: e.text for e in el}
+        return super(XmlIO, self).totuple(d)
 
-    def __iter__(self):
-        for el in self.itemlist:
-            yield self.todict(el)
-
-    def __getitem__(self, key):
-        if self.itemkey is None:
-            return self.todict(self.itemlist[key])
-
-        for item in self:
-            if item[self.itemkey] == key:
-                return item
-    
-    def __setitem__(self, key, item):
-        raise NotImplementedError
-    
-    def __delitem__(self, key, item):
-        raise NotImplementedError
-
-    def append(self, item):
-        if self.itemkey is not None and self.itemkey not in item:
-            item[self.itemkey] = self.generatekey(item)
-        self.root.append(self.toxml(item))
-
-    def todict(self, el):
-        return {e.tag: e.text for e in el}
-
-    def toxml(self, item):
+    def fromtuple(self, item):
         el = etree.Element(self.itemtag)
-        for k, v in item.iteritems():
-            sel = etree.SubElement(el, k)
-            sel.text = v
+        for k in self.field_name_map:
+            if getattr(item, k) is None:
+                continue
+            sel = etree.SubElement(el, self.field_name_map[k])
+            sel.text = str(getattr(item, k))
         return el
 
-    def generatekey(self, item):
-        raise NotImplementedError
+class XmlFileIO(FileIO, XmlIO):
+    pass
+
+class XmlNetIO(NetIO, XmlIO):
+    pass

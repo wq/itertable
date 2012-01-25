@@ -27,6 +27,9 @@ class NetIO(IO):
     def req(self, url=None, method=None, params=None, body=None, headers={}):
         if url is None:
             url = self.url
+        
+        if params is None:
+            params = getattr(self, 'params', None)
 
         if params is not None:
             url += '?' + urlencode(params)
