@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from wq.io.base import IO
 from wq.io.file import FileIO
 from wq.io.net  import NetIO

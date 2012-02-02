@@ -5,3 +5,7 @@ class FileIO(IO):
 
     def open(self):
         self.file = open(self.filename)
+
+class BinaryFileIO(FileIO):
+    def open(self):
+        self.file = open(self.filename, 'rb')

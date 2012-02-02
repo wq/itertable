@@ -1,4 +1,4 @@
-from collections import MutableMapping, MutableSequence, namedtuple
+from collections import MutableMapping, MutableSequence, namedtuple, OrderedDict
 import re
 
 class IO(MutableMapping, MutableSequence):
@@ -40,7 +40,8 @@ class IO(MutableMapping, MutableSequence):
             #Support specifying field_names as string (like namedtuple does)
             if isinstance(field_names, basestring):
                 field_names = field_names.replace(',',' ').split()
-            self._field_name_map = {re.sub(r'\W', '', field.lower()): field for field in field_names}
+            items = [(re.sub(r'\W', '', field.lower()), field) for field in field_names]
+            self._field_name_map = OrderedDict(items)
         return self._field_name_map
 
     @property
