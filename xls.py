@@ -1,7 +1,7 @@
-from wq.io.base import IO
+from wq.io.base import IOCollection, IOCollectionItem
 from wq.io.file import BinaryFileIO
 
-class _XlBaseIO(IO):
+class _XlBaseIO(IOCollection):
     @property
     def sheet_names(self):
         raise NotImplementedError
@@ -15,9 +15,9 @@ class _XlBaseIO(IO):
             yield name
 
     def __getitem__(self, key):
-        data = self.get_sheet_by_name(key)
-        if data is not None:
-            return SheetIO(book=self, data=data)
+        sheet = self.get_sheet_by_name(key)
+        if sheet is not None:
+            return self.totuple(sheet)
         else:
             raise KeyError
 
@@ -47,24 +47,15 @@ class _NewXlIO(_XlBaseIO):
     def get_sheet_by_name(self, name):
         return self.data.get_sheet_by_name(name)
 
-class XlIO(_NewXlIO):
-    pass
+class SheetIO(IOCollectionItem):
 
-class SheetIO(IO):
-    book = None
-
-    def open(self):
-        pass
-
-    def load(self):
-        pass
-    
     @property
     def field_names(self):
-        if hasattr(self.book, 'sheet_field_names'):
-            return self.book.sheet_field_names
-        for row in self.data.iter_rows():
-            return [c.internal_value or c.column for c in row]
+        if super(SheetIO, self).field_names is not None:
+            return super(SheetIO, self).field_names
+        else:
+            for row in self.data.iter_rows():
+                return [c.internal_value or c.column for c in row]
 
     def __iter__(self):
         for row in self.data.iter_rows():
@@ -76,6 +67,9 @@ class SheetIO(IO):
     def totuple(self, row):
         data = [c.internal_value for c in row]
         return self.item_class._make(data)
+
+class XlIO(_NewXlIO):
+    item_class = SheetIO
 
 class XlFileIO(XlIO, BinaryFileIO):
     pass

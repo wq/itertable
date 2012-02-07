@@ -110,7 +110,7 @@ class IO(MutableMapping, MutableSequence):
 
     def insert(self, t):
         if self.key_field is not None and not hasattr(t, self.key_field):
-            setattr(t, self.itemkey, self.generate_key(t))
+            setattr(t, self.key_field, self.generate_key(t))
         self.data.append(self.fromtuple(t))
 
     def __iter__(self):
@@ -120,3 +120,30 @@ class IO(MutableMapping, MutableSequence):
                 yield t
             else:
                 yield getattr(t, self.key_field)
+
+class IOCollectionItem(IO):
+    "An IO that must be accessed as a member of an IOCollection"
+    collection = None
+
+    # Parent collection handles open/load by directly setting data
+    def open(self):
+        pass
+
+    def load(self):
+        pass
+
+    @property
+    def field_names(self):
+        return self.collection.item_field_names
+
+class IOCollection(IO):
+    "An IO that itself contains IO objects"
+
+    item_class = IOCollectionItem
+    item_field_names = None
+
+    def totuple(self, item):
+        return self.item_class(collection=self, data=item)
+
+    def fromtuple(self, item):
+        raise NotImplementedError
