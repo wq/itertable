@@ -61,6 +61,8 @@ class SheetIO(IO):
     
     @property
     def field_names(self):
+        if hasattr(self.book, 'sheet_field_names'):
+            return self.book.sheet_field_names
         for row in self.data.iter_rows():
             return [c.internal_value or c.column for c in row]
 
