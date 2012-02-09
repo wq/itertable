@@ -15,10 +15,20 @@ class AssemblaIO(XmlNetIO):
     # Assembla space ID (given as argument to constructor)
     space = None
 
+    skip_alerts = True
+
     # NetIO url 
     @property
     def url(self):
         return "https://www.assembla.com/spaces/" + self.space
+
+    def fromtuple(self, t):
+        xml = super(AssemblaIO, self).fromtuple(t)
+        if self.skip_alerts:
+            el = etree.SubElement(xml, 'skip-alerts')
+            el.text = 'true'
+        return xml
+
 
 class UserIO(AssemblaIO):
 
@@ -109,3 +119,35 @@ class CommentIO(AssemblaIO):
         )
         self.refresh()
 
+class MilestoneIO(AssemblaIO):
+    itemtag = "milestone"
+    key_field = "title"
+    @property
+    def url(self):
+        return super(MilestoneIO, self).url + '/milestones'
+
+    # Post milestone changes directly to Assembla (!)
+    def __setitem__(self, key, item):
+        if key not in self:
+            raise NotImplementedError
+
+        url = self.url + '/' + str(self[key].id)
+        self.PUT(
+            url  = url,
+            body = etree.tostring(self.fromtuple(item))
+        )
+        self.refresh()
+
+    # Post milestone deletions directly to Assembla (!)
+    def __delitem__(self, key):
+        if key not in self:
+            raise NotImplementedError
+        url = self.url + '/' + str(self[key].id)
+        self.DELETE(url = url)
+
+    # Post new milestones directly to Assembla (!)
+    def append(self, item):
+        self.POST(
+           body = etree.tostring(self.fromtuple(item)),
+        )
+        self.refresh()
