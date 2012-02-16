@@ -30,7 +30,7 @@ class XmlIO(IO):
             if getattr(item, k) is None:
                 continue
             sel = etree.SubElement(el, self.field_name_map[k])
-            sel.text = str(getattr(item, k))
+            sel.text = unicode(getattr(item, k))
         return el
 
 class XmlFileIO(FileIO, XmlIO):

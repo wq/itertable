@@ -15,6 +15,7 @@ class AssemblaIO(XmlNetIO):
     # Assembla space ID (given as argument to constructor)
     space = None
 
+    # Avoid creating alerts in stream/email (but DELETE will always create alerts)
     skip_alerts = True
 
     # NetIO url 
@@ -111,6 +112,9 @@ class CommentIO(AssemblaIO):
         ticket  = etree.Element('ticket');
         comment = etree.SubElement(ticket, 'user-comment')
         comment.text = item.comment
+        if self.skip_alerts:
+            el = etree.SubElement(ticket, 'skip-alerts')
+            el.text = 'true'
 
         url = super(CommentIO, self).url + '/tickets/' + self.ticket
         self.PUT(
