@@ -94,7 +94,7 @@ class IO(MutableMapping, MutableSequence):
                t = self.totuple(item)
                if getattr(t, self.key_field) == key:
                    return t
-        return KeyError
+        raise KeyError
 
     def __setitem__(self, key, t):
         if self.key_field is None:

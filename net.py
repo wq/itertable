@@ -39,7 +39,7 @@ class NetIO(IO):
 
         resp, content = self.http.request(url, method=method, body=body, headers=all_headers)
         if resp.status < 200 or resp.status > 299:
-            raise Exception(content)
+            raise Exception(url + '\n' + content)
 
         return content
 

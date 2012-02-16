@@ -22,6 +22,38 @@ class AssemblaIO(XmlNetIO):
     @property
     def url(self):
         return "https://www.assembla.com/spaces/" + self.space
+    
+    def get_set_url(self, key):
+        raise NotImplementedError
+    
+    def get_del_url(self, key):
+        return self.get_set_url(key)
+    
+    def get_append_url(self):
+        raise NotImplementedError
+    
+    # Post changes directly to Assembla (!), then refresh
+    def __setitem__(self, key, item):
+        if key not in self:
+            raise NotImplementedError
+        self.PUT(
+            url  = self.get_set_url(key),
+            body = etree.tostring(self.fromtuple(item))
+        )
+        self.refresh()
+
+    def __delitem__(self, key):
+        if key not in self:
+            raise KeyError
+        self.DELETE(url = self.get_del_url(key))
+        self.refresh()
+
+    def append(self, item):
+        self.POST(
+           url  = self.get_append_url(),
+           body = etree.tostring(self.fromtuple(item)),
+        )
+        self.refresh()
 
     def fromtuple(self, t):
         xml = super(AssemblaIO, self).fromtuple(t)
@@ -46,7 +78,7 @@ class TicketIO(AssemblaIO):
 
     # XmlIO hints
     itemtag     = "ticket"
-    field_names = "assigned-to-id completed-date component-id created-on description from-support id importance is-story milestone-id notification-list number priority reporter-id space-id status status-name story-importance summary updated-at working-hours working-hour estimate total-estimate invested-hours assigned-to reporter user-comment"
+    field_names = "assigned-to-id completed-date component-id created-on description from-support id importance is-story milestone-id notification-list number priority reporter-id space-id status status-name story-importance summary updated-at working-hours working-hour estimate total-estimate invested-hours assigned-to reporter user-comment custom-fields"
     key_field   = "number"
 
     # Cache of CommentIO objects   
@@ -57,36 +89,42 @@ class TicketIO(AssemblaIO):
     def url(self):
         return super(TicketIO, self).url + '/tickets'
 
-    # Post ticket changes directly to Assembla (!)
-    def __setitem__(self, key, item):
-        if key not in self:
-            raise NotImplementedError
+    # Use report 0 to ensure all tickets are returned by GET
+    def GET(self, **kwargs):
+        if 'url' not in kwargs:
+            kwargs['url'] = self.url + '/report/0'
+        return super(TicketIO, self).GET(**kwargs)
 
-        url = self.url + '/' + key
-        self.PUT(
-            url  = url,
-            body = etree.tostring(self.fromtuple(item))
-        )
-        self.refresh()
+    def get_set_url(self, key):
+        return self.url + '/' + str(key)
 
-    # Post ticket deletions directly to Assembla (!)
-    def __delitem__(self, key):
-        if key not in self:
-            raise NotImplementedError
-        url = self.url + '/' + str(key)
-        self.DELETE(url = url)
+    def get_append_url(self):
+        return self.url
 
-    # Post new tickets directly to Assembla (!)
-    def append(self, item):
-        self.POST(
-           body = etree.tostring(self.fromtuple(item)),
-        )
-        self.refresh()
+    def totuple(self, xml):
+        t = super(TicketIO, self).totuple(xml)
+        cfxmls = xml.find('custom-fields')
+        if cfxmls is None:
+            return t
+        else:
+            cfields = {cfxml.get('name'): cfxml.text for cfxml in cfxmls}
+            return t._replace(customfields = cfields)
 
     def fromtuple(self, t):
-        nosave = {field: None for field in ('workinghour', 'statusname', 'id', 'reporterid', 'fromsupport', 'investedhours')}
+        cfields    = t.customfields
+        reporterid = t.reporterid
+        nosave = {field: None for field in ('workinghour', 'statusname', 'id', 'reporterid', 'fromsupport', 'investedhours', 'customfields')}
         t = t._replace(**nosave)
-        return super(TicketIO, self).fromtuple(t)
+        xml = super(TicketIO, self).fromtuple(t)
+        if cfields is not None and len(cfields) > 0:
+            cfxmls = etree.SubElement(xml, 'custom-fields')
+            for name, value in cfields.items():
+                cfxml = etree.SubElement(cfxmls, name.replace(' ', '_'))
+                cfxml.text = value
+        if reporterid is not None:
+            axml = etree.SubElement(xml, 'acts-as-user-id')
+            axml.text = reporterid
+        return xml
 
     def get_comments(self, tnum):
         if tnum not in self.comments:
@@ -97,10 +135,8 @@ class TicketIO(AssemblaIO):
 class CommentIO(AssemblaIO):
     # XmlIO hints
     itemtag = "comment"
+    field_names = "comment rendered created-on updated-at ticket-id user-id ticket-changes user"
     
-    # Ticket id
-    ticket  = None
-
     # NetIO url (read-only)
     @property
     def url(self):
@@ -111,7 +147,14 @@ class CommentIO(AssemblaIO):
     def append(self, item):
         ticket  = etree.Element('ticket');
         comment = etree.SubElement(ticket, 'user-comment')
-        comment.text = item.comment
+        comment.text = unicode(item.comment)
+        if item.createdon is not None:
+            createdon = etree.SubElement(ticket, 'updated-at')
+            createdon.text = unicode(item.createdon)
+        if item.userid is not None:
+            axml = etree.SubElement(ticket, 'acts-as-user-id')
+            axml.text = item.userid
+            
         if self.skip_alerts:
             el = etree.SubElement(ticket, 'skip-alerts')
             el.text = 'true'
@@ -130,28 +173,31 @@ class MilestoneIO(AssemblaIO):
     def url(self):
         return super(MilestoneIO, self).url + '/milestones'
 
-    # Post milestone changes directly to Assembla (!)
-    def __setitem__(self, key, item):
-        if key not in self:
-            raise NotImplementedError
+    def get_set_url(self, key):
+        return self.url + '/' + str(self[key].id)
 
-        url = self.url + '/' + str(self[key].id)
-        self.PUT(
-            url  = url,
-            body = etree.tostring(self.fromtuple(item))
-        )
-        self.refresh()
+    def get_append_url(self):
+        return self.url
 
-    # Post milestone deletions directly to Assembla (!)
-    def __delitem__(self, key):
-        if key not in self:
-            raise NotImplementedError
-        url = self.url + '/' + str(self[key].id)
-        self.DELETE(url = url)
+class ComponentIO(AssemblaIO):
+    itemtag = "component"
+    key_field = "name"
+    field_names = "id name"
 
-    # Post new milestones directly to Assembla (!)
-    def append(self, item):
-        self.POST(
-           body = etree.tostring(self.fromtuple(item)),
-        )
-        self.refresh()
+    @property
+    def url(self):
+        return super(ComponentIO, self).url + '/tickets/components'
+
+    def get_set_url(self, key):
+        raise NotImplementedError
+
+    def get_del_url(self, key):
+        return super(ComponentIO, self).url + '/tickets/%s/remove_component' % self[key].id
+
+    def get_append_url(self):
+        return super(ComponentIO, self).url + '/tickets/create_component'
+
+    def fromtuple(self, t):
+        xml = etree.Element('component_name')
+        xml.text = t.name
+        return xml
