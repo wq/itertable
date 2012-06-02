@@ -15,12 +15,12 @@ class CocorahsIO(CsvNetIO):
         'TimesInGMT':     "False"
     }
 
-    def open(self):
+    def load(self):
         self.params['ReportType'] = self.type
         self.params['State']      = self.state
         self.params['StartDate']  = self.datef(self.startdate)
         self.params['EndDate']    = self.datef(self.enddate)
-        super(CocorahsIO, self).open()
+        super(CocorahsIO, self).load()
 
     def datef(self, date):
         return '%s/%s/%s' % (date.month, date.day, date.year)

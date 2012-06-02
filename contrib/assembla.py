@@ -33,12 +33,12 @@ class AssemblaIO(XmlNetIO):
         raise NotImplementedError
     
     # Post changes directly to Assembla (!), then refresh
-    def __setitem__(self, key, item):
+    def __setitem__(self, key, uitem):
         if key not in self:
             raise NotImplementedError
         self.PUT(
             url  = self.get_set_url(key),
-            body = etree.tostring(self.fromtuple(item))
+            body = etree.tostring(self.dump_item(self.parse_usable_item(uitem)))
         )
         self.refresh()
 
@@ -48,15 +48,15 @@ class AssemblaIO(XmlNetIO):
         self.DELETE(url = self.get_del_url(key))
         self.refresh()
 
-    def append(self, item):
+    def append(self, uitem):
         self.POST(
            url  = self.get_append_url(),
-           body = etree.tostring(self.fromtuple(item)),
+           body = etree.tostring(self.dump_item(self.parse_usable_item(uitem))),
         )
         self.refresh()
 
-    def fromtuple(self, t):
-        xml = super(AssemblaIO, self).fromtuple(t)
+    def dump_item(self, item):
+        xml = super(AssemblaIO, self).dump_item(item)
         if self.skip_alerts:
             el = etree.SubElement(xml, 'skip-alerts')
             el.text = 'true'
@@ -68,6 +68,7 @@ class UserIO(AssemblaIO):
     # XmlIO hints
     itemtag   = "user"
     key_field = "login"
+    field_names = "id login login_name name email"
 
     # NetIO url 
     @property
@@ -101,21 +102,21 @@ class TicketIO(AssemblaIO):
     def get_append_url(self):
         return self.url
 
-    def totuple(self, xml):
-        t = super(TicketIO, self).totuple(xml)
+    def parse_item(self, xml):
+        item = super(TicketIO, self).parse_item(xml)
         cfxmls = xml.find('custom-fields')
-        if cfxmls is None:
-            return t
-        else:
-            cfields = {cfxml.get('name'): cfxml.text for cfxml in cfxmls}
-            return t._replace(customfields = cfields)
+        if cfxmls is not None:
+            item['custom-fields'] = {cfxml.get('name'): cfxml.text for cfxml in cfxmls}
+        if 'CustomFields' in item:
+            del item['CustomFields']
+        return item
 
-    def fromtuple(self, t):
-        cfields    = t.customfields
-        reporterid = t.reporterid
-        nosave = {field: None for field in ('workinghour', 'statusname', 'id', 'reporterid', 'fromsupport', 'investedhours', 'customfields')}
-        t = t._replace(**nosave)
-        xml = super(TicketIO, self).fromtuple(t)
+    def dump_item(self, item):
+        cfields    = item['custom-fields']
+        reporterid = item['reporter-id']
+        nosave = {field: None for field in ('working-hour', 'status-name', 'id', 'reporter-id', 'from-support', 'invested-hours', 'custom-fields')}
+        item.update(nosave)
+        xml = super(TicketIO, self).dump_item(item)
         if cfields is not None and len(cfields) > 0:
             cfxmls = etree.SubElement(xml, 'custom-fields')
             for name, value in cfields.items():
@@ -197,7 +198,7 @@ class ComponentIO(AssemblaIO):
     def get_append_url(self):
         return super(ComponentIO, self).url + '/tickets/create_component'
 
-    def fromtuple(self, t):
+    def dump_item(self, item):
         xml = etree.Element('component_name')
-        xml.text = t.name
+        xml.text = item['name']
         return xml

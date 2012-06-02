@@ -1,10 +1,32 @@
-from wq.io.base import IO
 from httplib2 import Http
 from StringIO import StringIO
 from urllib import urlencode
 
-class NetIO(IO):
-    "NetIO: opens HTTP/REST resources for use in wq.io"
+class BaseLoader(object):
+    def load(self):
+        raise NotImplementedError
+
+class FileLoader(BaseLoader):
+    filename = None
+
+    def load(self):
+        try:
+            self.file = open(self.filename)
+        except:
+            self.file = StringIO()
+
+    def save(self):
+        file = open(self.filename, 'w+')
+        self.dump(file)
+        file.close()
+        self.load()
+
+class BinaryFileLoader(FileLoader):
+    def load(self):
+        self.file = open(self.filename, 'rb')
+
+class NetLoader(BaseLoader):
+    "NetLoader: opens HTTP/REST resources for use in wq.io"
 
     username = None
     password = None
@@ -16,7 +38,7 @@ class NetIO(IO):
     def url(self):
         raise NotImplementedError
 
-    def open(self, **kwargs):
+    def load(self, **kwargs):
 
         if self.username is not None and self.password is not None:
             self.http.add_credentials(self.username, self.password)
