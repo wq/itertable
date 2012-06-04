@@ -1,75 +1,130 @@
-from wq.io.base import IOCollection, IOCollectionItem
-from wq.io.file import BinaryFileIO
+import magic
 
-class _XlBaseIO(IOCollection):
+class WorkbookParser(object):
+    workbook   = None
+    worksheet  = None
+    sheet_name = 0
+
+    def parse(self):
+        self.parse_workbook()
+        
+        if self.sheet_name is None:
+            for name in self.sheet_names:
+                self.data = {'name': name, 'data': self.get_sheet_by_name(name)}
+            return
+        
+        sheet_name = self.sheet_name
+        if isinstance(self.sheet_name, int):
+            sheet_name = self.sheet_names[sheet_name]
+        
+        self.parse_worksheet(sheet_name)
+        self.data = map(self.parse_row, self.worksheet[1:])
+
+    def parse_workbook(self):
+        raise NotImplementedError
+
     @property
     def sheet_names(self):
         raise NotImplementedError
-
-    @property
+    
     def get_sheet_by_name(self, name):
         raise NotImplementedError
 
-    def __iter__(self):
-        for name in self.sheet_names:
-            yield name
+    def parse_worksheet(self, name):
+        raise NotImplementedError
+    
+    @property
+    def column_names(self):
+        raise NotImplementedError
 
-    def __getitem__(self, key):
-        sheet = self.get_sheet_by_name(key)
-        if sheet is not None:
-            return self.totuple(sheet)
-        else:
-            raise KeyError
+    def parse_row(self, row):
+        raise NotImplementedError
 
 # Deal with pre-2003 format files (.xls)
-class _OldXlIO(_XlBaseIO):
-    def load(self):
+class XlsParser(WorkbookParser):
+    def parse_workbook(self):
         import xlrd
-        self.data = xlrd.open_workbook(file_contents=self.file.read())
+        self.workbook = xlrd.open_workbook(file_contents=self.file.read())
 
     @property
     def sheet_names(self):
-        return self.data.sheet_names()
+        return self.workbook.sheet_names()
 
     def get_sheet_by_name(self, name):
-        return self.data.sheet_by_name(name)
+        return self.workbook.sheet_by_name(name)
+
+    def parse_worksheet(self, name):
+        worksheet = self.get_sheet_by_name(name) 
+        self.worksheet = [worksheet.row(i) for i in range(worksheet.nrows)]
+
+    @property
+    def column_names(self):
+        row = self.worksheet[0]
+        return [c.value or 'c%s' % i for i, c in enumerate(row)]
+
+    def parse_row(self, row):
+        return {name: row[i].value
+                for i, name in enumerate(self.column_names)}
 
 # Deal with 2003+ format files (.xlsx)
-class _NewXlIO(_XlBaseIO):
-    def load(self):
+class XlsxParser(WorkbookParser):
+    def parse_workbook(self):
         import openpyxl
-        self.data = openpyxl.reader.excel.load_workbook(self.file, use_iterators=True)
+        self.workbook = openpyxl.reader.excel.load_workbook(self.file, use_iterators=True)
 
     @property
     def sheet_names(self):
-        return self.data.get_sheet_names()
+        return self.workbook.get_sheet_names()
 
     def get_sheet_by_name(self, name):
-        return self.data.get_sheet_by_name(name)
-
-class SheetIO(IOCollectionItem):
+        return self.workbook.get_sheet_by_name(name)
+    
+    def parse_worksheet(self, name):
+        worksheet = self.get_sheet_by_name(name) 
+        self.worksheet = [row for row in worksheet.iter_rows()]
 
     @property
-    def field_names(self):
-        if super(SheetIO, self).field_names is not None:
-            return super(SheetIO, self).field_names
+    def column_names(self):
+        row = self.worksheet[0]
+        return [c.internal_value or c.column for c in row]
+
+    def parse_row(self, row):
+        return {name: row[i].internal_value
+                for i, name in enumerate(self.column_names)}
+
+# Automagically determine Excel version and use appropriate parser
+class ExcelParser(WorkbookParser):
+    def parse(self):
+        m = magic.Magic(mime=True)
+        mimetype = m.from_buffer(self.file.read())
+        if mimetype == 'application/vnd.ms-excel':
+            cls = XlsParser
+        elif mimetype == 'application/zip':
+            cls = XlsxParser
         else:
-            for row in self.data.iter_rows():
-                return [c.internal_value or c.column for c in row]
+            raise Exception("File does not appear to be a valid worksheet!")
+        self.parser = cls()
+        self.file.seek(0)
+        self.parser.file = self.file
+        super(ExcelParser, self).parse()
 
-    def __iter__(self):
-        for row in self.data.iter_rows():
-            yield self.totuple(row)
+    def parse_workbook(self):
+        self.parser.parse_workbook()
 
-    def __getitem__(self, key):
-        raise NotImplementedError
+    @property
+    def sheet_names(self):
+        return self.parser.sheet_names
 
-    def totuple(self, row):
-        data = [c.internal_value for c in row]
-        return self.item_class._make(data)
+    def get_sheet_by_name(self, name):
+        return self.parser.get_sheet_by_name(name)
 
-class XlIO(_NewXlIO):
-    item_class = SheetIO
+    def parse_worksheet(self, name):
+        self.parser.parse_worksheet(name)
+        self.worksheet = self.parser.worksheet
 
-class XlFileIO(XlIO, BinaryFileIO):
-    pass
+    @property
+    def column_names(self):
+        return self.parser.column_names
+
+    def parse_row(self, row):
+        return self.parser.parse_row(row)
