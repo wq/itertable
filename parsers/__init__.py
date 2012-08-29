@@ -1,3 +1,3 @@
 from .text import CsvParser, JsonParser, XmlParser
 #from .gis import ...
-from .xls import XlsParser, XlsxParser, ExcelParser
+from .xls import ExcelParser
