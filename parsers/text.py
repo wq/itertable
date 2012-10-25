@@ -20,16 +20,31 @@ class CsvParser(object):
 
 class JsonParser(object):
     indent = None
+    namespace = None
     def parse(self):
         try:
-            self.data = json.load(self.file)
-        except:
+            obj = json.load(self.file)
+            if self.namespace:
+                for key in self.namespace.split('.'):
+                    obj = obj[key]
+            self.data = map(self.parse_item, obj)
+        except ValueError:
             self.data = []
+
+    def parse_item(self, item):
+        return item
 
     def dump(self, file=None):
         if file is None:
             file = self.file
-        json.dump(self.data, file, indent=self.indent)
+        obj = map(self.dump_item, self.data)
+        if self.namespace:
+            for key in reversed(self.namespace.split('.')):
+                obj = {key: obj}
+        json.dump(obj, file, indent=self.indent)
+    
+    def dump_item(self, item):
+        return item
 
 class XmlParser(object):
     root_tag = None
