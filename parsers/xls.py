@@ -17,6 +17,11 @@ class WorkbookParser(object):
             sheet_name = self.sheet_names[sheet_name]
         
         self.parse_worksheet(sheet_name)
+
+        if self.field_names is None:
+            row = self.worksheet[0]
+            self.field_names = [c.value or 'c%s' % i for i, c in enumerate(row)]
+
         self.data = map(self.parse_row, self.worksheet[1:])
 
     def parse_workbook(self):
@@ -32,10 +37,6 @@ class WorkbookParser(object):
     def parse_worksheet(self, name):
         raise NotImplementedError
     
-    @property
-    def column_names(self):
-        raise NotImplementedError
-
     def parse_row(self, row):
         raise NotImplementedError
 
@@ -54,11 +55,7 @@ class ExcelParser(WorkbookParser):
         worksheet = self.get_sheet_by_name(name) 
         self.worksheet = [worksheet.row(i) for i in range(worksheet.nrows)]
 
-    @property
-    def column_names(self):
-        row = self.worksheet[0]
-        return [c.value or 'c%s' % i for i, c in enumerate(row)]
-
     def parse_row(self, row):
         return {name: row[i].value
-                for i, name in enumerate(self.column_names)}
+                for i, name in enumerate(self.get_field_names())
+                if i < len(row)}

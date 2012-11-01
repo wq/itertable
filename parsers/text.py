@@ -3,7 +3,8 @@ from lxml import etree as xml
 
 class CsvParser(object):
     def parse(self):
-        self.csvdata = csv.DictReader(self.file)
+        self.csvdata = csv.DictReader(self.file, self.get_field_names())
+        self.field_names = self.csvdata.fieldnames
         self.data = [row for row in self.csvdata]
 
     def dump(self, file=None):
@@ -13,10 +14,6 @@ class CsvParser(object):
         csvout.writeheader()
         for row in self.data:
            csvout.writerow(row)
-
-    @property
-    def field_names(self):
-        return self.csvdata.fieldnames
 
 class JsonParser(object):
     indent = None
