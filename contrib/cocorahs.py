@@ -3,6 +3,7 @@ from datetime import date, timedelta
 
 class CocorahsIO(CsvNetIO):
     state     = None
+    county    = None
     startdate = date.today() - timedelta(days = 30)
     enddate   = date.today()
     url       = "http://data.cocorahs.org/cocorahs/export/exportreports.aspx"
@@ -18,6 +19,8 @@ class CocorahsIO(CsvNetIO):
     def load(self):
         self.params['ReportType'] = self.type
         self.params['State']      = self.state
+        if self.county is not None:
+            self.params['County'] = self.county
         self.params['StartDate']  = self.datef(self.startdate)
         self.params['EndDate']    = self.datef(self.enddate)
         super(CocorahsIO, self).load()
