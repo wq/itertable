@@ -1,4 +1,12 @@
-import csv, json
+import json
+
+try:
+    import unicodecsv as csv
+    UNICODE_CSV = True
+except ImportError:
+    import csv
+    UNICODE_CSV = False
+
 from lxml import etree as xml
 
 class CsvParser(object):
@@ -10,7 +18,9 @@ class CsvParser(object):
     def dump(self, file=None):
         if file is None:
             file = self.file
-        csvout = csv.DictWriter(file, self.get_field_names())
+        args = file, self.get_field_names()
+        kwargs = {'encoding': 'utf-8'} if UNICODE_CSV else {}
+        csvout = csv.DictWriter(*args, **kwargs)
         csvout.writeheader()
         for row in self.data:
            csvout.writerow(row)
