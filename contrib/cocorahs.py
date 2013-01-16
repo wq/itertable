@@ -17,7 +17,14 @@ class CocorahsIO(XmlNetIO):
         'responsefields': "all"
     }
     root_tag = 'Cocorahs'
-    item_tag = 'DailyPrecipReports/DailyPrecipReport'
+
+    @property
+    def item_tag(self):
+        if self.type == "Daily":
+            return 'DailyPrecipReports/DailyPrecipReport'
+        elif self.type == "MultiDay":
+            return 'MultiDayPrecipReports/MultiDayPrecipReport'
+        raise Exception("%s is not a valid report type!" % self.type)
 
     def load(self):
         fmt = '%m/%d/%Y'
