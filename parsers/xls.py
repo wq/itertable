@@ -4,6 +4,8 @@ class WorkbookParser(object):
     workbook   = None
     worksheet  = None
     sheet_name = 0
+    start_row  = None
+    column_count = None
 
     def parse(self):
         self.parse_workbook()
@@ -18,8 +20,21 @@ class WorkbookParser(object):
         
         self.parse_worksheet(sheet_name)
 
+        if self.start_row is None:
+            self.column_count = 0
+            def checkval(cell):
+                if cell.value is not None and cell.value != '':
+                    return True
+                return False
+
+            for row in range(5, 0, -1):
+                count = len(filter(checkval, self.worksheet[row]))
+                if count >= self.column_count:
+                    self.column_count = count
+                    self.start_row = row
+
         if self.field_names is None:
-            row = self.worksheet[0]
+            row = self.worksheet[self.start_row]
             self.field_names = [c.value or 'c%s' % i for i, c in enumerate(row)]
 
         self.data = map(self.parse_row, self.worksheet[1:])
