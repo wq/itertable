@@ -1,4 +1,6 @@
 import xlrd
+import datetime
+import math
 
 class WorkbookParser(object):
     workbook   = None
@@ -37,7 +39,7 @@ class WorkbookParser(object):
             row = self.worksheet[self.start_row]
             self.field_names = [c.value or 'c%s' % i for i, c in enumerate(row)]
 
-        self.data = map(self.parse_row, self.worksheet[1:])
+        self.data = map(self.parse_row, self.worksheet[self.start_row+1:])
 
     def parse_workbook(self):
         raise NotImplementedError
@@ -71,6 +73,18 @@ class ExcelParser(WorkbookParser):
         self.worksheet = [worksheet.row(i) for i in range(worksheet.nrows)]
 
     def parse_row(self, row):
-        return {name: row[i].value
+        def get_value(cell):
+            if cell.ctype == xlrd.XL_CELL_DATE:
+                time, date = math.modf(cell.value)
+                tpl = xlrd.xldate_as_tuple(cell.value, self.workbook.datemode)
+                if date and time:
+                    return datetime.datetime(*tpl)
+                elif date:
+                    return datetime.date(*tpl[0:3])
+                elif time:
+                    return datetime.time(*tpl[3:6])
+
+            return cell.value
+        return {name: get_value(row[i])
                 for i, name in enumerate(self.get_field_names())
                 if i < len(row)}
