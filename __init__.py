@@ -1,29 +1,14 @@
-from wq.io.base    import BaseIO
-from wq.io.loaders import FileLoader, BinaryFileLoader, NetLoader
-from wq.io.parsers import CsvParser, JsonParser, XmlParser, ExcelParser
-from wq.io.mappers import TupleMapper
+from wq.io.base    import *
+from wq.io.loaders import *
+from wq.io.parsers import *
+from wq.io.mappers import *
+from wq.io.util    import make_io, load_file, guess_type
 
 # Some useful pre-mixed classes
-class TupleIO(TupleMapper, BaseIO):
-    pass
-
-class CsvFileIO(FileLoader, CsvParser, TupleIO):
-    pass
-
-class CsvNetIO(NetLoader, CsvParser, TupleIO):
-    pass
-
-class JsonFileIO(FileLoader, JsonParser, TupleIO):
-    pass
-
-class JsonNetIO(NetLoader, JsonParser, TupleIO):
-    pass
-
-class XmlFileIO(FileLoader, XmlParser, TupleIO):
-    pass
-
-class XmlNetIO(NetLoader, XmlParser, TupleIO):
-    pass
-
-class ExcelFileIO(BinaryFileLoader, ExcelParser, TupleIO):
-    pass
+CsvFileIO   = make_io(FileLoader,       CsvParser)
+CsvNetIO    = make_io(NetLoader,        CsvParser)
+JsonFileIO  = make_io(FileLoader,       JsonParser)
+JsonNetIO   = make_io(NetLoader,        JsonParser)
+XmlFileIO   = make_io(FileLoader,       XmlParser)
+XmlNetIO    = make_io(NetLoader,        XmlParser)
+ExcelFileIO = make_io(BinaryFileLoader, ExcelParser, name='ExcelFileIO')

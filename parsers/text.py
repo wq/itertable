@@ -9,9 +9,27 @@ except ImportError:
 
 from lxml import etree as xml
 
-class CsvParser(object):
+from .base import BaseParser, TableParser
+
+class CsvParser(TableParser):
+
     def parse(self):
-        self.csvdata = csv.DictReader(self.file, self.get_field_names())
+        # Like DictReader, assume explicit field definition means CSV does not 
+        # contain column headers.
+        fields = self.get_field_names()
+        if self.start_row is None:
+            print fields
+            if fields:
+                self.start_row = 0
+            else:
+                self.start_row = 1
+        if self.header_row is None:
+            if fields:
+                self.header_row = None
+            else:
+                self.header_row = 0
+
+        self.csvdata = csv.DictReader(self.file, fields)
         self.field_names = self.csvdata.fieldnames
         self.data = [row for row in self.csvdata]
 
@@ -25,7 +43,7 @@ class CsvParser(object):
         for row in self.data:
            csvout.writerow(row)
 
-class JsonParser(object):
+class JsonParser(BaseParser):
     indent = None
     namespace = None
     def parse(self):
@@ -53,7 +71,7 @@ class JsonParser(object):
     def dump_item(self, item):
         return item
 
-class XmlParser(object):
+class XmlParser(BaseParser):
     root_tag = None
     item_tag = None
 

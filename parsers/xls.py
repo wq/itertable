@@ -1,8 +1,9 @@
 import xlrd
 import datetime
 import math
+from .base import TableParser
 
-class WorkbookParser(object):
+class WorkbookParser(TableParser):
     workbook   = None
     worksheet  = None
     sheet_name = 0
@@ -22,24 +23,30 @@ class WorkbookParser(object):
         
         self.parse_worksheet(sheet_name)
 
+        if self.header_row is None:
+            if self.start_row is not None:
+                self.header_row = self.start_row - 1
+            else:
+                self.column_count = 0
+                def checkval(cell):
+                    if cell.value is not None and cell.value != '':
+                        return True
+                    return False
+
+                for row in range(5, 0, -1):
+                    count = len(filter(checkval, self.worksheet[row]))
+                    if count >= self.column_count:
+                        self.column_count = count
+                        self.header_row = row
+
         if self.start_row is None:
-            self.column_count = 0
-            def checkval(cell):
-                if cell.value is not None and cell.value != '':
-                    return True
-                return False
-
-            for row in range(5, 0, -1):
-                count = len(filter(checkval, self.worksheet[row]))
-                if count >= self.column_count:
-                    self.column_count = count
-                    self.start_row = row
-
+            self.start_row = self.header_row + 1
+            
         if self.field_names is None:
-            row = self.worksheet[self.start_row]
+            row = self.worksheet[self.header_row]
             self.field_names = [c.value or 'c%s' % i for i, c in enumerate(row)]
 
-        self.data = map(self.parse_row, self.worksheet[self.start_row+1:])
+        self.data = map(self.parse_row, self.worksheet[self.start_row:])
 
     def parse_workbook(self):
         raise NotImplementedError

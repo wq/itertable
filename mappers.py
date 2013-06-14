@@ -34,7 +34,7 @@ class BaseMapper(object):
         return item
         
 
-class SimpleMapper(BaseMapper):
+class DictMapper(BaseMapper):
     field_map = {}
     value_map = {}
 
@@ -62,7 +62,7 @@ class SimpleMapper(BaseMapper):
                 return v
         return value
 
-class TupleMapper(SimpleMapper):
+class TupleMapper(DictMapper):
     @property
     def field_map(self):
         #FIXME: check for duplicates
