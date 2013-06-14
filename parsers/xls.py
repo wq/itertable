@@ -33,7 +33,7 @@ class WorkbookParser(TableParser):
                         return True
                     return False
 
-                for row in range(5, 0, -1):
+                for row in range(5, -1, -1):
                     count = len(filter(checkval, self.worksheet[row]))
                     if count >= self.column_count:
                         self.column_count = count
@@ -43,10 +43,28 @@ class WorkbookParser(TableParser):
             self.start_row = self.header_row + 1
             
         if self.field_names is None:
-            row = self.worksheet[self.header_row]
-            self.field_names = [c.value or 'c%s' % i for i, c in enumerate(row)]
+            rows = self.worksheet[self.header_row:self.start_row]
+            self.field_names = [unicode(c.value) or u'c%s' % i for i, c in enumerate(rows[0])]
+            for row in rows[1:]:
+                for i, c in enumerate(row):
+                    self.field_names[i] += "\n" + unicode(c.value)
 
+            seen_fields = set()
+            for i, field in enumerate(self.field_names):
+                if field in seen_fields:
+                    field += unicode(i)
+                    self.field_names[i] = field
+                seen_fields.add(field)
+                
+                        
         self.data = map(self.parse_row, self.worksheet[self.start_row:])
+        if self.header_row > 0:
+            for r in range(0, self.header_row):
+                for c, cell in enumerate(self.worksheet[r]):
+                    val = self.get_value(cell)
+                    if val is not None and val != '':
+                        self.extra_data.setdefault(r, {})
+                        self.extra_data[r][c] = val
 
     def parse_workbook(self):
         raise NotImplementedError
@@ -62,6 +80,9 @@ class WorkbookParser(TableParser):
         raise NotImplementedError
     
     def parse_row(self, row):
+        raise NotImplementedError
+
+    def get_value(self, cell):
         raise NotImplementedError
 
 class ExcelParser(WorkbookParser):
@@ -80,18 +101,18 @@ class ExcelParser(WorkbookParser):
         self.worksheet = [worksheet.row(i) for i in range(worksheet.nrows)]
 
     def parse_row(self, row):
-        def get_value(cell):
-            if cell.ctype == xlrd.XL_CELL_DATE:
-                time, date = math.modf(cell.value)
-                tpl = xlrd.xldate_as_tuple(cell.value, self.workbook.datemode)
-                if date and time:
-                    return datetime.datetime(*tpl)
-                elif date:
-                    return datetime.date(*tpl[0:3])
-                elif time:
-                    return datetime.time(*tpl[3:6])
-
-            return cell.value
-        return {name: get_value(row[i])
+        return {name: self.get_value(row[i])
                 for i, name in enumerate(self.get_field_names())
                 if i < len(row)}
+
+    def get_value(self, cell):
+        if cell.ctype == xlrd.XL_CELL_DATE:
+            time, date = math.modf(cell.value)
+            tpl = xlrd.xldate_as_tuple(cell.value, self.workbook.datemode)
+            if date and time:
+                return datetime.datetime(*tpl)
+            elif date:
+                return datetime.date(*tpl[0:3])
+            elif time:
+                return datetime.time(*tpl[3:6])
+        return cell.value
