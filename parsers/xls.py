@@ -33,7 +33,7 @@ class WorkbookParser(TableParser):
                         return True
                     return False
 
-                for row in range(5, -1, -1):
+                for row in range(min(len(self.worksheet) - 1, 5), -1, -1):
                     count = len(filter(checkval, self.worksheet[row]))
                     if count >= self.column_count:
                         self.column_count = count
