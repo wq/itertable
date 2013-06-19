@@ -113,6 +113,6 @@ class ExcelParser(WorkbookParser):
                 return datetime.datetime(*tpl)
             elif date:
                 return datetime.date(*tpl[0:3])
-            elif time:
+            else:
                 return datetime.time(*tpl[3:6])
         return cell.value
