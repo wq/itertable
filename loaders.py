@@ -25,6 +25,18 @@ class BinaryFileLoader(FileLoader):
     def load(self):
         self.file = open(self.filename, 'rb')
 
+class StringLoader(BaseLoader):
+    string = ""
+    def load(self):
+        self.file = StringIO(self.string)
+
+    def save(self):
+        file = StringIO()
+        self.dump(file)
+        self.string = file.getvalue()
+        file.close()
+        self.load()
+
 class NetLoader(BaseLoader):
     "NetLoader: opens HTTP/REST resources for use in wq.io"
 

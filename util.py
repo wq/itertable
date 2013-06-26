@@ -1,5 +1,5 @@
 from wq.io.base    import BaseIO
-from wq.io.loaders import FileLoader, BinaryFileLoader, NetLoader
+from wq.io.loaders import FileLoader, BinaryFileLoader, NetLoader, StringLoader
 from wq.io.parsers import CsvParser, JsonParser, XmlParser, ExcelParser
 from wq.io.mappers import TupleMapper
 import mimetypes
@@ -42,3 +42,18 @@ def load_file(filename, mapper=TupleMapper, options={}):
     loader = BinaryFileLoader if mimetype in BINARY_FORMATS else FileLoader
     IO = make_io(loader, parser, mapper)
     return IO(filename=filename, **options)
+
+def load_string(string, mapper=TupleMapper, options={}):
+    if string.startswith('<'):
+        parser = XmlParser
+    elif string.startswith('[') or (
+            string.startswith('{') and 'namespace' in options):
+        parser = JsonParser
+    elif ',' in string:
+        parser = CsvParser
+    else:
+        raise Exception("Could not determine parser for string!")
+        
+    loader = StringLoader
+    IO = make_io(loader, parser, mapper)
+    return IO(string=string, **options)
