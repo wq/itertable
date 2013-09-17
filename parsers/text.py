@@ -19,7 +19,6 @@ class CsvParser(TableParser):
         # contain column headers.
         fields = self.get_field_names()
         if self.start_row is None:
-            print fields
             if fields:
                 self.start_row = 0
             else:
