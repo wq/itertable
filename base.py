@@ -1,5 +1,6 @@
 from collections import MutableMapping, MutableSequence
 
+
 class BaseIO(MutableMapping, MutableSequence):
     "wq.io.BaseIO: Base class for generic resource management"
 
@@ -17,7 +18,10 @@ class BaseIO(MutableMapping, MutableSequence):
         pass
 
     def parse(self):
-        "Parse a resource (defined by parser mixins).  Result should be an iterable of dicts."
+        """
+        Parse a resource (defined by parser mixins).
+        Result should be an iterable of dicts.
+        """
         # self.data = some_parse_method(self.file)
         pass
 
@@ -38,7 +42,7 @@ class BaseIO(MutableMapping, MutableSequence):
         if self.field_names is not None:
             #Support specifying field_names as string (like namedtuple does)
             if isinstance(self.field_names, basestring):
-                return self.field_names.replace(',',' ').split()
+                return self.field_names.replace(',', ' ').split()
             else:
                 return self.field_names
 
@@ -62,7 +66,7 @@ class BaseIO(MutableMapping, MutableSequence):
 
     def parse_usable_item(self, uitem):
         "Hook to allow items to be untransformed"
-        return uitem 
+        return uitem
 
     def find_index(self, key):
         pk = self.get_key_field()
@@ -87,7 +91,7 @@ class BaseIO(MutableMapping, MutableSequence):
         return self.usable_item(self.data[index])
 
     def __setitem__(self, key, uitem):
-        item  = self.parse_usable_item(uitem)
+        item = self.parse_usable_item(uitem)
         index = self.find_index(key)
         if index is not None:
             self.data[index] = item
@@ -107,14 +111,14 @@ class BaseIO(MutableMapping, MutableSequence):
     def __iter__(self):
         for item in self.data:
             uitem = self.usable_item(item)
-            pk    = self.get_key_field()
+            pk = self.get_key_field()
             if pk is None:
                 yield uitem
             elif isinstance(uitem, dict):
                 yield uitem.get(pk, None)
             else:
                 yield getattr(uitem, pk, None)
-    
+
     def sync(self, other, save=True):
         if self.get_key_field() is None or other.get_key_field() is None:
             raise Exception("Key field required to sync!")

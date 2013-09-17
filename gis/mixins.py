@@ -2,14 +2,17 @@ from wq.io.gis.gdal import DataSource, Layer, Feature
 from wq.io.loaders import FileLoader
 from wq.io.mappers import TupleMapper
 
+
 class GisLoader(FileLoader):
     def load(self):
         self.datasource = DataSource(self.filename)
+
     def save(self):
         raise NotImplementedError
 
+
 class GisParser(object):
-    layer      = None
+    layer = None
     layer_name = None
 
     def parse(self):
@@ -33,6 +36,7 @@ class GisParser(object):
 
     def dump_feature(self, feat):
         raise NotImplementedError
+
 
 class WktMapper(TupleMapper):
     def map_value(self, field, value):

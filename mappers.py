@@ -1,6 +1,7 @@
 from collections import namedtuple, OrderedDict
 import re
 
+
 class BaseMapper(object):
     def get_key_field(self):
         return self.map_field(self.key_field)
@@ -10,7 +11,7 @@ class BaseMapper(object):
 
     def map_value(self, field, value):
         return value
-    
+
     def unmap_field(self, field):
         return field
 
@@ -32,7 +33,7 @@ class BaseMapper(object):
             val = self.unmap_value(field, value)
             item[key] = val
         return item
-        
+
 
 class DictMapper(BaseMapper):
     field_map = {}
@@ -41,19 +42,19 @@ class DictMapper(BaseMapper):
     def map_field(self, field):
         field = self.field_map[field] if field in self.field_map else field
         return field
-    
+
     def map_value(self, field, value):
         if not isinstance(value, basestring):
             return value
         value = self.value_map[value] if value in self.value_map else value
         return value
-    
+
     def unmap_field(self, field):
         for f in self.field_map:
             if self.field_map[f] == field:
                 return f
         return field
-    
+
     def unmap_value(self, field, value):
         if not isinstance(value, basestring):
             return value
@@ -62,13 +63,17 @@ class DictMapper(BaseMapper):
                 return v
         return value
 
+
 class TupleMapper(DictMapper):
     @property
     def field_map(self):
         #FIXME: check for duplicates
         if not hasattr(self, '_field_map'):
             field_names = self.get_field_names()
-            items = [(field, re.sub(r'\W', '', field.lower())) for field in field_names]
+            items = [
+                (field, re.sub(r'\W', '', field.lower()))
+                for field in field_names
+            ]
             self._field_map = OrderedDict(items)
         return self._field_map
 
@@ -77,8 +82,11 @@ class TupleMapper(DictMapper):
         "Returns a class to use for individual items"
 
         if not hasattr(self, '_item_class'):
-           cls = namedtuple(self.__class__.__name__ + 'Tuple', self.field_map.values())
-           self._tuple_class = cls
+            cls = namedtuple(
+                self.__class__.__name__ + 'Tuple',
+                self.field_map.values()
+            )
+            self._tuple_class = cls
 
         return self._tuple_class
 
@@ -96,6 +104,6 @@ class TupleMapper(DictMapper):
     def parse_usable_item(self, uitem):
         mapped = {key: getattr(uitem, key) for key in self.field_map.values()}
         return super(TupleMapper, self).parse_usable_item(mapped)
-   
+
     def create(self, **kwargs):
-        return self.tuple_prototype._replace(**kwargs) 
+        return self.tuple_prototype._replace(**kwargs)

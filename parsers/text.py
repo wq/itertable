@@ -11,10 +11,11 @@ from lxml import etree as xml
 
 from .base import BaseParser, TableParser
 
+
 class CsvParser(TableParser):
 
     def parse(self):
-        # Like DictReader, assume explicit field definition means CSV does not 
+        # Like DictReader, assume explicit field definition means CSV does not
         # contain column headers.
         fields = self.get_field_names()
         if self.start_row is None:
@@ -41,11 +42,13 @@ class CsvParser(TableParser):
         csvout = csv.DictWriter(*args, **kwargs)
         csvout.writeheader()
         for row in self.data:
-           csvout.writerow(row)
+            csvout.writerow(row)
+
 
 class JsonParser(BaseParser):
     indent = None
     namespace = None
+
     def parse(self):
         try:
             obj = json.load(self.file)
@@ -67,9 +70,10 @@ class JsonParser(BaseParser):
             for key in reversed(self.namespace.split('.')):
                 obj = {key: obj}
         json.dump(obj, file, indent=self.indent)
-    
+
     def dump_item(self, item):
         return item
+
 
 class XmlParser(BaseParser):
     root_tag = None

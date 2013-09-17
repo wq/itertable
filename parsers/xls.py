@@ -3,11 +3,12 @@ import datetime
 import math
 from .base import TableParser
 
+
 class WorkbookParser(TableParser):
-    workbook   = None
-    worksheet  = None
+    workbook = None
+    worksheet = None
     sheet_name = 0
-    start_row  = None
+    start_row = None
     column_count = None
 
     def parse(self):
@@ -16,11 +17,11 @@ class WorkbookParser(TableParser):
             self.data = [{'name': name, 'data': self.get_sheet_by_name(name)}
                          for name in self.sheet_names]
             return
-        
+
         sheet_name = self.sheet_name
         if isinstance(self.sheet_name, int):
             sheet_name = self.sheet_names[sheet_name]
-        
+
         self.parse_worksheet(sheet_name)
 
         if self.header_row is None:
@@ -28,6 +29,7 @@ class WorkbookParser(TableParser):
                 self.header_row = self.start_row - 1
             else:
                 self.column_count = 0
+
                 def checkval(cell):
                     if cell.value is not None and cell.value != '':
                         return True
@@ -41,10 +43,12 @@ class WorkbookParser(TableParser):
 
         if self.start_row is None:
             self.start_row = self.header_row + 1
-            
+
         if self.field_names is None:
             rows = self.worksheet[self.header_row:self.start_row]
-            self.field_names = [unicode(c.value) or u'c%s' % i for i, c in enumerate(rows[0])]
+            self.field_names = [
+                unicode(c.value) or u'c%s' % i for i, c in enumerate(rows[0])
+            ]
             for row in rows[1:]:
                 for i, c in enumerate(row):
                     self.field_names[i] += "\n" + unicode(c.value)
@@ -55,8 +59,7 @@ class WorkbookParser(TableParser):
                     field += unicode(i)
                     self.field_names[i] = field
                 seen_fields.add(field)
-                
-                        
+
         self.data = map(self.parse_row, self.worksheet[self.start_row:])
         if self.header_row > 0:
             for r in range(0, self.header_row):
@@ -72,18 +75,19 @@ class WorkbookParser(TableParser):
     @property
     def sheet_names(self):
         raise NotImplementedError
-    
+
     def get_sheet_by_name(self, name):
         raise NotImplementedError
 
     def parse_worksheet(self, name):
         raise NotImplementedError
-    
+
     def parse_row(self, row):
         raise NotImplementedError
 
     def get_value(self, cell):
         raise NotImplementedError
+
 
 class ExcelParser(WorkbookParser):
     def parse_workbook(self):
@@ -97,7 +101,7 @@ class ExcelParser(WorkbookParser):
         return self.workbook.sheet_by_name(name)
 
     def parse_worksheet(self, name):
-        worksheet = self.get_sheet_by_name(name) 
+        worksheet = self.get_sheet_by_name(name)
         self.worksheet = [worksheet.row(i) for i in range(worksheet.nrows)]
 
     def parse_row(self, row):
