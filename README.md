@@ -1,52 +1,48 @@
-# wq.io
+[<img src="https://raw.github.com/wq/wq/master/images/512/wq.io.png"
+  width="256" height="256"
+  alt="wq.io">]
+  (http://wq.io/wq.io)
 
-Python libraries for consuming (input) and generating (output) external data
-resources in various formats.
+**wq.io** is a collection of Python libraries for consuming (<b>i</b>nput) and generating (<b>o</b>utput) external data resources in various formats.  It thereby facilitates <b>i</b>nter<b>o</b>perability between the [wq framework](http://wq.io) and other systems and formats.
 
-## Importing data
+The basic idea behind wq.io is to avoid having to remember the unique usage of e.g. `csv`, `xlrd`, or `lxml` every time one needs to work with an external dataset.  Instead, wq.io abstracts these libraries into a consistent interface that works as an `iterable` of `namedtuples`.
 
-The basic process is broken into several steps which are handed by various
-submodules.
+```python
+from wq.io import load_file
+data = load_file('example.xls')
+for row in data:
+    print row.name, row.date
+```
 
-**loaders**
 
-  Load an external resource from the local filesystem or from the web
-  into a file-like object.
+## Extending wq.io
 
-**parsers**
+The actual process is broken into several steps (`load`, `parse`, and `map`) which are handed by various mixins.  These are mixed with the `BaseIO` class to provide a usable class that can load and iterate over files.
 
-  Parse the file (using the standard python library for that file type) and
-  convert the recordset into a simple list of dictionaries.
+```python
+from wq.io import make_io
+from wq.io.loaders import FileLoader
+from wq.io.parsers import JsonParser
 
-**mappers**
+class MyJsonParser(JsonParser):
+    def parse(self):
+    # custom parsing code ...
+    
+MyJsonFileIO = make_io(FileLoader, MyJsonParser)
 
-  Rename field names and values if needed and optionally convert the
-  dictionaries into other object types (such as a namedtuple).
+for record in MyJsonFileIO(filename='file.json'):
+    print record.id
+```
 
-## Traversing data
+### `loaders`
 
-The base library then provides a collection object (an "IO") that can be used
-to easily navigate the dataset.  It also provides a number of convenience
-classes for common IO use cases.  For example, CsvNetIO provides an IO with
-loaders.NetLoader, parsers.CsvParser, and mappers.TupleMapper pre-mixed into
-the class.
+Load an external resource from the local filesystem or from the web into a file-like object.  On export, loaders prepare the file-like object for writing and perform any needed wrap-up operations.
 
-## Exporting data 
+### `parsers`
 
-The export process uses the same submodules to apply the above steps in
-reverse:
+Parse the file (usually using the standard python library for that file type) and convert the recordset into a simple list of dictionaries.  On export, parsers coonvert the dictionary list back into the source format and write out to the file.
 
-**mappers**
+### `mappers`
 
-  Convert the mapped object back into a simple dictionary and map the field
-  names and values back to the format expected by the file.
+Rename field names and values if needed and optionally convert the dictionaries into other object types (such as a namedtuple).  On export, mappers convert the mapped object back into a simple dictionary and map the field names and values back to the format expected by the file.
 
-**parsers**
-
-  Convert the dictionary list back into the source format and write out to the
-  file.
-
-**loaders**
-
-  Prepare the file-like object for writing and perform any needed wrap-up
-  operations.
