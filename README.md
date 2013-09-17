@@ -7,6 +7,8 @@
 
 The basic idea behind wq.io is to avoid having to remember the unique usage of e.g. `csv`, `xlrd`, or `lxml` every time one needs to work with an external dataset.  Instead, wq.io abstracts these libraries into a consistent interface that works as an `iterable` of `namedtuples`.
 
+### Example
+
 ```python
 from wq.io import load_file
 data = load_file('example.xls')
@@ -14,10 +16,11 @@ for row in data:
     print row.name, row.date
 ```
 
-
 ## Extending wq.io
 
 The actual process is broken into several steps (`load`, `parse`, and `map`) which are handed by various mixins.  These are mixed with the `BaseIO` class to provide a usable class that can load and iterate over files.
+
+### Example
 
 ```python
 from wq.io import make_io
