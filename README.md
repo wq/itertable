@@ -1,9 +1,6 @@
-[<img src="https://raw.github.com/wq/wq/master/images/512/wq.io.png"
-  width="256" height="256"
-  alt="wq.io">]
-  (http://wq.io/wq.io)
+[![wq.io](https://raw.github.com/wq/wq/master/images/256/wq.io.png)](http://wq.io/wq.io)
 
-**wq.io** is a collection of Python libraries for consuming (<b>i</b>nput) and generating (<b>o</b>utput) external data resources in various formats.  It thereby facilitates <b>i</b>nter<b>o</b>perability between the [wq framework](http://wq.io) and other systems and formats.
+**[wq.io](http://wq.io/wq.io)** is a collection of Python libraries for consuming (<b>i</b>nput) and generating (<b>o</b>utput) external data resources in various formats.  It thereby facilitates <b>i</b>nter<b>o</b>perability between the [wq framework](http://wq.io) and other systems and formats.
 
 The basic idea behind wq.io is to avoid having to remember the unique usage of e.g. `csv`, `xlrd`, or `lxml` every time one needs to work with an external dataset.  Instead, wq.io abstracts these libraries into a consistent interface that works as an `iterable` of `namedtuples`.
 
