@@ -10,7 +10,7 @@ class CocorahsIO(TimeSeriesMapper, XmlNetIO):
     
     data = CocorahsIO(state='MN', county='HN')
     for row in data:
-        print row.observationdate, row.totalprecipamt
+        print row.stationname, row.observationdate.date(), row.totalprecipamt
     """
     
     state = None
