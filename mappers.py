@@ -1,5 +1,6 @@
 from collections import namedtuple, OrderedDict
 import re
+from datetime import datetime
 
 
 class BaseMapper(object):
@@ -71,11 +72,14 @@ class TupleMapper(DictMapper):
         if not hasattr(self, '_field_map'):
             field_names = self.get_field_names()
             items = [
-                (field, re.sub(r'\W', '', field.lower()))
+                (field, self.clean_field_name(field))
                 for field in field_names
             ]
             self._field_map = OrderedDict(items)
         return self._field_map
+
+    def clean_field_name(self, field):
+        return re.sub(r'\W', '', field.lower())
 
     @property
     def tuple_class(self):
@@ -107,3 +111,41 @@ class TupleMapper(DictMapper):
 
     def create(self, **kwargs):
         return self.tuple_prototype._replace(**kwargs)
+
+
+class TimeSeriesMapper(TupleMapper):
+    date_formats = None
+    map_floats = True
+
+    def map_value(self, field, value):
+        if not isinstance(value, basestring):
+            return value
+
+        # Generate functions to use for mapping string to date or float
+        def make_mapper(fmt):
+            def mapper(val):
+                val = datetime.strptime(val, fmt)
+                if '%Y' in fmt or '%y' in fmt:
+                    return val
+                else:
+                    return val.time()
+            return mapper
+
+        functions = [make_mapper(fmt) for fmt in self.date_formats]
+        if self.map_floats:
+            functions.insert(0, float)
+
+        value = value.strip()
+        for i, fn in enumerate(functions):
+            try:
+                return fn(value)
+            except ValueError:
+                pass
+        return value
+
+    @property
+    def key_fields(self):
+        raise NotImplementedError("Key fields must be specified")
+
+    def parameter_fields(self):
+        return sorted(set(self.field_map.values()) - set(self.key_fields))

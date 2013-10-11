@@ -111,6 +111,8 @@ class BaseIO(MutableMapping, MutableSequence):
     def __iter__(self):
         for item in self.data:
             uitem = self.usable_item(item)
+            if uitem is None:
+                return
             pk = self.get_key_field()
             if pk is None:
                 yield uitem

@@ -35,7 +35,8 @@ class WorkbookParser(TableParser):
                         return True
                     return False
 
-                for row in range(min(len(self.worksheet) - 1, 5), -1, -1):
+                search_rows = min(len(self.worksheet) - 1, self.max_header_row)
+                for row in range(search_rows, -1, -1):
                     count = len(filter(checkval, self.worksheet[row]))
                     if count >= self.column_count:
                         self.column_count = count

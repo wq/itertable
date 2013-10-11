@@ -49,6 +49,7 @@ class NetLoader(BaseLoader):
     username = None
     password = None
     headers = {}
+    debug = False
 
     http = Http()
 
@@ -72,11 +73,16 @@ class NetLoader(BaseLoader):
             params = getattr(self, 'params', None)
 
         if params is not None:
-            url += '?' + urlencode(params)
+            if isinstance(params, basestring):
+                url += '?' + params
+            else:
+                url += '?' + urlencode(params, doseq=True)
 
         all_headers = self.headers.copy()
         all_headers.update(headers)
 
+        if self.debug:
+            print "%s: %s" % (method, url)
         resp, content = self.http.request(
             url, method=method, body=body, headers=all_headers
         )

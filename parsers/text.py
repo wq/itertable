@@ -1,12 +1,5 @@
 import json
-
-try:
-    import unicodecsv as csv
-    UNICODE_CSV = True
-except ImportError:
-    import csv
-    UNICODE_CSV = False
-
+from .readers import csv, UNICODE_CSV, SkipPreludeReader
 from lxml import etree as xml
 
 from .base import BaseParser, TableParser
@@ -29,9 +22,17 @@ class CsvParser(TableParser):
             else:
                 self.header_row = 0
 
-        self.csvdata = csv.DictReader(self.file, fields)
+        Reader = self.reader_class()
+        self.csvdata = Reader(self.file, fields)
         self.field_names = self.csvdata.fieldnames
-        self.data = [row for row in self.csvdata]
+        if self.header_row is not None:
+            self.header_row = self.csvdata.header_row
+        self.data = (row for row in self.csvdata)
+
+    def reader_class(self):
+        class Reader(SkipPreludeReader):
+            max_header_row = self.max_header_row
+        return Reader
 
     def dump(self, file=None):
         if file is None:

@@ -1,8 +1,8 @@
-from wq.io import XmlNetIO
-from datetime import date, timedelta
+from wq.io import TimeSeriesMapper, XmlNetIO
+from datetime import datetime, date, timedelta
 
 
-class CocorahsIO(XmlNetIO):
+class CocorahsIO(TimeSeriesMapper, XmlNetIO):
     state = None
     county = None
     startdate = date.today() - timedelta(days=30)
@@ -18,6 +18,24 @@ class CocorahsIO(XmlNetIO):
         'responsefields': "all"
     }
     root_tag = 'Cocorahs'
+
+    date_formats = [
+        '%Y-%m-%d %I:%M %p',
+        '%Y-%m-%d',
+        '%I:%M %p',
+        '%m/%d/%Y %I:%M %p'
+    ]
+
+    key_fields = [
+        "stationnumber",
+        "stationname",
+        "latitude",
+        "longitude",
+        "datetimestamp",
+        "observationdate",
+        "observationtime",
+        "entrydatetime",
+    ]
 
     @property
     def item_tag(self):
@@ -42,3 +60,9 @@ class CocorahsIO(XmlNetIO):
             self.params['Date'] = self.startdate.strftime(fmt + " %I:%M %p")
 
         super(CocorahsIO, self).load()
+
+    def map_value(self, field, value):
+        value = super(CocorahsIO, self).map_value(field, value)
+        if isinstance(value, datetime) and value.year == 1:
+            return None
+        return value
