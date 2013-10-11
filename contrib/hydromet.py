@@ -4,6 +4,16 @@ from collections import OrderedDict
 
 
 class HydrometIO(TimeSeriesMapper, CsvNetIO):
+    """
+    Retrieves Hydromet data from USBR
+    
+    Usage:
+    
+    data = HydrometIO(station='ACAO', parameters=['GD','QD'])
+    for row in data:
+        print row.date, row.gd, row.qd
+    """
+    
     # USBR region: pn or gp
     region = 'pn'
 
