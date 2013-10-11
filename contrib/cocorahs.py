@@ -3,6 +3,16 @@ from datetime import datetime, date, timedelta
 
 
 class CocorahsIO(TimeSeriesMapper, XmlNetIO):
+    """
+    Retrieves CoCoRaHS observations from data.cocorahs.org
+    
+    Usage:
+    
+    data = CocorahsIO(state='MN', county='HN')
+    for row in data:
+        print row.observationdate, row.totalprecipamt
+    """
+    
     state = None
     county = None
     startdate = date.today() - timedelta(days=30)
