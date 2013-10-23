@@ -6,14 +6,14 @@ from collections import OrderedDict
 class HydrometIO(TimeSeriesMapper, CsvNetIO):
     """
     Retrieves Hydromet data from USBR
-    
+
     Usage:
-    
+
     data = HydrometIO(station='ACAO', parameters=['GD','QD'])
     for row in data:
         print row.date, row.gd, row.qd
     """
-    
+
     # USBR region: pn or gp
     region = 'pn'
 
@@ -94,8 +94,8 @@ class HydrometIO(TimeSeriesMapper, CsvNetIO):
         return item
 
 
-# PN also has an agrimet.pl that can return the last 8 days of data for a station
-# (no params need to be specified)
+# PN also has an agrimet.pl that can return the last 8 days of data for a
+# station (no params need to be specified)
 class AgrimetIO(HydrometIO):
     script = "agrimet.pl"
 
