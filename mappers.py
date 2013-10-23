@@ -113,6 +113,19 @@ class TupleMapper(DictMapper):
         return self.tuple_prototype._replace(**kwargs)
 
 
+def make_date_mapper(fmt):
+    """
+    Generate functions to use for mapping strings to dates
+    """
+    def mapper(val):
+        val = datetime.strptime(val, fmt)
+        if '%Y' in fmt or '%y' in fmt:
+            return val
+        else:
+            return val.time()
+    return mapper
+
+
 class TimeSeriesMapper(TupleMapper):
     date_formats = None
     map_floats = True
@@ -121,17 +134,7 @@ class TimeSeriesMapper(TupleMapper):
         if not isinstance(value, basestring):
             return value
 
-        # Generate functions to use for mapping string to date or float
-        def make_mapper(fmt):
-            def mapper(val):
-                val = datetime.strptime(val, fmt)
-                if '%Y' in fmt or '%y' in fmt:
-                    return val
-                else:
-                    return val.time()
-            return mapper
-
-        functions = [make_mapper(fmt) for fmt in self.date_formats]
+        functions = [make_date_mapper(fmt) for fmt in self.date_formats]
         if self.map_floats:
             functions.insert(0, float)
 
