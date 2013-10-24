@@ -6,6 +6,7 @@ from .base import BaseParser, TableParser
 
 
 class CsvParser(TableParser):
+    delimiter = ","
 
     def parse(self):
         # Like DictReader, assume explicit field definition means CSV does not
@@ -23,7 +24,7 @@ class CsvParser(TableParser):
                 self.header_row = 0
 
         Reader = self.reader_class()
-        self.csvdata = Reader(self.file, fields)
+        self.csvdata = Reader(self.file, fields, delimiter=self.delimiter)
         self.field_names = self.csvdata.fieldnames
         if self.header_row is not None:
             self.header_row = self.csvdata.header_row
@@ -39,6 +40,7 @@ class CsvParser(TableParser):
             file = self.file
         args = file, self.get_field_names()
         kwargs = {'encoding': 'utf-8'} if UNICODE_CSV else {}
+        kwargs['delimiter'] = self.delimiter
         csvout = csv.DictWriter(*args, **kwargs)
         csvout.writeheader()
         for row in self.data:
