@@ -30,12 +30,15 @@ def make_io(loader, parser, mapper=TupleMapper, name=None):
     return type(name, (loader, parser, mapper, BaseIO), {})
 
 
-def guess_type(filename):
+def guess_type(filename, buffer=None):
     mimetype, encoding = mimetypes.guess_type(filename)
     if mimetype is None:
         try:
             import magic
-            mimetype = magic.from_file(filename, mime=True)
+            if buffer:
+                mimetype = magic.from_buffer(buffer, mime=True)
+            else:
+                mimetype = magic.from_file(filename, mime=True)
         except ImportError:
             pass
     return mimetype
