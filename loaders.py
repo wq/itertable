@@ -1,6 +1,7 @@
-from httplib2 import Http
+from httplib2 import Http, __version__ as HTTPLIB_VERSION
 from StringIO import StringIO
 from urllib import urlencode
+from wq.io.version import VERSION
 
 
 class BaseLoader(object):
@@ -48,7 +49,6 @@ class NetLoader(BaseLoader):
 
     username = None
     password = None
-    headers = {}
     debug = False
 
     http = Http()
@@ -56,6 +56,16 @@ class NetLoader(BaseLoader):
     @property
     def url(self):
         raise NotImplementedError
+
+    @property
+    def user_agent(self):
+        return "wq.io/%s (Python-httplib2/%s)" % (VERSION, HTTPLIB_VERSION)
+
+    @property
+    def headers(self):
+        return {
+            'User-Agent': self.user_agent,
+        }
 
     def load(self, **kwargs):
 
