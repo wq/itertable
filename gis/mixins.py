@@ -1,10 +1,11 @@
 import fiona
 from shapely import wkt, geometry
 from wq.io.loaders import FileLoader
+from wq.io.parsers.base import BaseParser
 from wq.io.mappers import TupleMapper
 
 
-class FionaLoaderParser(FileLoader):
+class FionaLoaderParser(FileLoader, BaseParser):
     """
     Composite loader & parser mixin for GIS data, powered by Fiona
     """
