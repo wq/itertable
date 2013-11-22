@@ -30,8 +30,8 @@ When [fiona] and [shapely] are available, wq.io can also open and create shapefi
 ```python
 from wq.io import ShapeIO
 data = ShapeIO(filename='sites.shp')
-for site in data:
-    print site.id, site.geometry.wkt
+for id, site in data.items():
+    print id, site.geometry.wkt
 ```
 
 It is straightforward to [extend wq.io] by subclassing existing functionality with custom implementations.
