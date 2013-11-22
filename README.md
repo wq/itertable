@@ -8,6 +8,8 @@
 pip install wq.io
 # Or, if using together with wq.app and/or wq.db
 pip install wq
+# To use wq.io's GIS capabilities also install Shapely and Fiona
+pip install shapely fiona
 ```
 
 See [the documentation] for more information.
@@ -23,10 +25,21 @@ for row in data:
     print row.name, row.date
 ```
 
+When [fiona] and [shapely] are available, wq.io can also open and create shapefiles and other OGR-compatible geographic data formats.
+
+```python
+from wq.io import ShapeIO
+data = ShapeIO(filename='sites.shp')
+for site in data:
+    print site.id, site.geometry.wkt
+```
+
 It is straightforward to [extend wq.io] by subclassing existing functionality with custom implementations.
 
 
 [wq.io]: http://wq.io/wq.io
 [wq framework]: http://wq.io/
 [the documentation]: http://wq.io/docs/
+[fiona]: https://github.com/Toblerity/Fiona
+[shapely]: https://github.com/Toblerity/Shapely
 [extend wq.io]: http://wq.io/docs/custom-io
