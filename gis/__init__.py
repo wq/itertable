@@ -1,11 +1,15 @@
 from wq.io.mappers import TupleMapper
-from wq.io.gis.mixins import GisParser, GisLoader, WktMapper
+from .mixins import FionaLoaderParser, ShapeMapper, WktMapper, MetaSyncer
 from wq.io.base import BaseIO
 
 
-class GisIO(GisLoader, GisParser, TupleMapper, BaseIO):
+class GisIO(FionaLoaderParser, TupleMapper, MetaSyncer, BaseIO):
     pass
 
 
-class WktIO(GisLoader, GisParser, WktMapper, BaseIO):
+class ShapeIO(FionaLoaderParser, ShapeMapper, MetaSyncer, BaseIO):
+    pass
+
+
+class WktIO(FionaLoaderParser, WktMapper, MetaSyncer, BaseIO):
     pass

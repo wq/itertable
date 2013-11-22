@@ -19,3 +19,10 @@ XmlNetIO = make_io(NetLoader, XmlParser)
 XmlStringIO = make_io(StringLoader, XmlParser)
 
 ExcelFileIO = make_io(BinaryFileLoader, ExcelParser, name='ExcelFileIO')
+
+try:
+    import fiona
+    import shapely
+    from wq.io.gis import GisIO, ShapeIO, WktIO
+except ImportError:
+    pass
