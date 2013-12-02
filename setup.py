@@ -32,6 +32,13 @@ def parse_markdown_readme():
     return readme.read()
 
 
+def get_version():
+    version = open("version.py").read().strip()
+    version = version.replace("VERSION = ", '')
+    version = version.replace('"', '')
+    return version
+
+
 def create_wq_namespace():
     """
     Generate the wq namespace package
@@ -68,7 +75,7 @@ packages, package_dir = find_wq_packages('wq.io')
 
 setup(
     name='wq.io',
-    version='0.4.0-dev',
+    version=get_version(),
     author='S. Andrew Sheppard',
     author_email='andrew@wq.io',
     url='http://wq.io/wq.io',
