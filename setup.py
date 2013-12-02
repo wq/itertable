@@ -1,31 +1,85 @@
-from os.path import join, dirname
+import os
 from setuptools import setup, find_packages
 
-LONG_DESCRIPION = """
-Consistent API for reading and writing to external datasets
+
+LONG_DESCRIPTION = """
+Consistent iterable API for reading and writing to external datasets
 """
 
-def long_description():
-    """Return long description from README.rst if it's present
-    because it doesn't get installed."""
+
+def parse_markdown_readme():
+    """
+    Convert README.md to RST via pandoc, and load into memory
+    (fallback to LONG_DESCRIPTION on failure)
+    """
+    # Attempt to run pandoc on markdown file
+    import subprocess
     try:
-        return open(join(dirname(__file__), 'README.rst')).read()
-    except IOError:
+        subprocess.call(
+            ['pandoc', '-t', 'rst', '-o', 'README.rst', 'README.md']
+        )
+    except OSError:
         return LONG_DESCRIPTION
 
+    # Attempt to load output
+    try:
+        readme = open(os.path.join(
+            os.path.dirname(__file__),
+            'README.rst'
+        ))
+    except IOError:
+        return LONG_DESCRIPTION
+    return readme.read()
+
+
+def create_wq_namespace():
+    """
+    Generate the wq namespace package
+    (not checked in, as it technically is the parent of this folder)
+    """
+    if os.path.isdir("wq"):
+        return
+    os.makedirs("wq")
+    init = open(os.path.join("wq", "__init__.py"), 'w')
+    init.write("__import__('pkg_resources').declare_namespace(__name__)")
+    init.close()
+
+
+def find_wq_packages(submodule):
+    """
+    Add submodule prefix to found packages.  The packages within each wq
+    submodule exist at the top level of their respective repositories.
+    """
+    packages = ['wq', submodule]
+    package_dir = {submodule: '.'}
+    for package in find_packages():
+        if package == 'wq':
+            continue
+        full_name = submodule + "." + package
+        packages.append(full_name)
+        package_dir[full_name] = package.replace('.', os.sep)
+
+    return packages, package_dir
+
+
+create_wq_namespace()
+packages, package_dir = find_wq_packages('wq.io')
+
+
 setup(
-    name = 'wq.io',
-    version = '0.4.0-dev',
+    name='wq.io',
+    version='0.4.0-dev',
     author='S. Andrew Sheppard',
     author_email='andrew@wq.io',
     url='http://wq.io/wq.io',
     license='MIT',
-    packages=find_packages(),
+    packages=packages,
+    package_dir=package_dir,
     namespace_packages=['wq'],
-    description='Consistent iterable API for reading and writing to external datasets',
-    long_description=long_description(),
-    install_requires=['httplib2','lxml','xlrd'],
-    classifiers = [
+    description=LONG_DESCRIPTION.strip(),
+    long_description=parse_markdown_readme(),
+    install_requires=['httplib2', 'lxml', 'xlrd'],
+    classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
