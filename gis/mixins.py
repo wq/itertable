@@ -53,8 +53,8 @@ class FionaLoaderParser(FileLoader, BaseParser):
             'id': feat.get('id', feat.get('ID', i)),
             'geometry': feat['geometry'],
             'properties': {
-                 key: value for key, value in feat.items()
-                 if key not in ('geometry', 'id',)
+                key: value for key, value in feat.items()
+                if key not in ('geometry', 'id',)
             }
         }
 
@@ -98,13 +98,3 @@ class WktMapper(ShapeMapper):
         if field == 'geometry':
             value = wkt.loads(value)
         return super(WktMapper, self).unmap_value(field, value)
-
-
-class MetaSyncer(object):
-    """
-    Custom sync() to handle transfering Fiona meta
-    """
-    def sync(self, other, save=True):
-        other.meta = self.meta
-        other._field_map = self.field_map
-        super(MetaSyncer, self).sync(other, save)
