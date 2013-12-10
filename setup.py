@@ -85,7 +85,7 @@ setup(
     namespace_packages=['wq'],
     description=LONG_DESCRIPTION.strip(),
     long_description=parse_markdown_readme(),
-    install_requires=['httplib2', 'lxml', 'xlrd'],
+    install_requires=['httplib2', 'xlrd'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',

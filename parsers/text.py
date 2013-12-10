@@ -1,6 +1,6 @@
 import json
 from .readers import csv, UNICODE_CSV, SkipPreludeReader
-from lxml import etree as xml
+from xml.etree import ElementTree as ET
 
 from .base import BaseParser, TableParser
 
@@ -82,7 +82,7 @@ class XmlParser(BaseParser):
     item_tag = None
 
     def parse(self):
-        doc = xml.parse(self.file)
+        doc = ET.parse(self.file)
         root = doc.getroot()
         if self.root_tag is None:
             self.root_tag = root.tag
@@ -96,16 +96,16 @@ class XmlParser(BaseParser):
     def dump(self, file=None):
         if file is None:
             file = self.file
-        root = xml.Element(self.root_tag)
+        root = ET.Element(self.root_tag)
         for item in self.data:
             root.append(self.dump_item(item))
-        xml.ElementTree(root).write(file)
+        ET.ElementTree(root).write(file)
 
     def dump_item(self, item):
-        el = xml.Element(self.item_tag)
+        el = ET.Element(self.item_tag)
         for key in self.get_field_names():
             if key not in item or item[key] is None:
                 continue
-            sel = xml.SubElement(el, key)
+            sel = ET.SubElement(el, key)
             sel.text = unicode(item.get(key))
         return el
