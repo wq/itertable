@@ -1,6 +1,6 @@
 [![wq.io](https://raw.github.com/wq/wq/master/images/256/wq.io.png)](http://wq.io/wq.io)
 
-**[wq.io]** is a collection of Python libraries for consuming (<b>i</b>nput) and generating (<b>o</b>utput) external data resources in various formats.  It thereby facilitates <b>i</b>nter<b>o</b>perability between the [wq framework] and other systems and formats.
+[wq.io] is a collection of Python libraries for consuming (<b>i</b>nput) and generating (<b>o</b>utput) external data resources in various formats.  It thereby facilitates <b>i</b>nter<b>o</b>perability between the [wq framework] and other systems and formats.
 
 ## Getting Started
 
