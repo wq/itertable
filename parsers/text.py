@@ -28,7 +28,7 @@ class CsvParser(TableParser):
         self.field_names = self.csvdata.fieldnames
         if self.header_row is not None:
             self.header_row = self.csvdata.header_row
-        self.data = (row for row in self.csvdata)
+        self.data = [row for row in self.csvdata]
 
     def reader_class(self):
         class Reader(SkipPreludeReader):
