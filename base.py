@@ -68,18 +68,33 @@ class BaseIO(MutableMapping, MutableSequence):
         "Hook to allow items to be untransformed"
         return uitem
 
-    def find_index(self, key):
-        pk = self.get_key_field()
-        if pk is None:
-            return key
-        for index, item in enumerate(self.data):
+    def compute_index(self, recompute=False):
+        key_field = self.get_key_field()
+        if key_field is None:
+            return None
+
+        if getattr(self, '_index_cache', None) is not None and not recompute:
+            return self._index_cache
+
+        index = {}
+        for i, item in enumerate(self.data):
             uitem = self.usable_item(item)
             if isinstance(uitem, dict):
-                if uitem.get(pk, None) == key:
-                    return index
+                key = uitem.get(key_field, None)
             else:
-                if getattr(uitem, pk, None) == key:
-                    return index
+                key = getattr(uitem, key_field, None)
+            if key is not None:
+                index[key] = i
+
+        self._index_cache = index
+        return index
+
+    def find_index(self, key):
+        index = self.compute_index()
+        if index:
+            return index.get(key, None)
+        else:
+            return key
 
     def __len__(self):
         return len(self.data)
@@ -97,16 +112,19 @@ class BaseIO(MutableMapping, MutableSequence):
             self.data[index] = item
         else:
             self.data.append(item)
+            self.compute_index(True)
 
     def __delitem__(self, key):
         index = self.find_index(key)
         if index is None:
             raise KeyError
         del self.data[index]
+        self.compute_index(True)
 
     def insert(self, index, uitem):
         item = self.parse_usable_item(uitem)
         self.data.insert(index, item)
+        self.compute_index(True)
 
     def __iter__(self):
         for item in self.data:
