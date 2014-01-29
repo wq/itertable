@@ -23,7 +23,8 @@ class SkipPreludeReader(object, csv.DictReader):
         readeropts = [f, dialect]
         readeropts.extend(args)
         self._readeropts = (readeropts, kwds)
-        csv.DictReader.__init__(self, f, *args, **kwds)
+        csv.DictReader.__init__(self, f, fieldnames, restkey, restval,
+                                dialect, *args, **kwds)
 
     @property
     def fieldnames(self):
