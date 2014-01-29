@@ -45,7 +45,10 @@ class SkipPreludeReader(object, csv.DictReader):
         # Reset file and advance reader so it starts in the right spot
         self._file.seek(0)
         for i in range(header_row + 1):
-            self.reader.next()
+            try:
+                self.reader.next()
+            except StopIteration:
+                pass
 
         self._fieldnames = field_names
         self._header_row = header_row
