@@ -68,3 +68,44 @@ def load_string(string, mapper=TupleMapper, options={}):
     loader = StringLoader
     IO = make_io(loader, parser, mapper)
     return IO(string=string, **options)
+
+
+class FlatIO(TupleMapper, BaseIO):
+    """
+    Denormalizes a nested IO structure (e.g. an array of individual time
+    series) into a single iterable.  Each row in the top level IO should have
+    an attribute (typically 'data') pointing to an inner IO.  Both the top
+    level IO class and the inner class should extend TupleMapper.
+    """
+
+    io_class = None
+    inner_attr = 'data'
+
+    def __init__(self, *args, **kwargs):
+        self.io_class = kwargs.pop('io_class', self.io_class)
+        self.inner_attr = kwargs.pop('inner_attr', self.inner_attr)
+        if self.io_class is None:
+            raise Exception("An IO class must be specified")
+
+        # Pass remaining arguments
+        self.nested_io = self.io_class(*args, **kwargs)
+        self.data = list(self.unpack_io())
+
+    def unpack_io(self):
+        # Loop through outer IO (e.g. metadata series)
+        for outer in self.nested_io:
+            meta = outer._asdict()
+            inner_io = meta.pop(self.inner_attr)
+
+            # Loop through inner IO (e.g. time series) on each record
+            for inner in inner_io:
+                record = meta.copy()
+                record.update(inner._asdict())
+                yield record
+
+
+def flattened(io_class, *args, **kwargs):
+    if io_class.nested:
+        return FlatIO(io_class=io_class, *args, **kwargs)
+    else:
+        return io_class(*args, **kwargs)

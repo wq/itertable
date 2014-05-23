@@ -4,6 +4,9 @@ from collections import MutableMapping, MutableSequence
 class BaseIO(MutableMapping, MutableSequence):
     "wq.io.BaseIO: Base class for generic resource management"
 
+    tabular = False
+    nested = False
+
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.refresh()

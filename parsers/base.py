@@ -1,5 +1,5 @@
 class BaseParser(object):
-    tabular = False
+    pass
 
 
 class TableParser(BaseParser):
