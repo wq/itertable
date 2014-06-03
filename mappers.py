@@ -72,14 +72,18 @@ class TupleMapper(DictMapper):
         if not hasattr(self, '_field_map'):
             field_names = self.get_field_names()
             items = [
-                (field, self.clean_field_name(field))
+                (field, self.tuple_field_name(field))
                 for field in field_names
             ]
             self._field_map = OrderedDict(items)
         return self._field_map
 
-    def clean_field_name(self, field):
+    def tuple_field_name(self, field):
+        field = self.clean_field_name(field)
         return re.sub(r'\W', '', field.lower())
+
+    def clean_field_name(self, field):
+        return field
 
     @property
     def tuple_class(self):
