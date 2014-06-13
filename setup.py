@@ -87,12 +87,15 @@ setup(
     long_description=parse_markdown_readme(),
     install_requires=['httplib2', 'xlrd'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 2.7',
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Text Processing :: Markup :: XML',
         'Topic :: Scientific/Engineering :: GIS',
+        'Topic :: Utilities',
     ]
 )
