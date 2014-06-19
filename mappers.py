@@ -1,6 +1,7 @@
 from collections import namedtuple, OrderedDict
 import re
 from datetime import datetime
+from wq.io.exceptions import NoData
 
 
 class BaseMapper(object):
@@ -68,6 +69,9 @@ class DictMapper(BaseMapper):
 class TupleMapper(DictMapper):
     @property
     def field_map(self):
+        if not getattr(self, 'data', None):
+            raise NoData
+
         #FIXME: check for duplicates
         if not hasattr(self, '_field_map'):
             field_names = self.get_field_names()

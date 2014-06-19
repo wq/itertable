@@ -3,6 +3,7 @@ from .readers import csv, UNICODE_CSV, SkipPreludeReader
 from xml.etree import ElementTree as ET
 
 from .base import BaseParser, TableParser
+from wq.io.exceptions import ParseFailed
 
 
 class CsvParser(TableParser):
@@ -66,7 +67,7 @@ class JsonParser(BaseParser):
                     obj = obj[key]
             self.data = map(self.parse_item, obj)
         except ValueError:
-            self.data = []
+            raise ParseFailed
 
     def parse_item(self, item):
         return item

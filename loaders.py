@@ -2,6 +2,7 @@ from httplib2 import Http, __version__ as HTTPLIB_VERSION
 from StringIO import StringIO
 from urllib import urlencode
 from wq.io.version import VERSION
+from .exceptions import LoadFailed
 
 
 class BaseLoader(object):
@@ -97,7 +98,12 @@ class NetLoader(BaseLoader):
             url, method=method, body=body, headers=all_headers
         )
         if resp.status < 200 or resp.status > 299:
-            raise Exception(url + '\n' + content)
+            raise LoadFailed(
+                "Error Retrieving Data",
+                content=content,
+                path=url,
+                code=resp.status,
+            )
 
         return content
 
