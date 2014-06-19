@@ -99,8 +99,7 @@ class NetLoader(BaseLoader):
         )
         if resp.status < 200 or resp.status > 299:
             raise LoadFailed(
-                "Error Retrieving Data",
-                content=content,
+                content,
                 path=url,
                 code=resp.status,
             )
