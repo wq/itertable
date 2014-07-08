@@ -20,7 +20,11 @@ class LoadFailed(IoException):
     def __str__(self):
         if self.message:
             text = self.message
-            if '<' in text and '>' in text and BeautifulSoup:
+            has_html = False
+            for tag in '<html', '<body', '<div':
+                if tag in text or tag.upper() in text:
+                    has_html = True
+            if has_html and BeautifulSoup:
                 html = BeautifulSoup(text).body
                 if html:
                     text = html.get_text('\n')
