@@ -93,7 +93,7 @@ class TupleMapper(DictMapper):
     def tuple_class(self):
         "Returns a class to use for individual items"
 
-        if not hasattr(self, '_item_class'):
+        if not hasattr(self, '_tuple_class'):
             cls = namedtuple(
                 self.__class__.__name__ + 'Tuple',
                 self.field_map.values()
@@ -119,6 +119,16 @@ class TupleMapper(DictMapper):
 
     def create(self, **kwargs):
         return self.tuple_prototype._replace(**kwargs)
+
+    def __getstate__(self):
+        """
+        Don't include auto-created properties in pickle state.
+        (especially since the class doesn't have a real path)
+        """
+        state = self.__dict__.copy()
+        state.pop('_tuple_class', None)
+        state.pop('_tuple_prototype', None)
+        return state
 
 
 def make_date_mapper(fmt):
