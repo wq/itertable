@@ -36,7 +36,7 @@ class FionaLoaderParser(FileLoader, BaseParser):
             # One layer, load & parse GIS data
             with fiona.open(self.filename, layer=self.layer_id) as f:
                 self.meta = f.meta
-                self.data = map(self.parse_feature, f)
+                self.data = list(map(self.parse_feature, f))
 
     def parse_feature(self, f):
         # Flatten Fiona's GeoJSON-style representation into something more

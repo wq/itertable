@@ -65,7 +65,7 @@ class JsonParser(BaseParser):
             if self.namespace:
                 for key in self.namespace.split('.'):
                     obj = obj[key]
-            self.data = map(self.parse_item, obj)
+            self.data = list(map(self.parse_item, obj))
         except ValueError:
             raise ParseFailed
 
@@ -75,7 +75,7 @@ class JsonParser(BaseParser):
     def dump(self, file=None):
         if file is None:
             file = self.file
-        obj = map(self.dump_item, self.data)
+        obj = list(map(self.dump_item, self.data))
         if self.namespace:
             for key in reversed(self.namespace.split('.')):
                 obj = {key: obj}
@@ -96,7 +96,7 @@ class XmlParser(BaseParser):
             self.root_tag = root.tag
         if self.item_tag is None:
             self.item_tag = list(root)[0].tag
-        self.data = map(self.parse_item, root.findall(self.item_tag))
+        self.data = list(map(self.parse_item, root.findall(self.item_tag)))
 
     def parse_item(self, el):
         return {e.tag: e.text for e in el}
@@ -115,5 +115,5 @@ class XmlParser(BaseParser):
             if key not in item or item[key] is None:
                 continue
             sel = ET.SubElement(el, key)
-            sel.text = unicode(item.get(key))
+            sel.text = str(item.get(key))
         return el

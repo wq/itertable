@@ -22,7 +22,7 @@ class BaseMapper(object):
 
     def usable_item(self, item):
         uitem = {}
-        for key, val in item.iteritems():
+        for key, val in item.items():
             field = self.map_field(key)
             value = self.map_value(field, val)
             uitem[field] = value
@@ -30,7 +30,7 @@ class BaseMapper(object):
 
     def parse_usable_item(self, uitem):
         item = {}
-        for field, value in uitem.iteritems():
+        for field, value in uitem.items():
             key = self.unmap_field(field)
             val = self.unmap_value(field, value)
             item[key] = val
@@ -46,7 +46,7 @@ class DictMapper(BaseMapper):
         return field
 
     def map_value(self, field, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             return value
         value = self.value_map[value] if value in self.value_map else value
         return value
@@ -58,7 +58,7 @@ class DictMapper(BaseMapper):
         return field
 
     def unmap_value(self, field, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             return value
         for v in self.value_map:
             if self.value_map[v] == value:
@@ -96,7 +96,7 @@ class TupleMapper(DictMapper):
         if not hasattr(self, '_tuple_class'):
             cls = namedtuple(
                 self.__class__.__name__ + 'Tuple',
-                self.field_map.values()
+                list(self.field_map.values())
             )
             self._tuple_class = cls
 
@@ -149,7 +149,7 @@ class TimeSeriesMapper(TupleMapper):
     map_floats = True
 
     def map_value(self, field, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             return value
 
         functions = [make_date_mapper(fmt) for fmt in self.date_formats]

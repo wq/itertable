@@ -37,7 +37,7 @@ class WorkbookParser(TableParser):
 
                 search_rows = min(len(self.worksheet) - 1, self.max_header_row)
                 for row in range(search_rows, -1, -1):
-                    count = len(filter(checkval, self.worksheet[row]))
+                    count = len(list(filter(checkval, self.worksheet[row])))
                     if count >= self.column_count:
                         self.column_count = count
                         self.header_row = row
@@ -48,20 +48,20 @@ class WorkbookParser(TableParser):
         if self.field_names is None:
             rows = self.worksheet[self.header_row:self.start_row]
             self.field_names = [
-                unicode(c.value) or u'c%s' % i for i, c in enumerate(rows[0])
+                str(c.value) or 'c%s' % i for i, c in enumerate(rows[0])
             ]
             for row in rows[1:]:
                 for i, c in enumerate(row):
-                    self.field_names[i] += "\n" + unicode(c.value)
+                    self.field_names[i] += "\n" + str(c.value)
 
             seen_fields = set()
             for i, field in enumerate(self.field_names):
                 if field in seen_fields:
-                    field += unicode(i)
+                    field += str(i)
                     self.field_names[i] = field
                 seen_fields.add(field)
 
-        self.data = map(self.parse_row, self.worksheet[self.start_row:])
+        self.data = list(map(self.parse_row, self.worksheet[self.start_row:]))
         if self.header_row > 0:
             for r in range(0, self.header_row):
                 for c, cell in enumerate(self.worksheet[r]):

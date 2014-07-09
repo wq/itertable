@@ -32,7 +32,7 @@ class BaseIO(MutableMapping, MutableSequence):
         ""
         if file is None:
             file = self.file
-        file.write(unicode(self.data))
+        file.write(str(self.data))
 
     def save(self):
         ""
@@ -44,14 +44,14 @@ class BaseIO(MutableMapping, MutableSequence):
         "Returns a list of raw fields to expect (defined by parser mixins)"
         if self.field_names is not None:
             #Support specifying field_names as string (like namedtuple does)
-            if isinstance(self.field_names, basestring):
+            if isinstance(self.field_names, str):
                 return self.field_names.replace(',', ' ').split()
             else:
                 return self.field_names
 
         # If no defined field names, try to retrieve from first record
         if getattr(self, 'data', None) and len(self.data) > 0:
-            return self.data[0].keys()
+            return list(self.data[0].keys())
         else:
             return None
 

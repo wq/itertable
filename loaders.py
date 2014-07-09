@@ -1,6 +1,13 @@
+from __future__ import print_function
 from httplib2 import Http, __version__ as HTTPLIB_VERSION
-from StringIO import StringIO
-from urllib import urlencode
+try:
+    # Python 3
+    from io import StringIO
+    from urllib.parse import urlencode
+except ImportError:
+    # Python 2
+    from StringIO import StringIO
+    from urllib import urlencode
 from wq.io.version import VERSION
 from .exceptions import LoadFailed
 
@@ -84,7 +91,7 @@ class NetLoader(BaseLoader):
             params = getattr(self, 'params', None)
 
         if params is not None:
-            if isinstance(params, basestring):
+            if isinstance(params, str):
                 url += '?' + params
             else:
                 url += '?' + urlencode(params, doseq=True)
@@ -93,7 +100,7 @@ class NetLoader(BaseLoader):
         all_headers.update(headers)
 
         if self.debug:
-            print "%s: %s" % (method, url)
+            print("%s: %s" % (method, url))
         resp, content = self.http.request(
             url, method=method, body=body, headers=all_headers
         )

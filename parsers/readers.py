@@ -6,7 +6,16 @@ except ImportError:
     UNICODE_CSV = False
 
 
-class SkipPreludeReader(object, csv.DictReader):
+if issubclass(csv.DictReader, object):
+    # Python 3
+    DictReader = csv.DictReader
+else:
+    # Python 2
+    class DictReader(object, csv.DictReader):
+        pass
+
+
+class SkipPreludeReader(DictReader):
     """
     A specialized version of DictReader that attempts to find where the "real"
     CSV data is in a file that may contain a prelude of non-CSV text.
@@ -37,7 +46,7 @@ class SkipPreludeReader(object, csv.DictReader):
         rows = []
         for i in range(self.max_header_row):
             try:
-                rows.append(data.next())
+                rows.append(next(data))
             except StopIteration:
                 pass
         header_row, field_names = self.choose_header(rows)
@@ -46,7 +55,7 @@ class SkipPreludeReader(object, csv.DictReader):
         self._file.seek(0)
         for i in range(header_row + 1):
             try:
-                self.reader.next()
+                next(self.reader)
             except StopIteration:
                 pass
 

@@ -15,7 +15,7 @@ class MetaSyncIO(BaseIO):
         if self.field_names is None and self.meta is not None:
             return (
                 ['id', 'geometry']
-                + self.meta['schema']['properties'].keys()
+                + list(self.meta['schema']['properties'].keys())
             )
         return super(MetaSyncIO, self).get_field_names()
 
