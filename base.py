@@ -157,3 +157,28 @@ class BaseIO(MutableMapping, MutableSequence):
             other.append(uitem)
         if save:
             other.save()
+
+    # Slots to track things that can't be pickled
+    # (need a separate slot for each expected mixin class, since they don't
+    #  extend BaseIO)
+    no_pickle = []
+    no_pickle_loader = []
+    no_pickle_mapper = []
+    no_pickle_parser = []
+
+    def get_no_pickle(self):
+        return (
+            self.no_pickle +
+            self.no_pickle_loader +
+            self.no_pickle_mapper +
+            self.no_pickle_parser
+        )
+
+    def __getstate__(self):
+        """
+        Don't include auto-created and unpicklable properties in state.
+        """
+        state = self.__dict__.copy()
+        for name in self.get_no_pickle():
+            state.pop(name, None)
+        return state

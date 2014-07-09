@@ -10,6 +10,7 @@ class WorkbookParser(TableParser):
     sheet_name = 0
     start_row = None
     column_count = None
+    no_pickle_parser = ['workbook', 'worksheet']
 
     def parse(self):
         self.parse_workbook()

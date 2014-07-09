@@ -18,7 +18,18 @@ BINARY_FORMATS = (
 )
 
 
+# Save generated classes to avoid recreating them
+_io_classes = {}
+
+
 def make_io(loader, parser, mapper=TupleMapper, name=None):
+    """
+    Mix the specified loader, parser, and mapper classes into a usable IO
+    """
+    key = (loader, parser, mapper)
+    if key in _io_classes:
+        return _io_classes[key]
+
     if name is None:
         lname = parser.__name__.replace('Parser', '')
         pname = loader.__name__.replace('Loader', '')
@@ -27,7 +38,10 @@ def make_io(loader, parser, mapper=TupleMapper, name=None):
         else:
             mname = mapper.__name__.replace('Mapper', '')
         name = lname + pname + mname + "IO"
-    return type(name, (loader, parser, mapper, BaseIO), {})
+    cls = type(name, (loader, parser, mapper, BaseIO), {})
+    cls.__module__ = "wq.io"
+    _io_classes[key] = cls
+    return cls
 
 
 def guess_type(filename, buffer=None):

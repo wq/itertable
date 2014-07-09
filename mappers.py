@@ -67,6 +67,8 @@ class DictMapper(BaseMapper):
 
 
 class TupleMapper(DictMapper):
+    no_pickle_mapper = ['_tuple_class', '_tuple_prototype']
+
     @property
     def field_map(self):
         if not getattr(self, 'data', None):
@@ -119,16 +121,6 @@ class TupleMapper(DictMapper):
 
     def create(self, **kwargs):
         return self.tuple_prototype._replace(**kwargs)
-
-    def __getstate__(self):
-        """
-        Don't include auto-created properties in pickle state.
-        (especially since the class doesn't have a real path)
-        """
-        state = self.__dict__.copy()
-        state.pop('_tuple_class', None)
-        state.pop('_tuple_prototype', None)
-        return state
 
 
 def make_date_mapper(fmt):

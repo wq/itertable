@@ -19,6 +19,7 @@ class BaseLoader(object):
 
 class FileLoader(BaseLoader):
     filename = None
+    no_pickle_loader = ['file']
 
     def load(self):
         try:

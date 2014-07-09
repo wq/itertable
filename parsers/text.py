@@ -9,6 +9,7 @@ from wq.io.exceptions import ParseFailed
 class CsvParser(TableParser):
     delimiter = ","
     quotechar = '"'
+    no_pickle_parser = ['csvdata']
 
     def parse(self):
         # Like DictReader, assume explicit field definition means CSV does not
