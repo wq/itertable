@@ -2,6 +2,8 @@
 
 [wq.io] is a collection of Python libraries for consuming (<b>i</b>nput) and generating (<b>o</b>utput) external data resources in various formats.  It thereby facilitates <b>i</b>nter<b>o</b>perability between the [wq framework] and other systems and formats.
 
+[![Build Status](https://travis-ci.org/wq/wq.io.png?branch=master)](https://travis-ci.org/wq/wq.io)
+
 ## Getting Started
 
 ```bash
