@@ -113,7 +113,7 @@ setup(
     namespace_packages=['wq'],
     description=LONG_DESCRIPTION.strip(),
     long_description=parse_markdown_readme(),
-    install_requires=['httplib2', 'xlrd'],
+    install_requires=['requests', 'xlrd'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
@@ -129,5 +129,6 @@ setup(
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Utilities',
     ],
+    tests_require=['httpretty', 'beautifulsoup4'],
     test_suite='tests',
 )

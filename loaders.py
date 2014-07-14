@@ -1,13 +1,11 @@
 from __future__ import print_function
-from httplib2 import Http, __version__ as HTTPLIB_VERSION
+import requests
 try:
     # Python 3
     from io import StringIO
-    from urllib.parse import urlencode
 except ImportError:
     # Python 2
     from StringIO import StringIO
-    from urllib import urlencode
 from wq.io.version import VERSION
 from .exceptions import LoadFailed
 
@@ -60,15 +58,13 @@ class NetLoader(BaseLoader):
     password = None
     debug = False
 
-    http = Http()
-
     @property
     def url(self):
         raise NotImplementedError
 
     @property
     def user_agent(self):
-        return "wq.io/%s (Python-httplib2/%s)" % (VERSION, HTTPLIB_VERSION)
+        return "wq.io/%s (%s)" % (VERSION, requests.utils.default_user_agent())
 
     @property
     def headers(self):
@@ -77,12 +73,7 @@ class NetLoader(BaseLoader):
         }
 
     def load(self, **kwargs):
-
-        if self.username is not None and self.password is not None:
-            self.http.add_credentials(self.username, self.password)
-
-        content = self.GET()
-        self.file = StringIO(content)
+        self.file = StringIO(self.GET())
 
     def req(self, url=None, method=None, params=None, body=None, headers={}):
         if url is None:
@@ -91,28 +82,37 @@ class NetLoader(BaseLoader):
         if params is None:
             params = getattr(self, 'params', None)
 
-        if params is not None:
-            if isinstance(params, str):
-                url += '?' + params
-            else:
-                url += '?' + urlencode(params, doseq=True)
+        if isinstance(params, str):
+            url += '?' + params
+            params = None
+
+        if self.debug:
+            print("%s: %s" % (method, url))
+
+        if self.username is not None and self.password is not None:
+            auth = (self.username, self.password)
+        else:
+            auth = None
 
         all_headers = self.headers.copy()
         all_headers.update(headers)
 
-        if self.debug:
-            print("%s: %s" % (method, url))
-        resp, content = self.http.request(
-            url, method=method, body=body, headers=all_headers
+        resp = requests.request(
+            method, url,
+            params=params,
+            headers=all_headers,
+            auth=auth,
+            data=body,
         )
-        if resp.status < 200 or resp.status > 299:
+
+        if resp.status_code < 200 or resp.status_code > 299:
             raise LoadFailed(
-                content,
+                resp.text,
                 path=url,
-                code=resp.status,
+                code=resp.status_code,
             )
 
-        return content
+        return resp.text
 
     def GET(self, **kwargs):
         return self.req(method='GET', **kwargs)
