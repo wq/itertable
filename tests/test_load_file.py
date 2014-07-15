@@ -23,6 +23,11 @@ class LoadFileTestCase(unittest.TestCase):
             instance = load_file(filename)
             self.check_instance(instance)
 
+    def test_load_csv_prelude(self):
+        filename = join(dirname(__file__), "test2.csv")
+        instance = load_file(filename)
+        self.check_instance(instance)
+
     def test_pickle(self):
         for ext in self.types:
             filename = join(dirname(__file__), "test.%s" % ext)

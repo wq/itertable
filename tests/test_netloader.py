@@ -2,6 +2,11 @@ import unittest
 import httpretty
 from wq.io import CsvNetIO
 from wq.io.exceptions import LoadFailed
+import pickle
+
+
+class TestIO(CsvNetIO):
+    url = "http://example.com/test.csv"
 
 
 class NetLoaderTestCase(unittest.TestCase):
@@ -43,14 +48,9 @@ class NetLoaderTestCase(unittest.TestCase):
         httpretty.reset()
 
     def test_load_csv(self):
-        class TestIO(CsvNetIO):
-            url = "http://example.com/test.csv"
         self.check_instance(TestIO())
 
     def test_load_csv_params(self):
-        class TestIO(CsvNetIO):
-            url = "http://example.com/test.csv"
-
         self.check_instance(TestIO(params={'test': 1}))
         qs = httpretty.last_request().querystring
         self.assertEqual(qs, {'test': ['1']})
@@ -64,14 +64,20 @@ class NetLoaderTestCase(unittest.TestCase):
         self.assertEqual(qs, {})
 
     def test_load_csv_auth(self):
-        class TestIO(CsvNetIO):
+        class AuthTestIO(CsvNetIO):
             url = "http://example.com/test.csv"
             username = "user"
             password = "pass"
-        self.check_instance(TestIO(params=None))
+        self.check_instance(AuthTestIO())
         headers = httpretty.last_request().headers
         auth = "Basic dXNlcjpwYXNz"  # b64encode("user:pass")
         self.assertEqual(headers.get('Authorization', None), auth)
+
+    def test_load_csv_pickle(self):
+        instance = TestIO()
+        self.check_instance(instance)
+        instance = pickle.loads(pickle.dumps(instance))
+        self.check_instance(instance)
 
     def test_load_fail(self):
         class TestIO(CsvNetIO):

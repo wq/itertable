@@ -1,0 +1,6 @@
+Non-CSV Header, to test SkipPreludeReader
+Name: Test
+
+one,two,three
+1,2,3
+4,5,6

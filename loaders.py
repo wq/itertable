@@ -11,13 +11,14 @@ from .exceptions import LoadFailed
 
 
 class BaseLoader(object):
+    no_pickle_loader = ['file']
+
     def load(self):
         raise NotImplementedError
 
 
 class FileLoader(BaseLoader):
     filename = None
-    no_pickle_loader = ['file']
 
     def load(self):
         try:
