@@ -63,6 +63,16 @@ class NetLoaderTestCase(unittest.TestCase):
         qs = httpretty.last_request().querystring
         self.assertEqual(qs, {})
 
+    def test_debug_string(self):
+        instance = TestIO(debug=True)
+        self.assertEqual(
+            instance.debug_string, "GET: http://example.com/test.csv"
+        )
+        instance = TestIO(params={'test': 1}, debug=True)
+        self.assertEqual(
+            instance.debug_string, "GET: http://example.com/test.csv?test=1"
+        )
+
     def test_load_csv_auth(self):
         class AuthTestIO(CsvNetIO):
             url = "http://example.com/test.csv"

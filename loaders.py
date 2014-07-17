@@ -88,7 +88,13 @@ class NetLoader(BaseLoader):
             params = None
 
         if self.debug:
-            print("%s: %s" % (method, url))
+            if params:
+                from requests.compat import urlencode
+                debug_url = url + '?' + urlencode(params, doseq=True)
+            else:
+                debug_url = url
+            self.debug_string = "%s: %s" % (method, debug_url)
+            print(self.debug_string)
 
         if self.username is not None and self.password is not None:
             auth = (self.username, self.password)
