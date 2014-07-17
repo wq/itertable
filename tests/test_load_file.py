@@ -19,25 +19,25 @@ class LoadFileTestCase(unittest.TestCase):
 
     def test_load_file(self):
         for ext in self.types:
-            filename = join(dirname(__file__), "test.%s" % ext)
+            filename = join(dirname(__file__), "files", "test.%s" % ext)
             instance = load_file(filename)
             self.check_instance(instance)
 
     def test_load_csv_prelude(self):
-        filename = join(dirname(__file__), "test2.csv")
+        filename = join(dirname(__file__), "files", "test2.csv")
         instance = load_file(filename)
         self.check_instance(instance)
 
     def test_pickle(self):
         for ext in self.types:
-            filename = join(dirname(__file__), "test.%s" % ext)
+            filename = join(dirname(__file__), "files", "test.%s" % ext)
             instance = load_file(filename)
             instance = pickle.loads(pickle.dumps(instance))
             self.check_instance(instance)
 
     def test_auto_pickle(self):
         for ext in self.types:
-            filename = join(dirname(__file__), "test.%s" % ext)
+            filename = join(dirname(__file__), "files", "test.%s" % ext)
             instance = load_file(filename)
             # Run through the io once to ensure auto-generated data is present
             self.check_instance(instance)

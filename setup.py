@@ -129,6 +129,6 @@ setup(
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Utilities',
     ],
-    tests_require=['httpretty', 'beautifulsoup4'],
+    tests_require=['httpretty', 'beautifulsoup4', 'Shapely', 'Fiona'],
     test_suite='tests',
 )
