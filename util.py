@@ -22,7 +22,7 @@ BINARY_FORMATS = (
 _io_classes = {}
 
 
-def make_io(loader, parser, mapper=TupleMapper, name=None):
+def make_io(loader, parser, mapper=TupleMapper, name=None, module="wq.io"):
     """
     Mix the specified loader, parser, and mapper classes into a usable IO
     """
@@ -39,7 +39,7 @@ def make_io(loader, parser, mapper=TupleMapper, name=None):
             mname = mapper.__name__.replace('Mapper', '')
         name = lname + pname + mname + "IO"
     cls = type(name, (loader, parser, mapper, BaseIO), {})
-    cls.__module__ = "wq.io"
+    cls.__module__ = module
     _io_classes[key] = cls
     return cls
 
