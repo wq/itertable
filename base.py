@@ -13,7 +13,10 @@ class BaseIO(MutableMapping, MutableSequence):
 
     def refresh(self):
         self.load()
-        self.parse()
+        if self.empty_file:
+            self.data = []
+        else:
+            self.parse()
 
     def load(self):
         "Open a resource (defined by loader mixins)"
@@ -94,7 +97,7 @@ class BaseIO(MutableMapping, MutableSequence):
 
     def find_index(self, key):
         index = self.compute_index()
-        if index:
+        if index is not None:
             return index.get(key, None)
         else:
             return key

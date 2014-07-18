@@ -12,6 +12,7 @@ from .exceptions import LoadFailed
 
 class BaseLoader(object):
     no_pickle_loader = ['file']
+    empty_file = None
 
     def load(self):
         raise NotImplementedError
@@ -23,8 +24,10 @@ class FileLoader(BaseLoader):
     def load(self):
         try:
             self.file = open(self.filename)
-        except:
+            self.empty_file = False
+        except IOError:
             self.file = StringIO()
+            self.empty_file = True
 
     def save(self):
         file = open(self.filename, 'w+')
@@ -35,7 +38,12 @@ class FileLoader(BaseLoader):
 
 class BinaryFileLoader(FileLoader):
     def load(self):
-        self.file = open(self.filename, 'rb')
+        try:
+            self.file = open(self.filename, 'rb')
+            self.empty_file = False
+        except IOError:
+            self.file = StringIO()
+            self.empty_file = True
 
 
 class StringLoader(BaseLoader):
