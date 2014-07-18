@@ -13,10 +13,12 @@ class BaseIO(MutableMapping, MutableSequence):
 
     def refresh(self):
         self.load()
-        if self.empty_file:
+        if getattr(self, 'empty_file', False):
             self.data = []
         else:
             self.parse()
+            if hasattr(self, 'file') and not self.file.closed:
+                self.file.close()
 
     def load(self):
         "Open a resource (defined by loader mixins)"
