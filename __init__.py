@@ -14,7 +14,7 @@ JsonFileIO = make_io(FileLoader, JsonParser)
 JsonNetIO = make_io(NetLoader, JsonParser)
 JsonStringIO = make_io(StringLoader, JsonParser)
 
-XmlFileIO = make_io(FileLoader, XmlParser)
+XmlFileIO = make_io(BinaryFileLoader, XmlParser, name='XmlFileIO')
 XmlNetIO = make_io(NetLoader, XmlParser)
 XmlStringIO = make_io(StringLoader, XmlParser)
 

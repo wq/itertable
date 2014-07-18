@@ -13,6 +13,7 @@ PARSERS = {
     'application/xml': XmlParser,
 }
 BINARY_FORMATS = (
+    'application/xml',
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 )

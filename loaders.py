@@ -20,30 +20,27 @@ class BaseLoader(object):
 
 class FileLoader(BaseLoader):
     filename = None
+    read_mode = 'r'
+    write_mode = 'w+'
 
     def load(self):
         try:
-            self.file = open(self.filename)
+            self.file = open(self.filename, self.read_mode)
             self.empty_file = False
         except IOError:
             self.file = StringIO()
             self.empty_file = True
 
     def save(self):
-        file = open(self.filename, 'w+')
+        file = open(self.filename, self.write_mode)
         self.dump(file)
         file.close()
         self.load()
 
 
 class BinaryFileLoader(FileLoader):
-    def load(self):
-        try:
-            self.file = open(self.filename, 'rb')
-            self.empty_file = False
-        except IOError:
-            self.file = StringIO()
-            self.empty_file = True
+    read_mode = 'rb'
+    write_mode = 'wb+'
 
 
 class StringLoader(BaseLoader):
