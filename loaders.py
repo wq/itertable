@@ -35,7 +35,6 @@ class FileLoader(BaseLoader):
         file = open(self.filename, self.write_mode)
         self.dump(file)
         file.close()
-        self.load()
 
 
 class BinaryFileLoader(FileLoader):
@@ -54,7 +53,6 @@ class StringLoader(BaseLoader):
         self.dump(file)
         self.string = file.getvalue()
         file.close()
-        self.load()
 
 
 class NetLoader(BaseLoader):

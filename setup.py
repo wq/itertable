@@ -129,6 +129,7 @@ setup(
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Utilities',
     ],
-    tests_require=['httpretty', 'beautifulsoup4', 'Shapely', 'Fiona'],
+    tests_require=['httpretty', 'beautifulsoup4', 'Shapely', 'Fiona',
+                   'xlwt-future', 'xlsxwriter'],
     test_suite='tests',
 )

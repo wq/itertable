@@ -17,13 +17,13 @@ class LoadFileTestCase(unittest.TestCase):
             'two': 5,
             'three': 6,
         }]
-        self.types = ('csv', 'json', 'xml') #, 'xls', 'xlsx')
+        self.types = ('csv', 'json', 'xml', 'xls', 'xlsx')
         self.classes = (
             CsvFileIO,
             JsonFileIO,
             XmlFileIO,
-#            ExcelFileIO,
-#            ExcelFileIO,
+            ExcelFileIO,
+            ExcelFileIO,
         )
 
     def test_write_file(self):
@@ -97,8 +97,10 @@ class LoadFileTestCase(unittest.TestCase):
         for row, data in zip(instance, self.data):
             for key in data:
                 val = getattr(row, key)
-                if hasattr(val, 'isdigit') and val.isdigit():
-                    val = int(val)
+                try:
+                    val = int(float(val))
+                except ValueError:
+                    pass
                 self.assertEqual(val, data[key])
 
     def with_key_field(self, cls):

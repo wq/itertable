@@ -90,6 +90,17 @@ class WorkbookParser(TableParser):
     def get_value(self, cell):
         raise NotImplementedError
 
+    def dump(self, file=None):
+        if file is None:
+            file = self.file
+        write, close = self.open_worksheet(file)
+        for i, field in enumerate(self.field_names):
+            write(0, i, field)
+        for r, row in enumerate(self.data):
+            for c, field in enumerate(self.field_names):
+                write(r + 1, c, row[field])
+        close()
+
 
 class ExcelParser(WorkbookParser):
     def parse_workbook(self):
@@ -122,3 +133,20 @@ class ExcelParser(WorkbookParser):
             else:
                 return datetime.time(*tpl[3:6])
         return cell.value
+
+    def open_worksheet(self, file):
+        if getattr(self, 'filename', '').endswith('.xls'):
+            import xlwt
+            workbook = xlwt.Workbook()
+            worksheet = workbook.add_sheet('Sheet 1')
+
+            def close():
+                workbook.save(file)
+        else:
+            import xlsxwriter
+            workbook = xlsxwriter.Workbook(file)
+            worksheet = workbook.add_worksheet()
+
+            def close():
+                workbook.close()
+        return worksheet.write, close
