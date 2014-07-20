@@ -20,7 +20,7 @@ See [the documentation] for more information.
 
 wq.io provides a general purpose API for loading, iterating over, and writing tabular datasets.  The basic idea is to avoid needing to remember the unique usage of e.g. [csv], [xlrd], or [xml.etree] every time one needs to work with an external dataset.  Instead, wq.io abstracts these libraries into a consistent interface that works as an `iterable` of `namedtuples`.  Whenever possible, the field names for a dataset are automatically determined from the source file, e.g. the column headers in an Excel spreadsheet.
 
-```
+```python
 from wq.io import ExcelFileIO
 data = ExcelFileIO(filename='example.xls')
 for row in data:
@@ -46,6 +46,7 @@ wq.io also provides network-capable equivalents of each of the above classes, to
 from wq.io import JsonNetIO
 class WebServiceIO(JsonNetIO):
     url = "http://example.com/api"
+    
 data = WebServiceIO(params={'type': 'all'})
 for row in data:
     print row.timestamp, row.value
