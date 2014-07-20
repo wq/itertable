@@ -14,24 +14,22 @@ class FionaLoaderParser(FileLoader, BaseParser):
     key_field = 'id'
 
     def load(self):
-        # Load and parse the dataset at the same time via Fiona
-        pass
+        try:
+            self.layers = fiona.listlayers(self.filename)
+        except (ValueError, IOError) as e:
+            driver = guess_driver(self.filename)
+            self.meta = {'driver': driver}
+            self.empty_file = True
 
     def parse(self):
-        try:
-            layers = fiona.listlayers(self.filename)
-        except (ValueError, IOError) as e:
-            self.data = []
-            return
-
         # If multiple layers, parse all of them (!)
-        if len(layers) > 1 and self.layer_id is None:
+        if len(self.layers) > 1 and self.layer_id is None:
             cls = type(self)
             self.data = [{
                 'id': id,
                 'name': name,
                 'data': cls(filename=self.filename, layer_id=id)
-            } for id, name in enumerate(layers)]
+            } for id, name in enumerate(self.layers)]
         else:
             # One layer, load & parse GIS data
             with fiona.open(self.filename, layer=self.layer_id) as f:
@@ -98,3 +96,10 @@ class WktMapper(ShapeMapper):
         if field == 'geometry':
             value = wkt.loads(value)
         return super(WktMapper, self).unmap_value(field, value)
+
+
+def guess_driver(filename):
+    if filename.endswith(".shp"):
+        return "ESRI Shapefile"
+    else:
+        return "GeoJSON"

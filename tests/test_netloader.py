@@ -3,24 +3,16 @@ import httpretty
 from wq.io import CsvNetIO
 from wq.io.exceptions import LoadFailed
 import pickle
+from .base import IoTestCase
 
 
 class TestIO(CsvNetIO):
     url = "http://example.com/test.csv"
 
 
-class NetLoaderTestCase(unittest.TestCase):
+class NetLoaderTestCase(IoTestCase):
     def setUp(self):
         httpretty.enable()
-        self.data = [{
-            'one': 1,
-            'two': 2,
-            'three': 3,
-        }, {
-            'one': 4,
-            'two': 5,
-            'three': 6,
-        }]
 
         httpretty.register_uri(
             httpretty.GET,

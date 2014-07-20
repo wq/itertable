@@ -1,12 +1,11 @@
 from wq.io import load_file
 import unittest
-from os.path import dirname, join
-from os import unlink
 import pickle
 from wq.io import CsvFileIO, JsonFileIO, XmlFileIO, ExcelFileIO
+from .base import IoTestCase
 
 
-class LoadFileTestCase(unittest.TestCase):
+class LoadFileTestCase(IoTestCase):
     def setUp(self):
         self.data = [{
             'one': 1,
@@ -31,11 +30,7 @@ class LoadFileTestCase(unittest.TestCase):
         Test BaseIO.save() when starting from an empty IO instance
         """
         for ext, cls in zip(self.types, self.classes):
-            filename = self.get_filename("output", ext)
-            try:
-                unlink(filename)
-            except OSError:
-                pass
+            filename = self.get_filename("output", ext, True)
 
             # Create an empty instance of the class
             instance = cls(
@@ -65,11 +60,8 @@ class LoadFileTestCase(unittest.TestCase):
         for source_ext, source_cls in zip(self.types, self.classes):
             for dest_ext, dest_cls in zip(self.types, self.classes):
                 source_file = self.get_filename("test", source_ext)
-                dest_file = self.get_filename("sync", dest_ext)
-                try:
-                    unlink(dest_file)
-                except OSError:
-                    pass
+                dest_file = self.get_filename("sync", dest_ext, True)
+
                 # Sync requires key_field to be set on both classes
                 source_cls = self.with_key_field(source_cls)
                 dest_cls = self.with_key_field(dest_cls)
@@ -108,6 +100,3 @@ class LoadFileTestCase(unittest.TestCase):
             key_field = "one"
         new_class.__name__ = "Dict" + cls.__name__
         return new_class
-
-    def get_filename(self, filename, ext):
-        return join(dirname(__file__), "files", "%s.%s" % (filename, ext))
