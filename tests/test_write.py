@@ -52,19 +52,19 @@ class LoadFileTestCase(IoTestCase):
             # The contents of the saved file should match the original data
             self.check_instance(load_file(filename))
 
-    def test_sync_io(self):
+    def duplicate(self, mode, xform):
         """
-        Test BaseIO.sync() (and implicit save()) between combinations of the
-        default IO classes.
+        Test BaseIO.copy/sync() (and implicit save()) between combinations of
+        the default IO classes.
         """
         for source_ext, source_cls in zip(self.types, self.classes):
             for dest_ext, dest_cls in zip(self.types, self.classes):
                 source_file = self.get_filename("test", source_ext)
-                dest_file = self.get_filename("sync", dest_ext, True)
+                dest_file = self.get_filename(mode, dest_ext, True)
 
                 # Sync requires key_field to be set on both classes
-                source_cls = self.with_key_field(source_cls)
-                dest_cls = self.with_key_field(dest_cls)
+                source_cls = xform(source_cls)
+                dest_cls = xform(dest_cls)
 
                 # Load source data into IO instance
                 source_instance = source_cls(filename=source_file)
@@ -78,10 +78,16 @@ class LoadFileTestCase(IoTestCase):
                 )
 
                 # The Sync
-                source_instance.sync(dest_instance)
+                getattr(source_instance, mode)(dest_instance)
 
                 # Load the destination file again and check contents
                 self.check_instance(load_file(dest_file))
+
+    def test_copy_io(self):
+        self.duplicate('copy', lambda d: d)
+
+    def test_sync_io(self):
+        self.duplicate('sync', self.with_key_field)
 
     def check_instance(self, instance):
         self.assertEqual(len(instance), len(self.data))
