@@ -28,7 +28,7 @@ See [the wq documentation] for more information.
 
 ## Features
 
-wq.io provides a general purpose API for loading, iterating over, and writing tabular datasets.  The basic idea is to avoid needing to remember the unique usage of e.g. [csv], [xlrd], or [xml.etree] every time one needs to work with external data.  Instead, wq.io abstracts these libraries into a consistent interface that works as an `iterable` of `namedtuples`.  Whenever possible, the field names for a dataset are automatically determined from the source file, e.g. the column headers in an Excel spreadsheet.
+wq.io provides a general purpose API for loading, iterating over, and writing tabular datasets.  The basic idea is to avoid needing to remember the unique usage of e.g. [csv], [xlrd], or [xml.etree] every time one needs to work with external data.  Instead, wq.io abstracts these libraries into a consistent interface that works as an [iterable] of [namedtuples].  Whenever possible, the field names for a dataset are automatically determined from the source file, e.g. the column headers in an Excel spreadsheet.
 
 ```python
 from wq.io import ExcelFileIO
@@ -85,6 +85,8 @@ Each `IO` class is composed of mixin classes ([loaders], [parsers], and [mappers
 [csv]: https://docs.python.org/3/library/csv.html
 [xlrd]: http://www.python-excel.org/
 [xml.etree]: https://docs.python.org/3/library/xml.etree.elementtree.html
+[iterable]: https://docs.python.org/3/glossary.html#term-iterable
+[namedtuples]: https://docs.python.org/3/library/collections.html#collections.namedtuple
 [requests]: http://python-requests.org/
 [xlwt]: http://www.python-excel.org/
 [xlsxwriter]: https://xlsxwriter.readthedocs.org/
