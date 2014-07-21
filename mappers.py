@@ -71,12 +71,12 @@ class TupleMapper(DictMapper):
 
     @property
     def field_map(self):
-        if not self.field_names and not getattr(self, 'data', None):
+        field_names = self.get_field_names()
+        if not field_names and not getattr(self, 'data', None):
             raise NoData
 
         #FIXME: check for duplicates
         if not hasattr(self, '_field_map'):
-            field_names = self.get_field_names()
             items = [
                 (field, self.tuple_field_name(field))
                 for field in field_names

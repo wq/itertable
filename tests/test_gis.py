@@ -26,10 +26,7 @@ class GisTestCase(IoTestCase):
                 source_file = self.get_filename("test", source_ext)
                 dest_file = self.get_filename("sync", dest_ext, True)
                 source_instance = ShapeIO(filename=source_file)
-                dest_instance = ShapeIO(
-                    filename=dest_file,
-                    field_names=['one', 'two', 'three', 'geometry']
-                )
+                dest_instance = ShapeIO(filename=dest_file)
                 source_instance.sync(dest_instance)
                 self.check_instance(ShapeIO(filename=dest_file))
 

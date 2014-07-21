@@ -1,4 +1,5 @@
 from wq.io import load_file
+from wq.io.exceptions import NoData
 import unittest
 from .base import IoTestCase
 import pickle
@@ -18,6 +19,12 @@ class LoadFileTestCase(IoTestCase):
         filename = self.get_filename("test2", "csv")
         instance = load_file(filename)
         self.check_instance(instance)
+
+    def test_load_nodata(self):
+        filename = self.get_filename("nodata", "csv")
+        instance = load_file(filename)
+        with self.assertRaises(NoData):
+            instance[0]
 
     def test_pickle(self):
         for ext in self.types:
