@@ -6,6 +6,8 @@ Coincidentally, [http://wq.io](http://wq.io) is also the URL for the website des
 
 [![Build Status](https://travis-ci.org/wq/wq.io.png?branch=master)](https://travis-ci.org/wq/wq.io)
 
+Tested on Python 2.7 and 3.4.
+
 ## Getting Started
 
 ```bash
