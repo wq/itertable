@@ -23,8 +23,9 @@ class LoadFileTestCase(IoTestCase):
     def test_load_nodata(self):
         filename = self.get_filename("nodata", "csv")
         instance = load_file(filename)
-        with self.assertRaises(NoData):
+        with self.assertRaises(NoData) as cm:
             instance[0]
+        self.assertEqual(str(cm.exception), "No data returned!")
 
     def test_pickle(self):
         for ext in self.types:

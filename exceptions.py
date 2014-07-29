@@ -6,7 +6,9 @@ except ImportError:
 
 class IoException(Exception):
     def __str__(self):
-        return self.args[0] or self.__doc__
+        if self.args and self.args[0]:
+            return self.args[0]
+        return self.__doc__
 
 
 class LoadFailed(IoException):
@@ -18,7 +20,7 @@ class LoadFailed(IoException):
         self.code = code
 
     def __str__(self):
-        if self.args[0]:
+        if self.args and self.args[0]:
             text = self.args[0]
             has_html = False
             for tag in '<html', '<body', '<div':
