@@ -1,11 +1,11 @@
 from __future__ import print_function
 import requests
 try:
-    # Python 3
-    from io import StringIO
-except ImportError:
-    # Python 2
+    # Python 2 (uses str)
     from StringIO import StringIO
+except ImportError:
+    # Python 3 (Python 2 equivalent uses unicode)
+    from io import StringIO
 from wq.io.version import VERSION
 from .exceptions import LoadFailed
 
