@@ -187,3 +187,18 @@ class BaseIO(MutableMapping, MutableSequence):
         for name in self.get_no_pickle():
             state.pop(name, None)
         return state
+
+    def item_dict(self, item):
+        return item
+
+    def as_dataframe(self):
+        from pandas import DataFrame
+        key = self.get_key_field()
+        if key:
+            data = [self.item_dict(row) for row in self.values()]
+        else:
+            data = [self.item_dict(row) for row in self]
+        df = DataFrame(data)
+        if key:
+            df.set_index(key, inplace=True)
+        return df

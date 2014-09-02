@@ -119,6 +119,9 @@ class TupleMapper(DictMapper):
         mapped = {key: getattr(uitem, key) for key in self.field_map.values()}
         return super(TupleMapper, self).parse_usable_item(mapped)
 
+    def item_dict(self, uitem):
+        return uitem._asdict()
+
     def create(self, **kwargs):
         return self.tuple_prototype._replace(**kwargs)
 
