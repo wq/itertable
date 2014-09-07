@@ -66,6 +66,16 @@ for row in data:
 
 The powerful [requests] library is used internally to load data over HTTP.
 
+### Pandas Analysis
+
+When [Pandas] is installed, the `as_dataframe()` method on wq.io classes can be used to create a [DataFrame], enabling more extensive analysis possibilities.
+
+```python
+instance = WebServiceIO(params={'type': 'all'})
+df = instance.as_dataframe()
+print df.value.mean()
+```
+
 ### GIS Support
 
 When [Fiona] and [Shapely] are installed, wq.io can also open and create shapefiles and other OGR-compatible geographic data formats.
@@ -92,6 +102,8 @@ Each `IO` class is composed of mixin classes ([loaders], [parsers], and [mappers
 [requests]: http://python-requests.org/
 [xlwt]: http://www.python-excel.org/
 [xlsxwriter]: https://xlsxwriter.readthedocs.org/
+[Pandas]: http://pandas.pydata.org/
+[DataFrame]: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html
 [Fiona]: https://github.com/Toblerity/Fiona
 [Shapely]: https://github.com/Toblerity/Shapely
 [loaders]: http://wq.io/docs/loaders
