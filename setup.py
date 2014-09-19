@@ -130,6 +130,6 @@ setup(
         'Topic :: Utilities',
     ],
     tests_require=['httpretty', 'beautifulsoup4', 'Shapely', 'Fiona',
-                   'xlwt-future', 'xlsxwriter', 'pandas'],
+                   'xlwt-future', 'xlsxwriter', 'pandas', 'geopandas'],
     test_suite='tests',
 )

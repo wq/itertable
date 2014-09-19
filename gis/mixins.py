@@ -66,7 +66,28 @@ class FionaLoaderParser(FileLoader, BaseParser):
                 f.write(self.dump_feature(feat, i))
 
 
-class ShapeMapper(TupleMapper):
+class GisMapper(TupleMapper):
+    """
+    GIS-aware tuple mapper
+    """
+    def as_dataframe(self):
+        # Mimic BaseIO.as_dataframe() but with GeoDataFrame
+        # (also, key_field is always set)
+        from geopandas import GeoDataFrame
+        key = self.get_key_field()
+        data = [self.item_dict(row) for row in self.values()]
+        df = GeoDataFrame(data)
+        df.set_index(key, inplace=True)
+        return df
+
+    def item_dict(self, uitem):
+        # Turn usable item into GeoDataFrame-friendly dict
+        data = uitem._asdict()
+        data['geometry'] = geometry.shape(data['geometry'])
+        return data
+
+
+class ShapeMapper(GisMapper):
     """
     Map Fiona's GeoJSON-style geometries to and from Shapely shapes
     """
@@ -80,6 +101,9 @@ class ShapeMapper(TupleMapper):
         if field == 'geometry':
             value = geometry.mapping(value)
         return super(ShapeMapper, self).unmap_value(field, value)
+
+    def item_dict(self, uitem):
+        return uitem._asdict()
 
 
 class WktMapper(ShapeMapper):
@@ -96,6 +120,11 @@ class WktMapper(ShapeMapper):
         if field == 'geometry':
             value = wkt.loads(value)
         return super(WktMapper, self).unmap_value(field, value)
+
+    def item_dict(self, uitem):
+        data = uitem._asdict()
+        data['geometry'] = wkt.loads(data['geometry'])
+        return data
 
 
 def guess_driver(filename):

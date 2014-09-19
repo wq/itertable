@@ -1,5 +1,4 @@
-from wq.io.mappers import TupleMapper
-from .mixins import FionaLoaderParser, ShapeMapper, WktMapper
+from .mixins import FionaLoaderParser, GisMapper, ShapeMapper, WktMapper
 from wq.io.base import BaseIO
 
 
@@ -23,7 +22,7 @@ class MetaSyncIO(BaseIO):
         return super(MetaSyncIO, self).get_field_names()
 
 
-class GisIO(FionaLoaderParser, TupleMapper, MetaSyncIO):
+class GisIO(FionaLoaderParser, GisMapper, MetaSyncIO):
     pass
 
 
