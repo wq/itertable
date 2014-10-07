@@ -10,11 +10,14 @@ import httpretty
 class CsvZipFileIO(ZipFileLoader, CsvParser, TupleMapper, BaseIO):
     pass
 
+
 class ExcelZipFileIO(ZipFileLoader, ExcelParser, TupleMapper, BaseIO):
     inner_binary = True
 
+
 class CsvZipNetIO(ZipNetLoader, CsvParser, TupleMapper, BaseIO):
     url = "http://example.com/testcsv.zip"
+
 
 class ExcelZipNetIO(ZipNetLoader, ExcelParser, TupleMapper, BaseIO):
     url = "http://example.com/testxls.zip"
