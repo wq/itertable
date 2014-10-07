@@ -6,13 +6,16 @@ try:
 except ImportError:
     # Python 3 (Python 2 equivalent uses unicode)
     from io import StringIO
+from io import BytesIO
 from wq.io.version import VERSION
 from .exceptions import LoadFailed
+from zipfile import ZipFile
 
 
 class BaseLoader(object):
     no_pickle_loader = ['file']
     empty_file = None
+    binary = False
 
     def load(self):
         raise NotImplementedError
@@ -28,7 +31,10 @@ class FileLoader(BaseLoader):
             self.file = open(self.filename, self.read_mode)
             self.empty_file = False
         except IOError:
-            self.file = StringIO()
+            if self.binary:
+                self.file = BytesIO()
+            else:
+                self.file = StringIO()
             self.empty_file = True
 
     def save(self):
@@ -38,8 +44,43 @@ class FileLoader(BaseLoader):
 
 
 class BinaryFileLoader(FileLoader):
+    binary = True
     read_mode = 'rb'
     write_mode = 'wb+'
+
+
+class Zipper(object):
+    inner_filename = None
+    inner_binary = False
+
+    def unzip_file(self):
+        zipfile = ZipFile(self.file)
+        inner_file = zipfile.read(
+            self.get_inner_filename(zipfile)
+        )
+        if self.inner_binary:
+            self.file = BytesIO(inner_file)
+        else:
+            self.file = StringIO(inner_file.decode('utf-8'))
+        zipfile.fp.close()
+        zipfile.close()
+
+    def get_inner_filename(self, zipfile):
+        if self.inner_filename:
+            return self.inner_filename
+        names = zipfile.namelist()
+        if len(names) == 1:
+            return names[0]
+
+        zipfile.fp.close()
+        zipfile.close()
+        raise LoadFailed("Multiple Inner Files!")
+
+
+class ZipFileLoader(Zipper, BinaryFileLoader):
+    def load(self):
+        super(ZipFileLoader, self).load()
+        self.unzip_file()
 
 
 class StringLoader(BaseLoader):
@@ -77,7 +118,11 @@ class NetLoader(BaseLoader):
         }
 
     def load(self, **kwargs):
-        self.file = StringIO(self.GET())
+        result = self.GET()
+        if self.binary:
+            self.file = BytesIO(result)
+        else:
+            self.file = StringIO(result)
 
     def req(self, url=None, method=None, params=None, body=None, headers={}):
         if url is None:
@@ -122,7 +167,10 @@ class NetLoader(BaseLoader):
                 code=resp.status_code,
             )
 
-        return resp.text
+        if self.binary:
+            return resp.content
+        else:
+            return resp.text
 
     def GET(self, **kwargs):
         return self.req(method='GET', **kwargs)
@@ -135,3 +183,11 @@ class NetLoader(BaseLoader):
 
     def DELETE(self, **kwargs):
         return self.req(method='DELETE', **kwargs)
+
+
+class ZipNetLoader(Zipper, NetLoader):
+    binary = True
+
+    def load(self):
+        super(ZipNetLoader, self).load()
+        self.unzip_file()
