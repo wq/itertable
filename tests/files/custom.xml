@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<root>
+  <name>Test Case</name>
+  <items>
+    <info>Items Array</info>
+    <item>
+      <one>1</one>
+      <two>2</two>
+      <three>3</three>
+    </item>
+    <item>
+      <one>4</one>
+      <two>5</two>
+      <three>6</three>
+    </item>
+  </items>
+</root>

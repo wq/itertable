@@ -92,12 +92,18 @@ class XmlParser(BaseParser):
 
     def parse(self):
         doc = ET.parse(self.file)
-        root = doc.getroot()
+        root = self.parse_root(doc)
         if self.root_tag is None:
             self.root_tag = root.tag
         if self.item_tag is None:
             self.item_tag = list(root)[0].tag
         self.data = list(map(self.parse_item, root.findall(self.item_tag)))
+
+    def parse_root(self, doc):
+        root = doc.getroot()
+        if self.root_tag is not None and root.tag != self.root_tag:
+            root = root.find(self.root_tag)
+        return root
 
     def parse_item(self, el):
         return {e.tag: e.text for e in el}
