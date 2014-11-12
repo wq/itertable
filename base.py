@@ -44,21 +44,37 @@ class BaseIO(MutableMapping, MutableSequence):
         self.dump(self.file)
 
     field_names = None
+    scan_fields = False
+    _auto_field_names = None
 
     def get_field_names(self):
         "Returns a list of raw fields to expect (defined by parser mixins)"
         if self.field_names is not None:
-            #Support specifying field_names as string (like namedtuple does)
+            # Support specifying field_names as string (like namedtuple does)
             if isinstance(self.field_names, str):
                 return self.field_names.replace(',', ' ').split()
             else:
                 return self.field_names
 
-        # If no defined field names, try to retrieve from first record
-        if getattr(self, 'data', None) and len(self.data) > 0:
-            return list(self.data[0].keys())
-        else:
+        # If no defined field names, try to retrieve from data
+        if not getattr(self, 'data', None):
             return None
+
+        if self._auto_field_names:
+            return self._auto_field_names
+
+        if self.scan_fields:
+            # Scan all rows for field names
+            field_names = set()
+            for row in self.data:
+                field_names.update(row.keys())
+            field_names = list(field_names)
+        else:
+            # Assume first row contains same keys as all other rows
+            field_names = list(self.data[0].keys())
+
+        self._auto_field_names = field_names
+        return field_names
 
     @property
     def key_field(self):

@@ -1,7 +1,7 @@
 from collections import namedtuple, OrderedDict
 import re
 from datetime import datetime
-from wq.io.exceptions import NoData
+from wq.io.exceptions import NoData, MappingFailed
 
 
 class BaseMapper(object):
@@ -75,7 +75,7 @@ class TupleMapper(DictMapper):
         if not field_names and not getattr(self, 'data', None):
             raise NoData
 
-        #FIXME: check for duplicates
+        # FIXME: check for duplicates
         if not hasattr(self, '_field_map'):
             items = [
                 (field, self.tuple_field_name(field))
@@ -113,7 +113,10 @@ class TupleMapper(DictMapper):
 
     def usable_item(self, item):
         mapped = super(TupleMapper, self).usable_item(item)
-        return self.tuple_prototype._replace(**mapped)
+        try:
+            return self.tuple_prototype._replace(**mapped)
+        except ValueError as e:
+            raise MappingFailed(str(e))
 
     def parse_usable_item(self, uitem):
         mapped = {key: getattr(uitem, key) for key in self.field_map.values()}
