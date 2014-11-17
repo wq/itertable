@@ -5,6 +5,7 @@
 Coincidentally, [http://wq.io](http://wq.io) is also the URL for the website describing the wq framework as a whole.  The documentation for wq.io (the library) is available on wq.io (the website) at <http://wq.io/wq.io>.
 
 [![Build Status](https://travis-ci.org/wq/wq.io.png?branch=master)](https://travis-ci.org/wq/wq.io)
+[![PyPI Package](https://pypip.in/version/wq.io/badge.png)](https://pypi.python.org/pypi/wq.io)
 
 Tested on Python 2.7 and 3.4.
 
