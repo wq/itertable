@@ -2,7 +2,9 @@
 
 [wq.io] is a Pythonic library for consuming (<b>i</b>nput), iterating over, and generating (<b>o</b>utput) external data resources in various formats.  wq.io facilitates <b>i</b>nter<b>o</b>perability between the [wq framework] and other systems and formats. 
 
-Coincidentally, [http://wq.io](http://wq.io) is also the URL for the website describing the wq framework as a whole.  The documentation for wq.io (the library) is available on wq.io (the website) at <http://wq.io/wq.io>.
+wq.io is [designed to be customized], with a [base class] and modular mixin classes that handle [loading], [parsing], and [mapping] external data to a convenient API.
+
+> Coincidentally, [http://wq.io](http://wq.io) is also the URL for the website describing the wq framework as a whole.  The documentation for wq.io (the library) is available on wq.io (the website) at <http://wq.io/wq.io>.
 
 [![Build Status](https://travis-ci.org/wq/wq.io.png?branch=master)](https://travis-ci.org/wq/wq.io)
 [![PyPI Package](https://pypip.in/version/wq.io/badge.png)](https://pypi.python.org/pypi/wq.io)
@@ -13,17 +15,17 @@ Tested on Python 2.7 and 3.4.
 
 ```bash
 # Basic install
-pip install wq.io
+pip3 install wq.io
 
 # Alternatively, install the wq metapackage if using together with wq.app and/or wq.db:
-pip install wq
+pip3 install wq
 
 # To enable wq.io's GIS support
-pip install Shapely Fiona
+pip3 install geopandas # includes Shapely & Fiona
 
 # To enable wq.io's Excel write support
-pip install xlwt # xls support (use xlwt-future for Python 3)
-pip install xlsxwriter # xlsx support
+pip3 install xlwt # xls support (use xlwt-future for Python 3)
+pip3 install xlsxwriter # xlsx support
 # (xls/xlsx read support is enabled by default)
 ```
 
@@ -112,3 +114,8 @@ Each `IO` class is composed of mixin classes ([loaders], [parsers], and [mappers
 [mappers]: http://wq.io/docs/mappers
 [extend wq.io]: http://wq.io/docs/custom-io
 [climata library]: https://github.com/heigeo/climata
+[designed to be customized]: http://wq.io/docs/custom-io
+[base class]: http://wq.io/docs/base-io
+[loading]: http://wq.io/docs/loaders
+[parsing]: http://wq.io/docs/parsers
+[mapping]: http://wq.io/docs/mappers
