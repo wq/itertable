@@ -21,6 +21,14 @@ class LoadFileTestCase(IoTestCase):
         self.assertEqual(instance.extra_data[0][3], "Date")
         self.assertEqual(instance.extra_data[0][4], date(2014, 12, 12))
 
+    def test_no_extra_data(self):
+        filename = self.get_filename("extra", "xls")
+        ExtraDataIO(filename=filename)
+        filename = self.get_filename("noextra", "xls")
+        instance = ExtraDataIO(filename=filename)
+        self.check_instance(instance)
+        self.assertFalse(instance.extra_data)
+
     def check_instance(self, instance):
         self.assertEqual(len(instance), len(self.data))
 
