@@ -7,4 +7,4 @@ class TableParser(BaseParser):
     header_row = None
     max_header_row = 20
     start_row = None
-    extra_data = {}
+    extra_data = None

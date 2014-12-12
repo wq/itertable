@@ -63,6 +63,8 @@ class WorkbookParser(TableParser):
                 seen_fields.add(field)
 
         self.data = list(map(self.parse_row, self.worksheet[self.start_row:]))
+
+        self.extra_data = {}
         if self.header_row > 0:
             for r in range(0, self.header_row):
                 for c, cell in enumerate(self.worksheet[r]):
