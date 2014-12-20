@@ -2,6 +2,7 @@ from collections import namedtuple, OrderedDict
 import re
 from datetime import datetime
 from wq.io.exceptions import NoData, MappingFailed
+from unicodedata import normalize
 
 
 class BaseMapper(object):
@@ -86,7 +87,15 @@ class TupleMapper(DictMapper):
 
     def tuple_field_name(self, field):
         field = self.clean_field_name(field)
-        return re.sub(r'\W', '', field.lower())
+        field = re.sub(r'\W', '', field.lower())
+        try:
+            # normalize identifiers for consistency with namedtuple
+            # http://bugs.python.org/issue23091
+            field = normalize('NFKC', field)
+        except TypeError:
+            # normalize doesn't work on Python 2 str() instances
+            pass
+        return field
 
     def clean_field_name(self, field):
         return field

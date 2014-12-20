@@ -1,8 +1,13 @@
+# coding=utf-8
+
 from wq.io import load_file
 from wq.io.exceptions import NoData
 import unittest
 from .base import IoTestCase
 import pickle
+
+import sys
+PY3 = sys.version_info[0] >= 3
 
 
 class LoadFileTestCase(IoTestCase):
@@ -19,6 +24,16 @@ class LoadFileTestCase(IoTestCase):
         filename = self.get_filename("test2", "csv")
         instance = load_file(filename)
         self.check_instance(instance)
+
+    @unittest.skipUnless(PY3, "requires Python 3")
+    def test_load_csv_unicode(self):
+        filename = self.get_filename("test3", "csv")
+        instance = load_file(filename)
+        self.check_instance(instance)
+        self.assertTrue(hasattr(instance[0], "μ"))
+
+        # Use getattr to avoid Python 2 compile error
+        self.assertEqual(getattr(instance[0], "μ"), "test")
 
     def test_load_nodata(self):
         filename = self.get_filename("nodata", "csv")
