@@ -129,7 +129,7 @@ setup(
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Utilities',
     ],
-    tests_require=['httpretty', 'beautifulsoup4', 'Shapely', 'Fiona',
+    tests_require=['httpretty<0.8.7', 'beautifulsoup4', 'Shapely', 'Fiona',
                    'xlwt-future', 'xlsxwriter<0.5.8', 'pandas', 'geopandas'],
     test_suite='tests',
 )
