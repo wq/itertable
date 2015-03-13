@@ -4,7 +4,7 @@
 
 wq.io is [designed to be customized], with a [base class] and modular mixin classes that handle [loading], [parsing], and [mapping] external data to a convenient API.
 
-[**Release Notes**](https://github.com/wq/wq.io/releases) | [**Installation**](https://wq.io/docs/setup) | [**Documentation**](https://wq.io/wq.io)
+[**Release Notes**](https://github.com/wq/wq.io/releases) | [**Installation**](https://wq.io/docs/setup) | [**Documentation**](https://wq.io/wq.io) | [**Issue Tracker**](https://github.com/wq/wq.io/issues)
 
 [![Build Status](https://travis-ci.org/wq/wq.io.svg?branch=master)](https://travis-ci.org/wq/wq.io)
 [![PyPI Package](https://pypip.in/version/wq.io/badge.svg?style=flat)](https://pypi.python.org/pypi/wq.io)
