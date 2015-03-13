@@ -1,15 +1,17 @@
-[![wq.io](https://raw.github.com/wq/wq/master/images/256/wq.io.png)](http://wq.io/wq.io)
+[![wq.io](https://raw.github.com/wq/wq/master/images/256/wq.io.png)](https://wq.io/wq.io)
 
-[wq.io](http://wq.io/wq.io) is a Pythonic library for consuming (<b>i</b>nput), iterating over, and generating (<b>o</b>utput) external data resources in various formats.  wq.io facilitates <b>i</b>nter<b>o</b>perability between the [wq framework] and other systems and formats. 
+[wq.io](https://wq.io/wq.io) is a Pythonic library for consuming (<b>i</b>nput), iterating over, and generating (<b>o</b>utput) external data resources in various formats.  wq.io facilitates <b>i</b>nter<b>o</b>perability between the [wq framework] and other systems and formats. 
 
 wq.io is [designed to be customized], with a [base class] and modular mixin classes that handle [loading], [parsing], and [mapping] external data to a convenient API.
 
-> Coincidentally, [http://wq.io](http://wq.io) is also the URL for the website describing the wq framework as a whole.  The documentation for wq.io (the library) is available on wq.io (the website) at <http://wq.io/wq.io>.
+[**Release Notes**](https://github.com/wq/wq.io/releases) | [**Installation**](https://wq.io/docs/setup) | [**Documentation**](https://wq.io/wq.io)
 
 [![Build Status](https://travis-ci.org/wq/wq.io.svg?branch=master)](https://travis-ci.org/wq/wq.io)
 [![PyPI Package](https://pypip.in/version/wq.io/badge.svg?style=flat)](https://pypi.python.org/pypi/wq.io)
 
 Tested on Python 2.7 and 3.4.
+
+> Somewhat coincidentally, [https://wq.io](https://wq.io) is also the URL for the website describing the wq framework as a whole.  The documentation for wq.io (the library) is available on wq.io (the website) at <https://wq.io/wq.io>.
 
 ## Getting Started
 
@@ -94,8 +96,8 @@ for id, site in data.items():
 Each `IO` class is composed of mixin classes ([loaders], [parsers], and [mappers]) that handle the various steps of the process.  By extending these mixin or the pre-mixed classes above, it is straightforward to [extend wq.io] to support arbitrary formats.  The [climata library] provides a number of examples of custom `IO` classes for loading climate and hydrology data.
 
 
-[wq framework]: http://wq.io/
-[the wq documentation]: http://wq.io/docs/
+[wq framework]: https://wq.io/
+[the wq documentation]: https://wq.io/docs/
 [csv]: https://docs.python.org/3/library/csv.html
 [xlrd]: http://www.python-excel.org/
 [xml.etree]: https://docs.python.org/3/library/xml.etree.elementtree.html
@@ -108,13 +110,13 @@ Each `IO` class is composed of mixin classes ([loaders], [parsers], and [mappers
 [DataFrame]: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html
 [Fiona]: https://github.com/Toblerity/Fiona
 [Shapely]: https://github.com/Toblerity/Shapely
-[loaders]: http://wq.io/docs/loaders
-[parsers]: http://wq.io/docs/parsers
-[mappers]: http://wq.io/docs/mappers
-[extend wq.io]: http://wq.io/docs/custom-io
+[loaders]: https://wq.io/docs/loaders
+[parsers]: https://wq.io/docs/parsers
+[mappers]: https://wq.io/docs/mappers
+[extend wq.io]: https://wq.io/docs/custom-io
 [climata library]: https://github.com/heigeo/climata
-[designed to be customized]: http://wq.io/docs/custom-io
-[base class]: http://wq.io/docs/base-io
-[loading]: http://wq.io/docs/loaders
-[parsing]: http://wq.io/docs/parsers
-[mapping]: http://wq.io/docs/mappers
+[designed to be customized]: https://wq.io/docs/custom-io
+[base class]: https://wq.io/docs/base-io
+[loading]: https://wq.io/docs/loaders
+[parsing]: https://wq.io/docs/parsers
+[mapping]: https://wq.io/docs/mappers
