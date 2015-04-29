@@ -71,6 +71,7 @@ def create_wqio_namespace():
         "parsers",
         "util.py",
         "version.py",
+        "commands.py",
     )
     for name in files:
         os.symlink("../../" + name, "wq/io/" + name)
@@ -111,6 +112,7 @@ setup(
     packages=packages,
     package_dir=package_dir,
     namespace_packages=['wq'],
+    entry_points={'wq': 'wq.io=wq.io.commands'},
     description=LONG_DESCRIPTION.strip(),
     long_description=parse_markdown_readme(),
     install_requires=['requests', 'xlrd'],
