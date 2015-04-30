@@ -2,6 +2,7 @@ from wq.io.base import BaseIO
 from wq.io.loaders import FileLoader, BinaryFileLoader, NetLoader, StringLoader
 from wq.io.parsers import CsvParser, JsonParser, XmlParser, ExcelParser
 from wq.io.mappers import TupleMapper
+from wq.io.exceptions import ParseFailed
 import mimetypes
 
 PARSERS = {
@@ -62,7 +63,7 @@ def guess_type(filename, buffer=None):
 def load_file(filename, mapper=TupleMapper, options={}):
     mimetype = guess_type(filename)
     if mimetype not in PARSERS:
-        raise Exception("Could not determine parser for %s" % mimetype)
+        raise ParseFailed("Could not determine parser for %s" % mimetype)
     parser = PARSERS[mimetype]
     loader = BinaryFileLoader if mimetype in BINARY_FORMATS else FileLoader
     IO = make_io(loader, parser, mapper)

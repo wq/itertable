@@ -102,10 +102,7 @@ class NetLoader(BaseLoader):
     username = None
     password = None
     debug = False
-
-    @property
-    def url(self):
-        raise NotImplementedError
+    url = None
 
     @property
     def user_agent(self):
@@ -127,6 +124,8 @@ class NetLoader(BaseLoader):
     def req(self, url=None, method=None, params=None, body=None, headers={}):
         if url is None:
             url = self.url
+            if url is None:
+                raise LoadFailed("No URL provided")
 
         if params is None:
             params = getattr(self, 'params', None)

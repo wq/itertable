@@ -2,7 +2,7 @@ from wq.io.base import *
 from wq.io.loaders import *
 from wq.io.parsers import *
 from wq.io.mappers import *
-from wq.io.util import make_io, load_file, load_string, guess_type
+from wq.io.util import make_io, load_file, load_string, guess_type, flattened
 from wq.io.version import VERSION
 
 # Some useful pre-mixed classes
