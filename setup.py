@@ -115,7 +115,7 @@ setup(
     entry_points={'wq': 'wq.io=wq.io.commands'},
     description=LONG_DESCRIPTION.strip(),
     long_description=parse_markdown_readme(),
-    install_requires=['requests', 'xlrd'],
+    install_requires=['wq.core', 'requests', 'xlrd'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
