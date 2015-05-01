@@ -40,17 +40,17 @@ def cat(source, source_options, format):
         try:
             input = load_file(source, options=options)
         except IoException as e:
-            raise click.ClickException(e)
+            raise click.ClickException(str(e))
     else:
         parts = source.split('.')
         class_name = parts[-1]
         module_name = ".".join(parts[:-1])
-        module = importlib.import_module(module_name)
-        IO = getattr(module, class_name)
         try:
+            module = importlib.import_module(module_name)
+            IO = getattr(module, class_name)
             input = flattened(IO, **options)
-        except IoException as e:
-            raise click.ClickException(e)
+        except (ImportError, ValueError, AttributeError, IoException) as e:
+            raise click.ClickException(str(e))
 
     if format == "json":
         OutputIO = JsonStringIO
