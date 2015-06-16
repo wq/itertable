@@ -4,12 +4,17 @@
 
 wq.io is [designed to be customized], with a [base class] and modular mixin classes that handle [loading], [parsing], and [mapping] external data to a convenient API.
 
-[**Release Notes**](https://github.com/wq/wq.io/releases) | [**Installation**](https://wq.io/docs/setup) | [**Documentation**](https://wq.io/wq.io) | [**Issue Tracker**](https://github.com/wq/wq.io/issues)
 
-[![Build Status](https://travis-ci.org/wq/wq.io.svg?branch=master)](https://travis-ci.org/wq/wq.io)
-[![PyPI Package](https://pypip.in/version/wq.io/badge.svg?style=flat)](https://pypi.python.org/pypi/wq.io)
+[![Travis Build Status](https://img.shields.io/travis/wq/wq.io.svg)](https://travis-ci.org/wq/wq.io)
+[![Latest PyPI Release](https://img.shields.io/pypi/v/wq.io.svg)](https://pypi.python.org/pypi/wq.io)
+[![Release Notes](https://img.shields.io/github/release/wq/wq.io.svg)](https://github.com/wq/wq.io/releases)
+[![Documentation](https://img.shields.io/badge/Docs-0.8-blue.svg)](https://wq.io/wq.io)
+[![Python Support](https://img.shields.io/pypi/pyversions/wq.io.svg)](https://pypi.python.org/pypi/wq.io)
+[![License](https://img.shields.io/pypi/l/wq.io.svg)](https://wq.io/license)
+[![GitHub Stars](https://img.shields.io/github/stars/wq/wq.io.svg)](https://github.com/wq/wq.io/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/wq/wq.io.svg)](https://github.com/wq/wq.io/network)
+[![GitHub Issues](https://img.shields.io/github/issues/wq/wq.io.svg)](https://github.com/wq/wq.io/issues)
 
-Tested on Python 2.7 and 3.4.
 
 > Somewhat coincidentally, [https://wq.io](https://wq.io) is also the URL for the website describing the wq framework as a whole.  The documentation for wq.io (the library) is available on wq.io (the website) at <https://wq.io/wq.io>.
 
