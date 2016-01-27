@@ -10,6 +10,7 @@ class CsvParser(TableParser):
     delimiter = ","
     quotechar = '"'
     no_pickle_parser = ['csvdata']
+    binary = UNICODE_CSV
 
     def parse(self):
         # Like DictReader, assume explicit field definition means CSV does not

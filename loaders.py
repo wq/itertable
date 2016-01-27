@@ -15,7 +15,6 @@ from zipfile import ZipFile
 class BaseLoader(object):
     no_pickle_loader = ['file']
     empty_file = None
-    binary = False
 
     def load(self):
         raise NotImplementedError
@@ -23,8 +22,14 @@ class BaseLoader(object):
 
 class FileLoader(BaseLoader):
     filename = None
-    read_mode = 'r'
-    write_mode = 'w+'
+
+    @property
+    def read_mode(self):
+        return 'rb' if self.binary else 'r'
+
+    @property
+    def write_mode(self):
+        return 'wb+' if self.binary else 'w+'
 
     def load(self):
         try:
@@ -41,12 +46,6 @@ class FileLoader(BaseLoader):
         file = open(self.filename, self.write_mode)
         self.dump(file)
         file.close()
-
-
-class BinaryFileLoader(FileLoader):
-    binary = True
-    read_mode = 'rb'
-    write_mode = 'wb+'
 
 
 class Zipper(object):
@@ -77,7 +76,9 @@ class Zipper(object):
         raise LoadFailed("Multiple Inner Files!")
 
 
-class ZipFileLoader(Zipper, BinaryFileLoader):
+class ZipFileLoader(Zipper, FileLoader):
+    binary = True
+
     def load(self):
         super(ZipFileLoader, self).load()
         self.unzip_file()
@@ -86,17 +87,23 @@ class ZipFileLoader(Zipper, BinaryFileLoader):
 class StringLoader(BaseLoader):
     string = ""
 
+    @property
+    def _io_class(self):
+        return BytesIO if self.binary else StringIO
+
     def load(self):
-        self.file = StringIO(self.string)
+        if self.binary and not self.string:
+            self.string = b''
+        self.file = self._io_class(self.string)
 
     def save(self):
-        file = StringIO()
+        file = self._io_class()
         self.dump(file)
         self.string = file.getvalue()
         file.close()
 
 
-class NetLoader(BaseLoader):
+class NetLoader(StringLoader):
     "NetLoader: opens HTTP/REST resources for use in wq.io"
 
     username = None
@@ -116,10 +123,7 @@ class NetLoader(BaseLoader):
 
     def load(self, **kwargs):
         result = self.GET()
-        if self.binary:
-            self.file = BytesIO(result)
-        else:
-            self.file = StringIO(result)
+        self.file = self._io_class(result)
 
     def req(self, url=None, method=None, params=None, body=None, headers={}):
         if url is None:

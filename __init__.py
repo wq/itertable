@@ -14,11 +14,11 @@ JsonFileIO = make_io(FileLoader, JsonParser)
 JsonNetIO = make_io(NetLoader, JsonParser)
 JsonStringIO = make_io(StringLoader, JsonParser)
 
-XmlFileIO = make_io(BinaryFileLoader, XmlParser, name='XmlFileIO')
+XmlFileIO = make_io(FileLoader, XmlParser, name='XmlFileIO')
 XmlNetIO = make_io(NetLoader, XmlParser)
 XmlStringIO = make_io(StringLoader, XmlParser)
 
-ExcelFileIO = make_io(BinaryFileLoader, ExcelParser, name='ExcelFileIO')
+ExcelFileIO = make_io(FileLoader, ExcelParser, name='ExcelFileIO')
 
 try:
     import fiona

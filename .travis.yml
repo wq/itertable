@@ -3,10 +3,14 @@ language: python
 python:
  - "2.7"
  - "3.4"
+env:
+ - UNICODE_CSV=pip install unicodecsv
+ - UNICODE_CSV=
 before_install:
  - sudo apt-get update
  - sudo apt-get install libgdal1-dev libgdal1h
 install:
  - pip install requests
+ - $UNICODE_CSV
 script:
  - python setup.py test

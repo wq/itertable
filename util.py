@@ -1,5 +1,5 @@
 from wq.io.base import BaseIO
-from wq.io.loaders import FileLoader, BinaryFileLoader, NetLoader, StringLoader
+from wq.io.loaders import FileLoader, NetLoader, StringLoader
 from wq.io.parsers import CsvParser, JsonParser, XmlParser, ExcelParser
 from wq.io.mappers import TupleMapper
 from wq.io.exceptions import ParseFailed
@@ -13,12 +13,6 @@ PARSERS = {
     'application/json': JsonParser,
     'application/xml': XmlParser,
 }
-BINARY_FORMATS = (
-    'application/xml',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-)
-
 
 # Save generated classes to avoid recreating them
 _io_classes = {}
@@ -65,7 +59,7 @@ def load_file(filename, mapper=TupleMapper, options={}):
     if mimetype not in PARSERS:
         raise ParseFailed("Could not determine parser for %s" % mimetype)
     parser = PARSERS[mimetype]
-    loader = BinaryFileLoader if mimetype in BINARY_FORMATS else FileLoader
+    loader = FileLoader
     IO = make_io(loader, parser, mapper)
     return IO(filename=filename, **options)
 

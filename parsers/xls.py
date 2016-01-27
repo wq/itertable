@@ -11,6 +11,7 @@ class WorkbookParser(TableParser):
     start_row = None
     column_count = None
     no_pickle_parser = ['workbook', 'worksheet']
+    binary = True
 
     def parse(self):
         self.parse_workbook()

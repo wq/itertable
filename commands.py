@@ -61,4 +61,7 @@ def cat(source, source_options, format):
     output = OutputIO(data=input.data, string=init)
     output.data = input.data
     output.save()
-    print(output.string)
+    result = output.string
+    if output.binary:
+        result = result.decode('utf-8')
+    print(result)
