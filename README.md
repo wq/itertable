@@ -31,7 +31,7 @@ pip3 install wq
 pip3 install geopandas # includes Shapely & Fiona
 
 # To enable wq.io's Excel write support
-pip3 install xlwt # xls support (use xlwt-future for Python 3)
+pip3 install xlwt # xls support
 pip3 install xlsxwriter # xlsx support
 # (xls/xlsx read support is enabled by default)
 ```
