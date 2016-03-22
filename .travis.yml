@@ -12,7 +12,6 @@ addons:
     packages:
       - libgdal1-dev
       - libgdal1h
-      - python-pandas
 install:
  - pip install requests
  - $UNICODE_CSV
