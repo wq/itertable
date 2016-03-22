@@ -1,14 +1,18 @@
-sudo: required
+sudo: false
 language: python
 python:
  - "2.7"
  - "3.4"
+ - "3.5"
 env:
  - UNICODE_CSV=pip install unicodecsv
  - UNICODE_CSV=
-before_install:
- - sudo apt-get update
- - sudo apt-get install libgdal1-dev libgdal1h
+addons:
+  apt:
+    packages:
+      - libgdal1-dev
+      - libgdal1h
+      - python-pandas
 install:
  - pip install requests
  - $UNICODE_CSV
