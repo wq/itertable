@@ -77,6 +77,8 @@ def load_string(string, mapper=TupleMapper, options={}):
 
     loader = StringLoader
     IO = make_io(loader, parser, mapper)
+    if IO.binary:
+        string = string.encode('utf-8')
     return IO(string=string, **options)
 
 

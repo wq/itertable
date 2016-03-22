@@ -116,7 +116,8 @@ class XmlParser(BaseParser):
         root = ET.Element(self.root_tag)
         for item in self.data:
             root.append(self.dump_item(item))
-        ET.ElementTree(root).write(file)
+        output = ET.tostring(root).decode('utf-8')
+        file.write(output)
 
     def dump_item(self, item):
         el = ET.Element(self.item_tag)

@@ -8,7 +8,7 @@ import httpretty
 
 
 class CsvZipFileIO(ZipFileLoader, CsvParser, TupleMapper, BaseIO):
-    pass
+    inner_binary = CsvParser.binary
 
 
 class ExcelZipFileIO(ZipFileLoader, ExcelParser, TupleMapper, BaseIO):
@@ -17,6 +17,7 @@ class ExcelZipFileIO(ZipFileLoader, ExcelParser, TupleMapper, BaseIO):
 
 class CsvZipNetIO(ZipNetLoader, CsvParser, TupleMapper, BaseIO):
     url = "http://example.com/testcsv.zip"
+    inner_binary = CsvParser.binary
 
 
 class ExcelZipNetIO(ZipNetLoader, ExcelParser, TupleMapper, BaseIO):
@@ -46,16 +47,6 @@ class ZipFileTestCase(IoTestCase):
         instance = CsvZipFileIO(filename=filename, inner_filename="test.csv")
         self.check_instance(instance)
 
-    def check_instance(self, instance):
-        self.assertEqual(len(instance), len(self.data))
-
-        for row, data in zip(instance, self.data):
-            for key in data:
-                val = getattr(row, key)
-                if isinstance(val, str) and val.isdigit():
-                    val = int(val)
-                self.assertEqual(val, data[key])
-
 
 class NetZipFileTestCase(IoTestCase):
     def setUp(self):
@@ -84,13 +75,3 @@ class NetZipFileTestCase(IoTestCase):
 
     def test_xls_zip(self):
         self.check_instance(ExcelZipNetIO())
-
-    def check_instance(self, instance):
-        self.assertEqual(len(instance), len(self.data))
-
-        for row, data in zip(instance, self.data):
-            for key in data:
-                val = getattr(row, key)
-                if isinstance(val, str) and val.isdigit():
-                    val = int(val)
-                self.assertEqual(val, data[key])

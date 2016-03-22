@@ -89,18 +89,6 @@ class LoadFileTestCase(IoTestCase):
     def test_sync_io(self):
         self.duplicate('sync', self.with_key_field)
 
-    def check_instance(self, instance):
-        self.assertEqual(len(instance), len(self.data))
-
-        for row, data in zip(instance, self.data):
-            for key in data:
-                val = getattr(row, key)
-                try:
-                    val = int(float(val))
-                except ValueError:
-                    pass
-                self.assertEqual(val, data[key])
-
     def with_key_field(self, cls):
         class new_class(cls):
             key_field = "one"

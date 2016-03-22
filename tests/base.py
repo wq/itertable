@@ -22,3 +22,15 @@ class IoTestCase(unittest.TestCase):
             except OSError:
                 pass
         return filename
+
+    def check_instance(self, instance):
+        self.assertEqual(len(instance), len(self.data))
+
+        for row, data in zip(instance, self.data):
+            for key in data:
+                val = getattr(row, key)
+                try:
+                    val = int(float(val))
+                except ValueError:
+                    pass
+                self.assertEqual(val, data[key])

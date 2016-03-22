@@ -94,13 +94,3 @@ class NetLoaderTestCase(IoTestCase):
         with self.assertRaises(LoadFailed) as cm:
             instance = TestIO()
         self.assertEqual(str(cm.exception), "Not Found")
-
-    def check_instance(self, instance):
-        self.assertEqual(len(instance), len(self.data))
-
-        for row, data in zip(instance, self.data):
-            for key in data:
-                val = getattr(row, key)
-                if isinstance(val, str) and val.isdigit():
-                    val = int(val)
-                self.assertEqual(val, data[key])

@@ -36,8 +36,10 @@ class GisTestCase(IoTestCase):
         for row, data, point in zip(instance.values(), self.data, self.points):
             for key in data:
                 val = getattr(row, key)
-                if isinstance(val, str) and val.isdigit():
+                try:
                     val = int(val)
+                except ValueError:
+                    pass
                 self.assertEqual(val, data[key])
                 self.assertTrue(row.geometry.contains(point))
 
