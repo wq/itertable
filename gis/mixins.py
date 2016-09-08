@@ -16,7 +16,7 @@ class FionaLoaderParser(FileLoader, BaseParser):
     def load(self):
         try:
             self.layers = fiona.listlayers(self.filename)
-        except (ValueError, IOError) as e:
+        except (ValueError, IOError):
             driver = guess_driver(self.filename)
             self.meta = {'driver': driver}
             self.empty_file = True
