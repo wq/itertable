@@ -1,5 +1,5 @@
 from wq.io.base import BaseIO
-from wq.io.loaders import FileLoader, StringLoader
+from wq.io.loaders import FileLoader, NetLoader, StringLoader
 from wq.io.parsers import CsvParser, JsonParser, XmlParser, ExcelParser
 from wq.io.mappers import TupleMapper
 from wq.io.exceptions import ParseFailed
@@ -62,6 +62,16 @@ def load_file(filename, mapper=TupleMapper, options={}):
     loader = FileLoader
     IO = make_io(loader, parser, mapper)
     return IO(filename=filename, **options)
+
+
+def load_url(url, mapper=TupleMapper, options={}):
+    mimetype = guess_type(url)
+    if mimetype not in PARSERS:
+        raise ParseFailed("Could not determine parser for %s" % mimetype)
+    parser = PARSERS[mimetype]
+    loader = NetLoader
+    IO = make_io(loader, parser, mapper)
+    return IO(url=url, **options)
 
 
 def load_string(string, mapper=TupleMapper, options={}):

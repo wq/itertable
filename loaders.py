@@ -162,6 +162,7 @@ class NetLoader(StringLoader):
             auth=auth,
             data=body,
         )
+        resp.connection.close()
 
         if resp.status_code < 200 or resp.status_code > 299:
             raise LoadFailed(

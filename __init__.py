@@ -1,4 +1,5 @@
 from .base import BaseIO
+
 from .loaders import (
     BaseLoader,
     FileLoader,
@@ -8,6 +9,7 @@ from .loaders import (
     NetLoader,
     ZipNetLoader,
 )
+
 from .parsers import (
     CsvParser,
     JsonParser,
@@ -26,10 +28,12 @@ from .mappers import (
 from .util import (
     make_io,
     load_file,
+    load_url,
     load_string,
     guess_type,
     flattened
 )
+
 from wq.io.version import VERSION
 
 
@@ -57,6 +61,7 @@ __all__ = (
 
     'make_io',
     'load_file',
+    'load_url',
     'load_string',
     'guess_type',
     'flattened',
@@ -87,11 +92,12 @@ JsonFileIO = make_io(FileLoader, JsonParser)
 JsonNetIO = make_io(NetLoader, JsonParser)
 JsonStringIO = make_io(StringLoader, JsonParser)
 
-XmlFileIO = make_io(FileLoader, XmlParser, name='XmlFileIO')
+XmlFileIO = make_io(FileLoader, XmlParser)
 XmlNetIO = make_io(NetLoader, XmlParser)
 XmlStringIO = make_io(StringLoader, XmlParser)
 
-ExcelFileIO = make_io(FileLoader, ExcelParser, name='ExcelFileIO')
+ExcelFileIO = make_io(FileLoader, ExcelParser)
+ExcelNetIO = make_io(NetLoader, ExcelParser)
 
 try:
     from wq.io.gis import GisIO, ShapeIO, WktIO

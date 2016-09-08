@@ -1,5 +1,5 @@
 import httpretty
-from wq.io import CsvNetIO
+from wq.io import CsvNetIO, load_url
 from wq.io.exceptions import LoadFailed
 import pickle
 from .base import IoTestCase
@@ -40,6 +40,9 @@ class NetLoaderTestCase(IoTestCase):
 
     def test_load_csv(self):
         self.check_instance(TestIO())
+
+    def test_load_url(self):
+        self.check_instance(load_url("http://example.com/test.csv"))
 
     def test_load_csv_params(self):
         self.check_instance(TestIO(params={'test': 1}))
