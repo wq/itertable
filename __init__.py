@@ -1,9 +1,82 @@
-from wq.io.base import *
-from wq.io.loaders import *
-from wq.io.parsers import *
-from wq.io.mappers import *
-from wq.io.util import make_io, load_file, load_string, guess_type, flattened
+from .base import BaseIO
+from .loaders import (
+    BaseLoader,
+    FileLoader,
+    Zipper,
+    ZipFileLoader,
+    StringLoader,
+    NetLoader,
+    ZipNetLoader,
+)
+from .parsers import (
+    CsvParser,
+    JsonParser,
+    XmlParser,
+    ExcelParser,
+)
+
+from .mappers import (
+    BaseMapper,
+    DictMapper,
+    TupleMapper,
+    TimeSeriesMapper,
+    make_date_mapper,
+)
+
+from .util import (
+    make_io,
+    load_file,
+    load_string,
+    guess_type,
+    flattened
+)
 from wq.io.version import VERSION
+
+
+__all__ = (
+    'BaseIO',
+
+    'BaseLoader',
+    'FileLoader',
+    'Zipper',
+    'ZipFileLoader',
+    'StringLoader',
+    'NetLoader',
+    'ZipNetLoader',
+
+    'CsvParser',
+    'JsonParser',
+    'XmlParser',
+    'ExcelParser',
+
+    'BaseMapper',
+    'DictMapper',
+    'TupleMapper',
+    'TimeSeriesMapper',
+    'make_date_mapper',
+
+    'make_io',
+    'load_file',
+    'load_string',
+    'guess_type',
+    'flattened',
+
+    'VERSION',
+
+    'CsvFileIO',
+    'CsvNetIO',
+    'CsvStringIO',
+
+    'JsonFileIO',
+    'JsonNetIO',
+    'JsonStringIO',
+
+    'XmlFileIO',
+    'XmlNetIO',
+    'XmlStringIO',
+
+    'ExcelFileIO',
+)
 
 # Some useful pre-mixed classes
 CsvFileIO = make_io(FileLoader, CsvParser)
@@ -21,8 +94,11 @@ XmlStringIO = make_io(StringLoader, XmlParser)
 ExcelFileIO = make_io(FileLoader, ExcelParser, name='ExcelFileIO')
 
 try:
-    import fiona
-    import shapely
     from wq.io.gis import GisIO, ShapeIO, WktIO
+    __all__ += (
+        'GisIO',
+        'ShapeIO',
+        'WktIO',
+    )
 except ImportError:
     pass

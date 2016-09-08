@@ -39,7 +39,7 @@ class ZipFileTestCase(IoTestCase):
     def test_multi_zip(self):
         filename = self.get_filename("testmulti", "zip")
         with self.assertRaises(LoadFailed) as cm:
-            instance = CsvZipFileIO(filename=filename)
+            CsvZipFileIO(filename=filename)
         self.assertEqual(str(cm.exception), "Multiple Inner Files!")
 
     def test_multi_zip_name(self):

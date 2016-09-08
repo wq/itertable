@@ -1,6 +1,4 @@
 from wq.io import load_file
-import unittest
-import pickle
 from wq.io import CsvFileIO, JsonFileIO, XmlFileIO, ExcelFileIO
 from .base import IoTestCase
 

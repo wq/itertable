@@ -1,6 +1,4 @@
 from wq.io.gis import ShapeIO
-import unittest
-import pickle
 from shapely.geometry import Point
 from .base import IoTestCase
 from os import unlink

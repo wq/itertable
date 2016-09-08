@@ -1,5 +1,5 @@
 from wq.io.base import BaseIO
-from wq.io.loaders import FileLoader, NetLoader, StringLoader
+from wq.io.loaders import FileLoader, StringLoader
 from wq.io.parsers import CsvParser, JsonParser, XmlParser, ExcelParser
 from wq.io.mappers import TupleMapper
 from wq.io.exceptions import ParseFailed

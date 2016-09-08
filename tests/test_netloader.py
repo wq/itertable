@@ -1,4 +1,3 @@
-import unittest
 import httpretty
 from wq.io import CsvNetIO
 from wq.io.exceptions import LoadFailed
@@ -85,12 +84,12 @@ class NetLoaderTestCase(IoTestCase):
         class TestIO(CsvNetIO):
             url = "http://example.com/fail.txt"
         with self.assertRaises(LoadFailed) as cm:
-            instance = TestIO()
+            TestIO()
         self.assertEqual(str(cm.exception), "Not Found")
 
     def test_load_fail_html(self):
         class TestIO(CsvNetIO):
             url = "http://example.com/fail.html"
         with self.assertRaises(LoadFailed) as cm:
-            instance = TestIO()
+            TestIO()
         self.assertEqual(str(cm.exception), "Not Found")

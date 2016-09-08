@@ -1,6 +1,5 @@
 from wq.io import ExcelFileIO
 from .base import IoTestCase
-import pickle
 from datetime import date
 
 

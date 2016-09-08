@@ -6,7 +6,8 @@ python:
  - "3.5"
 env:
  - UNICODE_CSV=pip install unicodecsv
- - UNICODE_CSV=
+ - NO_UNICODE_CSV=1
+ - LINT=pip install flake8
 addons:
   apt:
     packages:
@@ -15,5 +16,6 @@ addons:
 install:
  - pip install requests
  - $UNICODE_CSV
+ - $LINT
 script:
- - python setup.py test
+ - ./runtests.sh
