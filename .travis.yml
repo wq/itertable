@@ -5,9 +5,9 @@ python:
  - "3.4"
  - "3.5"
 env:
- - UNICODE_CSV=pip install unicodecsv
- - NO_UNICODE_CSV=1
- - LINT=pip install flake8
+ - ""
+ - UNICODE_CSV="pip install unicodecsv"
+ - LINT="pip install flake8"
 addons:
   apt:
     packages:
