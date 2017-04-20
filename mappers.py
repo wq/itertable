@@ -138,11 +138,30 @@ class TupleMapper(DictMapper):
         return self.tuple_prototype._replace(**kwargs)
 
 
+def parse_iso8601(val):
+    # See http://bugs.python.org/issue15873
+    if hasattr(datetime, 'fromisoformat'):
+        return datetime.fromisoformat(val)
+    try:
+        from django.utils.dateparse import parse_datetime
+    except ImportError:
+        try:
+            from iso8601 import parse_date as parse_datetime
+        except ImportError:
+            raise Exception('No suitable iso8601 parser found!')
+    result = parse_datetime(val)
+    if result is None:
+        raise ValueError("Could not parse %s as iso8601 date!" % val)
+    return result
+
+
 def make_date_mapper(fmt):
     """
     Generate functions to use for mapping strings to dates
     """
     def mapper(val):
+        if fmt == 'iso8601':
+            return parse_iso8601(val)
         val = datetime.strptime(val, fmt)
         if '%Y' in fmt or '%y' in fmt:
             return val
@@ -154,17 +173,25 @@ def make_date_mapper(fmt):
 class TimeSeriesMapper(TupleMapper):
     date_formats = None
     map_floats = True
+    map_functions = []
+
+    def make_date_mapper(self, fmt):
+        return make_date_mapper(fmt)
 
     def map_value(self, field, value):
         if not isinstance(value, str):
             return value
 
-        functions = [make_date_mapper(fmt) for fmt in self.date_formats]
-        if self.map_floats:
-            functions.insert(0, float)
+        if not self.map_functions:
+            self.map_functions = [
+                self.make_date_mapper(fmt) for fmt in self.date_formats
+            ]
+
+            if self.map_floats:
+                self.map_functions.insert(0, float)
 
         value = value.strip()
-        for i, fn in enumerate(functions):
+        for i, fn in enumerate(self.map_functions):
             try:
                 return fn(value)
             except ValueError:
