@@ -1,12 +1,11 @@
 sudo: false
 language: python
 python:
- - "2.7"
  - "3.4"
  - "3.5"
+ - "3.6"
 env:
  - ""
- - UNICODE_CSV="pip install unicodecsv"
  - LINT="pip install flake8"
 addons:
   apt:
@@ -15,7 +14,6 @@ addons:
       - libgdal1h
 install:
  - pip install requests "pandas==0.18.1"
- - $UNICODE_CSV
  - $LINT
 script:
  - ./runtests.sh
