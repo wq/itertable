@@ -7,7 +7,7 @@ wq.io is [designed to be customized], with a [base class] and modular mixin clas
 
 [![Latest PyPI Release](https://img.shields.io/pypi/v/wq.io.svg)](https://pypi.python.org/pypi/wq.io)
 [![Release Notes](https://img.shields.io/github/release/wq/wq.io.svg)](https://github.com/wq/wq.io/releases)
-[![Documentation](https://img.shields.io/badge/Docs-0.8-blue.svg)](https://wq.io/wq.io)
+[![Documentation](https://img.shields.io/badge/Docs-1.0-blue.svg)](https://wq.io/wq.io)
 [![License](https://img.shields.io/pypi/l/wq.io.svg)](https://wq.io/license)
 [![GitHub Stars](https://img.shields.io/github/stars/wq/wq.io.svg)](https://github.com/wq/wq.io/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/wq/wq.io.svg)](https://github.com/wq/wq.io/network)
@@ -21,18 +21,22 @@ wq.io is [designed to be customized], with a [base class] and modular mixin clas
 ## Getting Started
 
 ```bash
-# Basic install
-pip3 install wq.io
+# Recommended: create virtual environment
+# python3 -m venv venv
+# . venv/bin/activate
 
-# Alternatively, install the wq metapackage if using together with wq.app and/or wq.db:
-pip3 install wq
+# Install entire wq suite (recommended)
+pip install wq
+
+# Install only wq.io
+pip install wq.io
 
 # To enable wq.io's GIS support
-pip3 install geopandas # includes Shapely & Fiona
+pip install geopandas # includes Shapely & Fiona
 
 # To enable wq.io's Excel write support
-pip3 install xlwt # xls support
-pip3 install xlsxwriter # xlsx support
+pip install xlwt # xls support
+pip install xlsxwriter # xlsx support
 # (xls/xlsx read support is enabled by default)
 ```
 
