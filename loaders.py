@@ -110,6 +110,7 @@ class NetLoader(StringLoader):
     password = None
     debug = False
     url = None
+    client = requests
 
     @property
     def user_agent(self):
@@ -155,7 +156,7 @@ class NetLoader(StringLoader):
         all_headers = self.headers.copy()
         all_headers.update(headers)
 
-        resp = requests.request(
+        resp = self.client.request(
             method, url,
             params=params,
             headers=all_headers,
