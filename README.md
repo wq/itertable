@@ -50,7 +50,7 @@ wq.io provides a general purpose API for loading, iterating over, and writing ta
 from wq.io import ExcelFileIO
 data = ExcelFileIO(filename='example.xls')
 for row in data:
-    print row.name, row.date
+    print(row.name, row.date)
 ```
 
 wq.io provides a number of built-in classes like the above, including a `CsvFileIO`, `XmlFileIO`, and `JsonFileIO`.  There is also a convenience function, `load_file()`, that attempts to automatically determine which class to use for a given file.
@@ -59,7 +59,7 @@ wq.io provides a number of built-in classes like the above, including a `CsvFile
 from wq.io import load_file
 data = load_file('example.csv')
 for row in data:
-    print row.name, row.date
+    print(row.name, row.date)
 ```
 
 All of the included `*FileIO` classes support both reading and writing to external files, though write support for Excel files requires additional libraries ([xlwt] and [xlsxwriter]) that aren't listed as dependencies.
@@ -75,7 +75,7 @@ class WebServiceIO(JsonNetIO):
     
 data = WebServiceIO(params={'type': 'all'})
 for row in data:
-    print row.timestamp, row.value
+    print(row.timestamp, row.value)
 ```
 
 The powerful [requests] library is used internally to load data over HTTP.
@@ -87,7 +87,7 @@ When [Pandas] is installed, the `as_dataframe()` method on wq.io classes can be 
 ```python
 instance = WebServiceIO(params={'type': 'all'})
 df = instance.as_dataframe()
-print df.value.mean()
+print(df.value.mean())
 ```
 
 ### GIS Support
@@ -98,7 +98,7 @@ When [Fiona] and [Shapely] are installed, wq.io can also open and create shapefi
 from wq.io import ShapeIO
 data = ShapeIO(filename='sites.shp')
 for id, site in data.items():
-    print id, site.geometry.wkt
+    print(id, site.geometry.wkt)
 ```
 
 ### Extending wq.io
