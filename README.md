@@ -5,9 +5,9 @@
 wq.io is [designed to be customized], with a [base class] and modular mixin classes that handle [loading], [parsing], and [mapping] external data to a convenient API.
 
 
-[![Latest PyPI Release](https://img.shields.io/pypi/v/wq.io.svg)](https://pypi.python.org/pypi/wq.io)
+[![Latest PyPI Release](https://img.shields.io/pypi/v/wq.io.svg)](https://pypi.org/project/wq.io)
 [![Release Notes](https://img.shields.io/github/release/wq/wq.io.svg)](https://github.com/wq/wq.io/releases)
-[![Documentation](https://img.shields.io/badge/Docs-1.0-blue.svg)](https://wq.io/wq.io)
+[![Documentation](https://img.shields.io/badge/Docs-1.1-blue.svg)](https://wq.io/wq.io)
 [![License](https://img.shields.io/pypi/l/wq.io.svg)](https://wq.io/license)
 [![GitHub Stars](https://img.shields.io/github/stars/wq/wq.io.svg)](https://github.com/wq/wq.io/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/wq/wq.io.svg)](https://github.com/wq/wq.io/network)

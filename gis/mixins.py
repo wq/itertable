@@ -34,6 +34,9 @@ class FionaLoaderParser(FileLoader, BaseParser):
             # One layer, load & parse GIS data
             with fiona.open(self.filename, layer=self.layer_id) as f:
                 self.meta = f.meta
+                if 'id' in f.meta.get('schema', {}).get('properties', {}):
+                    # TODO: Is this correct?
+                    del f.meta['schema']['properties']['id']
                 self.data = list(map(self.parse_feature, f))
 
     def parse_feature(self, f):
