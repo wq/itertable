@@ -151,7 +151,7 @@ def parse_iso8601(val):
             raise Exception('No suitable iso8601 parser found!')
     try:
         result = parse_datetime(val)
-    except:
+    except Exception:
         result = None
     if result is None:
         raise ValueError("Could not parse %s as iso8601 date!" % val)
