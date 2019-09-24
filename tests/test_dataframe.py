@@ -1,4 +1,4 @@
-from wq.io import load_string, BaseIO
+from itertable import load_string, BaseIter
 from .base import IoTestCase
 
 
@@ -7,7 +7,7 @@ class LoadFileTestCase(IoTestCase):
         self.csv_data = "one,two,three\n1,2,3\n4,5,6"
 
     def test_base_dataframe(self):
-        io = BaseIO(data=self.data)
+        io = BaseIter(data=self.data)
         df = io.as_dataframe()
         self.assertEqual(len(df), 2)
 
@@ -15,10 +15,10 @@ class LoadFileTestCase(IoTestCase):
         self.assertEqual(val, 3)
 
     def test_index_dataframe(self):
-        class KeyIO(BaseIO):
+        class KeyIter(BaseIter):
             key_field = "one"
 
-        io = KeyIO(data=self.data)
+        io = KeyIter(data=self.data)
         df = io.as_dataframe()
         self.assertEqual(len(df), 2)
 

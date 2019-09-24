@@ -1,11 +1,11 @@
 import httpretty
-from wq.io import CsvNetIO, load_url
-from wq.io.exceptions import LoadFailed
+from itertable import CsvNetIter, load_url
+from itertable.exceptions import LoadFailed
 import pickle
 from .base import IoTestCase
 
 
-class TestIO(CsvNetIO):
+class TestIter(CsvNetIter):
     url = "http://example.com/test.csv"
 
 
@@ -39,60 +39,60 @@ class NetLoaderTestCase(IoTestCase):
         httpretty.reset()
 
     def test_load_csv(self):
-        self.check_instance(TestIO())
+        self.check_instance(TestIter())
 
     def test_load_url(self):
         self.check_instance(load_url("http://example.com/test.csv"))
 
     def test_load_csv_params(self):
-        self.check_instance(TestIO(params={'test': 1}))
+        self.check_instance(TestIter(params={'test': 1}))
         qs = httpretty.last_request().querystring
         self.assertEqual(qs, {'test': ['1']})
 
-        self.check_instance(TestIO(params="test=1"))
+        self.check_instance(TestIter(params="test=1"))
         qs = httpretty.last_request().querystring
         self.assertEqual(qs, {'test': ['1']})
 
-        self.check_instance(TestIO(params=None))
+        self.check_instance(TestIter(params=None))
         qs = httpretty.last_request().querystring
         self.assertEqual(qs, {})
 
     def test_debug_string(self):
-        instance = TestIO(debug=True)
+        instance = TestIter(debug=True)
         self.assertEqual(
             instance.debug_string, "GET: http://example.com/test.csv"
         )
-        instance = TestIO(params={'test': 1}, debug=True)
+        instance = TestIter(params={'test': 1}, debug=True)
         self.assertEqual(
             instance.debug_string, "GET: http://example.com/test.csv?test=1"
         )
 
     def test_load_csv_auth(self):
-        class AuthTestIO(CsvNetIO):
+        class AuthTestIter(CsvNetIter):
             url = "http://example.com/test.csv"
             username = "user"
             password = "pass"
-        self.check_instance(AuthTestIO())
+        self.check_instance(AuthTestIter())
         headers = httpretty.last_request().headers
         auth = "Basic dXNlcjpwYXNz"  # b64encode("user:pass")
         self.assertEqual(headers.get('Authorization', None), auth)
 
     def test_load_csv_pickle(self):
-        instance = TestIO()
+        instance = TestIter()
         self.check_instance(instance)
         instance = pickle.loads(pickle.dumps(instance))
         self.check_instance(instance)
 
     def test_load_fail(self):
-        class TestIO(CsvNetIO):
+        class TestIter(CsvNetIter):
             url = "http://example.com/fail.txt"
         with self.assertRaises(LoadFailed) as cm:
-            TestIO()
+            TestIter()
         self.assertEqual(str(cm.exception), "Not Found")
 
     def test_load_fail_html(self):
-        class TestIO(CsvNetIO):
+        class TestIter(CsvNetIter):
             url = "http://example.com/fail.html"
         with self.assertRaises(LoadFailed) as cm:
-            TestIO()
+            TestIter()
         self.assertEqual(str(cm.exception), "Not Found")

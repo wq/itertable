@@ -1,31 +1,27 @@
----
-order: 1
----
+Extending IterTable
+===================
 
-Extending wq.io
-===============
+[IterTable] provides a consistent interface for working with data from a variety of common formats.  However, it is not possible to support every conceivable file format and data structure in a single library.  Because of this, IterTable is designed to be customized and extended.  To facilitate fully modular customization, the IterTable APIs are designed as combinations of a `BaseIter` class and several mixin classes.
 
-<img align=right alt="wq.io" src="https://wq.io/images/128/wq.io.png">
+The `BaseIter` class and mixins break the process into several steps:
 
-[wq.io] provides a consistent interface for working with data from a variety of common formats.  However, it is not possible to support every conceivable file format and data structure in a single library.  Because of this, wq.io is designed primarily to be customized and extended.  To facilitate fully modular customization, the wq.io APIs are designed as combinations of a `BaseIO` class and several mixin classes.
+1. The [BaseIter][base] class initializes each instance, saving any passed arguments as properties on the instance, then immediately triggering the next two steps.
+2. A [Loader][loaders] mixin loads an external resource into file-like object and saves it to a `file` property on the instance
+3. A [Parser][parsers] mixin extracts data from the `file` property and saves it to a `data` property, which should almost always be a `list` of `dict`s.
+4. After initialization, the BaseIter class and a [Mapper][mappers] mixin provide a transparent interface for iterating over the instance's `data`, e.g. by transforming each row into a `namedtuple` for convenience.
 
-The `BaseIO` class and mixins break the process into several steps:
+These steps and their corresponding classes are detailed in the following pages.
 
-1. The [BaseIO] class initializes each instance, saving any passed arguments as properties on the instance, then immediately triggering the next two steps.
-2. A [Loader] mixin loads an external resource into file-like object and saves it to a `file` property on the instance
-3. A [Parser] mixin extracts data from the `file` property and saves it to a `data` property, which should almost always be a `list` of `dict`s.
-4. After initialization, the BaseIO class and a [Mapper] mixin provide a transparent interface for iterating over the instance's `data`, e.g. by transforming each row into a `namedtuple` for convenience.
+When writing to a file, the above steps are done more or less in reverse: the [Mapper][mappers] transforms data back into the `dict` format used in the `data` list; and the [Parser][parsers] dumps the data into a file-like object prepared by the [Loader][loaders] which then writes the output file.
 
-These steps and their corresponding classes are detailed in the following pages.  When writing to a file, the above steps are done more or less in reverse: the [Mapper] transforms data back into the `dict` format used in the `data` list; and the [Parser] dumps the data into a file-like object prepared by the [Loader] which then writes the output file.
+There are a number of pre-mixed classes directly exported by the [itertable module].  By convention, each pre-mixed class has a suffix "Iter", e.g. `ExcelFileIter`.  The class names provide hints to the mixins that were used in their creation: for example, `JsonFileIter` extends `FileLoader`, `JsonParser`, `TupleMapper`, and `BaseIter`.  Note that all of the pre-mixed classes extend `TupleMapper`, and all Iter classes extend `BaseIter` by definition.
 
-There are a number of pre-mixed classes provided by wq.io's [top level module].  By convention, each pre-mixed class has a suffix "IO", e.g. `ExcelFileIO`.  (Note that `IO` in this context is a reference to wq.io, not Python's built-in `io` module or its `StringIO` class.)  The class names provide hints to the mixins that were used in their creation: for example, `JsonFileIO` extends `FileLoader`, `JsonParser`, `TupleMapper`, and `BaseIO`.  Note that all of the pre-mixed classes extend `TupleMapper`, and all IO classes extend `BaseIO` by definition.
-
-To extend wq.io, you can subclass one of these pre-mixed classes:
+To extend IterTable, you can subclass one of these pre-mixed classes:
 
 ```python
-from wq.io import JsonFileIO
+from itertable import JsonFileIter
 
-class MyJsonFileIO(JsonFileIO):
+class MyJsonFileIter(JsonFileIter):
     def parse(self):
         # custom parsing code...
 ```
@@ -34,36 +30,39 @@ class MyJsonFileIO(JsonFileIO):
 
 ```python
 # Load base classes
-from wq.io.base import BaseIO
-from wq.io.loaders import FileLoader
-from wq.io.parsers import JsonParser
-from wq.io.mappers import TupleMapper
+from itertable.base import BaseIter
+from itertable.loaders import FileLoader
+from itertable.parsers import JsonParser
+from itertable.mappers import TupleMapper
 
 # Equivalent:
-# from wq.io import BaseIO, FileLoader, JsonParser, TupleMapper
+# from itertable import BaseIter, FileLoader, JsonParser, TupleMapper
 
 # Define custom mixin class
 class MyJsonParser(JsonParser):
     def parse(self):
         # custom parsing code ...
 
-# Mix together a usable IO class
-class MyJsonFileIO(FileLoader, JsonParser, TupleMapper, BaseIO):
+# Mix together a usable Iter class
+class MyJsonFileIter(FileLoader, MyJsonParser, TupleMapper, BaseIter):
     pass
 ```
 
-Note that the order of classes is important: `BaseIO` should always be listed last to ensure the correct method resolution order.
+Note that the order of classes is important: `BaseIter` should always be listed last to ensure the correct method resolution order.
 
-You can then use your new class like any other IO class:
+You can then use your new class like any other Iter class:
 
 ```python
-for record in MyJsonFileIO(filename='file.json'):
-    print record.id
+for record in MyJsonFileIter(filename='file.json'):
+    print(record.id)
 ```
 
-[wq.io]: https://wq.io/wq.io
-[BaseIO]: https://wq.io/docs/base-io
-[Loader]: https://wq.io/docs/loaders
-[Parser]: https://wq.io/docs/parsers
-[Mapper]: https://wq.io/docs/mappers
-[top level module]: https://github.com/wq/wq.io/blob/master/__init__.py
+[IterTable]: https://github.com/wq/itertable
+[custom]: https://github.com/wq/itertable/blob/master/docs/about.md
+[base]: https://github.com/wq/itertable/blob/master/docs/base.md
+[loaders]: https://github.com/wq/itertable/blob/master/docs/loaders.md
+[parsers]: https://github.com/wq/itertable/blob/master/docs/parsers.md
+[mappers]: https://github.com/wq/itertable/blob/master/docs/mappers.md
+[gis]: https://github.com/wq/itertable/blob/master/docs/gis.md
+
+[itertable module]: https://github.com/wq/itertable/blob/master/itertable/__init__.py

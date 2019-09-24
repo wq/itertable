@@ -1,8 +1,8 @@
 import fiona
 from shapely import wkt, geometry
-from wq.io.loaders import FileLoader
-from wq.io.parsers.base import BaseParser
-from wq.io.mappers import TupleMapper
+from ..loaders import FileLoader
+from ..parsers.base import BaseParser
+from ..mappers import TupleMapper
 
 
 class FionaLoaderParser(FileLoader, BaseParser):
@@ -74,7 +74,7 @@ class GisMapper(TupleMapper):
     GIS-aware tuple mapper
     """
     def as_dataframe(self):
-        # Mimic BaseIO.as_dataframe() but with GeoDataFrame
+        # Mimic BaseIter.as_dataframe() but with GeoDataFrame
         # (also, key_field is always set)
         from geopandas import GeoDataFrame
         key = self.get_key_field()

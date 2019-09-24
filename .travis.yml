@@ -1,19 +1,17 @@
-sudo: false
 language: python
-python:
- - "3.4"
- - "3.5"
- - "3.6"
-env:
- - ""
- - LINT="pip install flake8"
-addons:
-  apt:
-    packages:
-      - libgdal1-dev
-      - libgdal1h
-install:
- - pip install requests "pandas==0.20.3"
- - $LINT
+python: 3.7
+dist: xenial
+matrix:
+  include:
+    - name: "Defaults (Python 3.7)"
+    - name: "Python 3.6"
+      python: "3.6"
+    - name: "Python 3.5"
+      python: "3.5"
+    - name: "Code Lint"
+      env:
+        - LINT=1
+      install:
+        - pip install flake8
 script:
  - ./runtests.sh

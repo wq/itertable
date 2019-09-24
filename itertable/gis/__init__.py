@@ -1,8 +1,8 @@
 from .mixins import FionaLoaderParser, GisMapper, ShapeMapper, WktMapper
-from wq.io.base import BaseIO
+from ..base import BaseIter
 
 
-class MetaSyncIO(BaseIO):
+class MetaSyncIter(BaseIter):
     """
     Custom sync() to handle transfering Fiona metadata (except for driver)
     """
@@ -11,7 +11,7 @@ class MetaSyncIO(BaseIO):
         other.meta = self.meta.copy()
         if driver:
             other.meta['driver'] = driver
-        super(MetaSyncIO, self).sync(other, save)
+        super(MetaSyncIter, self).sync(other, save)
 
     def get_field_names(self):
         if self.field_names is None and self.meta is not None:
@@ -19,16 +19,16 @@ class MetaSyncIO(BaseIO):
                 ['id', 'geometry']
                 + list(self.meta['schema']['properties'].keys())
             )
-        return super(MetaSyncIO, self).get_field_names()
+        return super(MetaSyncIter, self).get_field_names()
 
 
-class GisIO(FionaLoaderParser, GisMapper, MetaSyncIO):
+class GisIter(FionaLoaderParser, GisMapper, MetaSyncIter):
     pass
 
 
-class ShapeIO(FionaLoaderParser, ShapeMapper, MetaSyncIO):
+class ShapeIter(FionaLoaderParser, ShapeMapper, MetaSyncIter):
     pass
 
 
-class WktIO(FionaLoaderParser, WktMapper, MetaSyncIO):
+class WktIter(FionaLoaderParser, WktMapper, MetaSyncIter):
     pass

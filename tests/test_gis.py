@@ -1,4 +1,4 @@
-from wq.io.gis import ShapeIO
+from itertable.gis import ShapeIter
 from shapely.geometry import Point
 from .base import IoTestCase
 from os import unlink
@@ -15,7 +15,7 @@ class GisTestCase(IoTestCase):
     def test_shapeio(self):
         for ext in self.types:
             filename = self.get_filename("test", ext)
-            instance = ShapeIO(filename=filename)
+            instance = ShapeIter(filename=filename)
             self.check_instance(instance)
 
     def test_shapeio_sync(self):
@@ -23,10 +23,10 @@ class GisTestCase(IoTestCase):
             for dest_ext in self.types:
                 source_file = self.get_filename("test", source_ext)
                 dest_file = self.get_filename("sync", dest_ext, True)
-                source_instance = ShapeIO(filename=source_file)
-                dest_instance = ShapeIO(filename=dest_file)
+                source_instance = ShapeIter(filename=source_file)
+                dest_instance = ShapeIter(filename=dest_file)
                 source_instance.sync(dest_instance)
-                self.check_instance(ShapeIO(filename=dest_file))
+                self.check_instance(ShapeIter(filename=dest_file))
 
     def check_instance(self, instance):
         self.assertEqual(len(instance), len(self.data))

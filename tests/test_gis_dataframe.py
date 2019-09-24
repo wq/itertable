@@ -1,16 +1,16 @@
-from wq.io.gis import GisIO, WktIO, ShapeIO
+from itertable.gis import GisIter, WktIter, ShapeIter
 from .base import IoTestCase
 
 
 class GisDataFrameTestCase(IoTestCase):
     def test_gisio_dataframe(self):
-        self.dataframe_test(GisIO)
+        self.dataframe_test(GisIter)
 
     def test_wktio_dataframe(self):
-        self.dataframe_test(WktIO)
+        self.dataframe_test(WktIter)
 
     def test_shapeio_dataframe(self):
-        self.dataframe_test(ShapeIO)
+        self.dataframe_test(ShapeIter)
 
     def dataframe_test(self, cls):
         instance = cls(filename="tests/files/test.shp")

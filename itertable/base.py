@@ -1,8 +1,8 @@
 from collections import MutableMapping, MutableSequence
 
 
-class BaseIO(MutableMapping, MutableSequence):
-    "wq.io.BaseIO: Base class for generic resource management"
+class BaseIter(MutableMapping, MutableSequence):
+    "itertable.BaseIter: Base class for generic resource management"
 
     tabular = False
     nested = False
@@ -182,7 +182,7 @@ class BaseIO(MutableMapping, MutableSequence):
 
     # Slots to track things that can't be pickled
     # (need a separate slot for each expected mixin class, since they don't
-    #  extend BaseIO)
+    #  extend BaseIter)
     no_pickle = []
     no_pickle_loader = []
     no_pickle_mapper = []

@@ -1,22 +1,31 @@
-[![wq.io](https://raw.github.com/wq/wq/master/images/256/wq.io.png)](https://wq.io/wq.io)
+IterTable is a Pythonic API for iterating through tabular data formats, including CSV, XLS, XML, and JSON.
 
-[wq.io](https://wq.io/wq.io) is a Pythonic library for consuming (<b>i</b>nput), iterating over, and generating (<b>o</b>utput) external data resources in various formats.  wq.io facilitates <b>i</b>nter<b>o</b>perability between the [wq framework] and other systems and formats. 
+```python
+from itertable import load_file
 
-wq.io is [designed to be customized], with a [base class] and modular mixin classes that handle [loading], [parsing], and [mapping] external data to a convenient API.
+for row in load_file("example.xls"):
+    print(row.date, row.name)
+```
 
+[![Latest PyPI Release](https://img.shields.io/pypi/v/itertable.svg)](https://pypi.org/project/itertable)
+[![Release Notes](https://img.shields.io/github/release/wq/itertable.svg)](https://github.com/wq/itertable/releases)
+[![License](https://img.shields.io/pypi/l/itertable.svg)](https://github.com/wq/itertable/blob/master/LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/wq/itertable.svg)](https://github.com/wq/itertable/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/wq/itertable.svg)](https://github.com/wq/itertable/network)
+[![GitHub Issues](https://img.shields.io/github/issues/wq/itertable.svg)](https://github.com/wq/itertable/issues)
 
-[![Latest PyPI Release](https://img.shields.io/pypi/v/wq.io.svg)](https://pypi.org/project/wq.io)
-[![Release Notes](https://img.shields.io/github/release/wq/wq.io.svg)](https://github.com/wq/wq.io/releases)
-[![Documentation](https://img.shields.io/badge/Docs-1.1-blue.svg)](https://wq.io/wq.io)
-[![License](https://img.shields.io/pypi/l/wq.io.svg)](https://wq.io/license)
-[![GitHub Stars](https://img.shields.io/github/stars/wq/wq.io.svg)](https://github.com/wq/wq.io/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/wq/wq.io.svg)](https://github.com/wq/wq.io/network)
-[![GitHub Issues](https://img.shields.io/github/issues/wq/wq.io.svg)](https://github.com/wq/wq.io/issues)
+[![Travis Build Status](https://img.shields.io/travis/wq/itertable.svg)](https://travis-ci.org/wq/itertable)
+[![Python Support](https://img.shields.io/pypi/pyversions/itertable.svg)](https://pypi.python.org/pypi/itertable)
 
-[![Travis Build Status](https://img.shields.io/travis/wq/wq.io.svg)](https://travis-ci.org/wq/wq.io)
-[![Python Support](https://img.shields.io/pypi/pyversions/wq.io.svg)](https://pypi.python.org/pypi/wq.io)
+> **Note** Prior to version 2.0, IterTable was **wq.io**, a submodule of the [wq framework].  The package has been renamed to avoid confusion with the wq framework website (<https://wq.io>).
+Similarly, IterTable's `*IO` classes have been renamed to `*Iter`, as the API is not intended to match that of Python's `StringIO` or other `io` classes.
 
-> Somewhat coincidentally, [https://wq.io](https://wq.io) is also the URL for the website describing the wq framework as a whole.  The documentation for wq.io (the library) is available on wq.io (the website) at <https://wq.io/wq.io>.
+```diff
+- from wq.io import CsvFileIO
+- data = CsvFileIO(filename='data.csv')
++ from itertable import CsvFileIter
++ data = CsvFileIter(filename='data.csv')
+```
 
 ## Getting Started
 
@@ -25,55 +34,51 @@ wq.io is [designed to be customized], with a [base class] and modular mixin clas
 # python3 -m venv venv
 # . venv/bin/activate
 
-# Install entire wq suite (recommended)
-pip install wq
+python3 -m pip install itertable
 
-# Install only wq.io
-pip install wq.io
+# GIS support (Fiona & Shapely)
+python3 -m pip install itertable[gis]
 
-# To enable wq.io's GIS support
-pip install geopandas # includes Shapely & Fiona
-
-# To enable wq.io's Excel write support
-pip install xlwt # xls support
-pip install xlsxwriter # xlsx support
+# Excel write support
+python3 -m pip install itertable[write]
 # (xls/xlsx read support is enabled by default)
+
+# Pandas integration
+python3 -m pip install itertable[pandas]
 ```
 
-See [the wq documentation] for more information.
+## Overview
 
-## Features
-
-wq.io provides a general purpose API for loading, iterating over, and writing tabular datasets.  The basic idea is to avoid needing to remember the unique usage of e.g. [csv], [xlrd], or [xml.etree] every time one needs to work with external data.  Instead, wq.io abstracts these libraries into a consistent interface that works as an [iterable] of [namedtuples].  Whenever possible, the field names for a dataset are automatically determined from the source file, e.g. the column headers in an Excel spreadsheet.
+IterTable provides a general purpose API for loading, iterating over, and writing tabular datasets.  The goal is to avoid needing to remember the unique usage of e.g. [csv], [xlrd], or [xml.etree] every time one needs to work with external data.  Instead, IterTable abstracts these libraries into a consistent interface that works as an [iterable] of [namedtuples].  Whenever possible, the field names for a dataset are automatically determined from the source file, e.g. the column headers in an Excel spreadsheet.
 
 ```python
-from wq.io import ExcelFileIO
-data = ExcelFileIO(filename='example.xls')
+from itertable import ExcelFileIter
+data = ExcelFileIter(filename='example.xls')
 for row in data:
     print(row.name, row.date)
 ```
 
-wq.io provides a number of built-in classes like the above, including a `CsvFileIO`, `XmlFileIO`, and `JsonFileIO`.  There is also a convenience function, `load_file()`, that attempts to automatically determine which class to use for a given file.
+IterTable provides a number of built-in classes like the above, including a `CsvFileIter`, `XmlFileIter`, and `JsonFileIter`.  There is also a convenience function, `load_file()`, that attempts to automatically determine which class to use for a given file.
 
 ```python
-from wq.io import load_file
+from itertable import load_file
 data = load_file('example.csv')
 for row in data:
     print(row.name, row.date)
 ```
 
-All of the included `*FileIO` classes support both reading and writing to external files, though write support for Excel files requires additional libraries ([xlwt] and [xlsxwriter]) that aren't listed as dependencies.
+All of the included `*FileIter` classes support both reading and writing to external files, though write support for Excel files requires `itertable[write]` (which installs `xlwt` and `xlswriter`).
 
 ### Network Client
 
-wq.io also provides network-capable equivalents of each of the above classes, to facilitate loading data from third party webservices.
+IterTable also provides network-capable equivalents of each of the above classes, to facilitate loading data from third party webservices.
 
 ```python
-from wq.io import JsonNetIO
-class WebServiceIO(JsonNetIO):
+from itertable import JsonNetIter
+class WebServiceIter(JsonNetIter):
     url = "http://example.com/api"
     
-data = WebServiceIO(params={'type': 'all'})
+data = WebServiceIter(params={'type': 'all'})
 for row in data:
     print(row.timestamp, row.value)
 ```
@@ -82,31 +87,32 @@ The powerful [requests] library is used internally to load data over HTTP.
 
 ### Pandas Analysis
 
-When [Pandas] is installed, the `as_dataframe()` method on wq.io classes can be used to create a [DataFrame], enabling more extensive analysis possibilities.
+When [Pandas] is installed (via `itertable[pandas]`), the `as_dataframe()` method on itertable classes can be used to create a [DataFrame], enabling more extensive analysis possibilities.
 
 ```python
-instance = WebServiceIO(params={'type': 'all'})
+instance = WebServiceIter(params={'type': 'all'})
 df = instance.as_dataframe()
 print(df.value.mean())
 ```
 
 ### GIS Support
 
-When [Fiona] and [Shapely] are installed, wq.io can also open and create shapefiles and other OGR-compatible geographic data formats.
+When [Fiona] and [Shapely] are installed (via `itertable[gis]`), itertable can also open and create shapefiles and other OGR-compatible geographic data formats.
 
 ```python
-from wq.io import ShapeIO
-data = ShapeIO(filename='sites.shp')
+from itertable import ShapeIter
+data = ShapeIter(filename='sites.shp')
 for id, site in data.items():
     print(id, site.geometry.wkt)
 ```
 
-### Extending wq.io
-Each `IO` class is composed of mixin classes ([loaders], [parsers], and [mappers]) that handle the various steps of the process.  By extending these mixin or the pre-mixed classes above, it is straightforward to [extend wq.io] to support arbitrary formats.  The [climata library] provides a number of examples of custom `IO` classes for loading climate and hydrology data.
+More information on IterTable's gis support is available [here][gis].
 
+### Extending IterTable
+
+It is straightforward to [extend IterTable][custom] to support arbitrary formats.   Each provided class is composed of a [BaseIter][base] class and mixin classes ([loaders], [parsers], and [mappers]) that handle the various steps of the process.
 
 [wq framework]: https://wq.io/
-[the wq documentation]: https://wq.io/docs/
 [csv]: https://docs.python.org/3/library/csv.html
 [xlrd]: http://www.python-excel.org/
 [xml.etree]: https://docs.python.org/3/library/xml.etree.elementtree.html
@@ -119,13 +125,10 @@ Each `IO` class is composed of mixin classes ([loaders], [parsers], and [mappers
 [DataFrame]: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html
 [Fiona]: https://github.com/Toblerity/Fiona
 [Shapely]: https://github.com/Toblerity/Shapely
-[loaders]: https://wq.io/docs/loaders
-[parsers]: https://wq.io/docs/parsers
-[mappers]: https://wq.io/docs/mappers
-[extend wq.io]: https://wq.io/docs/custom-io
-[climata library]: https://github.com/heigeo/climata
-[designed to be customized]: https://wq.io/docs/custom-io
-[base class]: https://wq.io/docs/base-io
-[loading]: https://wq.io/docs/loaders
-[parsing]: https://wq.io/docs/parsers
-[mapping]: https://wq.io/docs/mappers
+
+[custom]: https://github.com/wq/itertable/blob/master/docs/about.md
+[base]: https://github.com/wq/itertable/blob/master/docs/base.md
+[loaders]: https://github.com/wq/itertable/blob/master/docs/loaders.md
+[parsers]: https://github.com/wq/itertable/blob/master/docs/parsers.md
+[mappers]: https://github.com/wq/itertable/blob/master/docs/mappers.md
+[gis]: https://github.com/wq/itertable/blob/master/docs/gis.md

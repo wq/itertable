@@ -1,16 +1,16 @@
-from wq.io import ExcelFileIO
+from itertable import ExcelFileIter
 from .base import IoTestCase
 from datetime import date
 
 
-class ExtraDataIO(ExcelFileIO):
+class ExtraDataIter(ExcelFileIter):
     start_row = 5
 
 
 class LoadFileTestCase(IoTestCase):
     def test_extra_data(self):
         filename = self.get_filename("extra", "xls")
-        instance = ExtraDataIO(filename=filename)
+        instance = ExtraDataIter(filename=filename)
         self.check_instance(instance)
 
         self.assertEqual(instance.extra_data[0][0], "Name")
@@ -22,9 +22,9 @@ class LoadFileTestCase(IoTestCase):
 
     def test_no_extra_data(self):
         filename = self.get_filename("extra", "xls")
-        ExtraDataIO(filename=filename)
+        ExtraDataIter(filename=filename)
         filename = self.get_filename("noextra", "xls")
-        instance = ExtraDataIO(filename=filename)
+        instance = ExtraDataIter(filename=filename)
         self.check_instance(instance)
         self.assertFalse(instance.extra_data)
 

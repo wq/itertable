@@ -7,7 +7,7 @@ except ImportError:
     # Python 3 (Python 2 equivalent uses unicode)
     from io import StringIO
 from io import BytesIO
-from wq.io.version import VERSION
+from .version import VERSION
 from .exceptions import LoadFailed
 from zipfile import ZipFile
 
@@ -104,7 +104,7 @@ class StringLoader(BaseLoader):
 
 
 class NetLoader(StringLoader):
-    "NetLoader: opens HTTP/REST resources for use in wq.io"
+    "NetLoader: opens HTTP/REST resources for use in IterTable"
 
     username = None
     password = None
@@ -114,7 +114,7 @@ class NetLoader(StringLoader):
 
     @property
     def user_agent(self):
-        return "wq.io/%s (%s)" % (VERSION, requests.utils.default_user_agent())
+        return "IterTable/%s (%s)" % (VERSION, requests.utils.default_user_agent())
 
     @property
     def headers(self):

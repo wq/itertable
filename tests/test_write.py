@@ -1,5 +1,5 @@
-from wq.io import load_file
-from wq.io import CsvFileIO, JsonFileIO, XmlFileIO, ExcelFileIO
+from itertable import load_file
+from itertable import CsvFileIter, JsonFileIter, XmlFileIter, ExcelFileIter
 from .base import IoTestCase
 
 
@@ -16,16 +16,16 @@ class LoadFileTestCase(IoTestCase):
         }]
         self.types = ('csv', 'json', 'xml', 'xls', 'xlsx')
         self.classes = (
-            CsvFileIO,
-            JsonFileIO,
-            XmlFileIO,
-            ExcelFileIO,
-            ExcelFileIO,
+            CsvFileIter,
+            JsonFileIter,
+            XmlFileIter,
+            ExcelFileIter,
+            ExcelFileIter,
         )
 
     def test_write_file(self):
         """
-        Test BaseIO.save() when starting from an empty IO instance
+        Test BaseIter.save() when starting from an empty Iter instance
         """
         for ext, cls in zip(self.types, self.classes):
             filename = self.get_filename("output", ext, True)
@@ -35,12 +35,12 @@ class LoadFileTestCase(IoTestCase):
                 filename=filename,
                 field_names=['one', 'two', 'three'],
 
-                # These only apply to XmlFileIO, will be ignored by the others
+                # These only apply to XmlFileIter, will be ignored by others
                 root_tag="root",
                 item_tag="item"
             )
 
-            # Add rows to the instance using list-style BaseIO.append()
+            # Add rows to the instance using list-style BaseIter.append()
             for row in self.data:
                 instance.append(instance.create(**row))
 
@@ -52,8 +52,8 @@ class LoadFileTestCase(IoTestCase):
 
     def duplicate(self, mode, xform):
         """
-        Test BaseIO.copy/sync() (and implicit save()) between combinations of
-        the default IO classes.
+        Test BaseIter.copy/sync() (and implicit save()) between combinations of
+        the default Iter classes.
         """
         for source_ext, source_cls in zip(self.types, self.classes):
             for dest_ext, dest_cls in zip(self.types, self.classes):
@@ -64,10 +64,10 @@ class LoadFileTestCase(IoTestCase):
                 source_cls = xform(source_cls)
                 dest_cls = xform(dest_cls)
 
-                # Load source data into IO instance
+                # Load source data into Iter instance
                 source_instance = source_cls(filename=source_file)
 
-                # Create empty instance of the destination IO class
+                # Create empty instance of the destination Iter class
                 dest_instance = dest_cls(
                     filename=dest_file,
                     field_names=['one', 'two', 'three'],

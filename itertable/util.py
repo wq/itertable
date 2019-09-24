@@ -1,8 +1,8 @@
-from wq.io.base import BaseIO
-from wq.io.loaders import FileLoader, NetLoader, StringLoader
-from wq.io.parsers import CsvParser, JsonParser, XmlParser, ExcelParser
-from wq.io.mappers import TupleMapper
-from wq.io.exceptions import ParseFailed
+from .base import BaseIter
+from .loaders import FileLoader, NetLoader, StringLoader
+from .parsers import CsvParser, JsonParser, XmlParser, ExcelParser
+from .mappers import TupleMapper
+from .exceptions import ParseFailed
 import mimetypes
 
 PARSERS = {
@@ -15,16 +15,16 @@ PARSERS = {
 }
 
 # Save generated classes to avoid recreating them
-_io_classes = {}
+_iter_classes = {}
 
 
-def make_io(loader, parser, mapper=TupleMapper, name=None, module="wq.io"):
+def make_iter(loader, parser, mapper=TupleMapper, name=None, module="itertable"):
     """
-    Mix the specified loader, parser, and mapper classes into a usable IO
+    Mix the specified loader, parser, and mapper classes into a usable Iter
     """
     key = (loader, parser, mapper)
-    if key in _io_classes:
-        return _io_classes[key]
+    if key in _iter_classes:
+        return _iter_classes[key]
 
     if name is None:
         lname = parser.__name__.replace('Parser', '')
@@ -33,10 +33,10 @@ def make_io(loader, parser, mapper=TupleMapper, name=None, module="wq.io"):
             mname = ""
         else:
             mname = mapper.__name__.replace('Mapper', '')
-        name = lname + pname + mname + "IO"
-    cls = type(name, (loader, parser, mapper, BaseIO), {})
+        name = lname + pname + mname + "Iter"
+    cls = type(name, (loader, parser, mapper, BaseIter), {})
     cls.__module__ = module
-    _io_classes[key] = cls
+    _iter_classes[key] = cls
     return cls
 
 
@@ -60,8 +60,8 @@ def load_file(filename, mapper=TupleMapper, options={}):
         raise ParseFailed("Could not determine parser for %s" % mimetype)
     parser = PARSERS[mimetype]
     loader = FileLoader
-    IO = make_io(loader, parser, mapper)
-    return IO(filename=filename, **options)
+    Iter = make_iter(loader, parser, mapper)
+    return Iter(filename=filename, **options)
 
 
 def load_url(url, mapper=TupleMapper, options={}):
@@ -70,8 +70,8 @@ def load_url(url, mapper=TupleMapper, options={}):
         raise ParseFailed("Could not determine parser for %s" % mimetype)
     parser = PARSERS[mimetype]
     loader = NetLoader
-    IO = make_io(loader, parser, mapper)
-    return IO(url=url, **options)
+    Iter = make_iter(loader, parser, mapper)
+    return Iter(url=url, **options)
 
 
 def load_string(string, mapper=TupleMapper, options={}):
@@ -86,48 +86,48 @@ def load_string(string, mapper=TupleMapper, options={}):
         raise Exception("Could not determine parser for string!")
 
     loader = StringLoader
-    IO = make_io(loader, parser, mapper)
-    if IO.binary:
+    Iter = make_iter(loader, parser, mapper)
+    if Iter.binary:
         string = string.encode('utf-8')
-    return IO(string=string, **options)
+    return Iter(string=string, **options)
 
 
-class FlatIO(TupleMapper, BaseIO):
+class FlatIter(TupleMapper, BaseIter):
     """
-    Denormalizes a nested IO structure (e.g. an array of individual time
-    series) into a single iterable.  Each row in the top level IO should have
-    an attribute (typically 'data') pointing to an inner IO.  Both the top
-    level IO class and the inner class should extend TupleMapper.
+    Denormalizes a nested Iter structure (e.g. an array of individual time
+    series) into a single iterable.  Each row in the top level Iter should have
+    an attribute (typically 'data') pointing to an inner Iter.  Both the top
+    level Iter class and the inner class should extend TupleMapper.
     """
 
-    io_class = None
+    iter_class = None
     inner_attr = 'data'
 
     def __init__(self, *args, **kwargs):
-        self.io_class = kwargs.pop('io_class', self.io_class)
+        self.iter_class = kwargs.pop('iter_class', self.iter_class)
         self.inner_attr = kwargs.pop('inner_attr', self.inner_attr)
-        if self.io_class is None:
-            raise Exception("An IO class must be specified")
+        if self.iter_class is None:
+            raise Exception("An Iter class must be specified")
 
         # Pass remaining arguments
-        self.nested_io = self.io_class(*args, **kwargs)
-        self.data = list(self.unpack_io())
+        self.nested_iter = self.iter_class(*args, **kwargs)
+        self.data = list(self.unpack_iter())
 
-    def unpack_io(self):
-        # Loop through outer IO (e.g. metadata series)
-        for outer in self.nested_io:
+    def unpack_iter(self):
+        # Loop through outer Iter (e.g. metadata series)
+        for outer in self.nested_iter:
             meta = outer._asdict()
-            inner_io = meta.pop(self.inner_attr)
+            inner_iter = meta.pop(self.inner_attr)
 
-            # Loop through inner IO (e.g. time series) on each record
-            for inner in inner_io:
+            # Loop through inner Iter (e.g. time series) on each record
+            for inner in inner_iter:
                 record = meta.copy()
                 record.update(inner._asdict())
                 yield record
 
 
-def flattened(io_class, *args, **kwargs):
-    if io_class.nested:
-        return FlatIO(io_class=io_class, *args, **kwargs)
+def flattened(iter_class, *args, **kwargs):
+    if iter_class.nested:
+        return FlatIter(iter_class=iter_class, *args, **kwargs)
     else:
-        return io_class(*args, **kwargs)
+        return iter_class(*args, **kwargs)

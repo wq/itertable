@@ -3,7 +3,7 @@ from .readers import csv, UNICODE_CSV, SkipPreludeReader
 from xml.etree import ElementTree as ET
 
 from .base import BaseParser, TableParser
-from wq.io.exceptions import ParseFailed
+from ..exceptions import ParseFailed
 
 
 class CsvParser(TableParser):

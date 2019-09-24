@@ -1,17 +1,17 @@
-from wq.io import JsonFileIO, XmlFileIO
-from wq.io.exceptions import MappingFailed
+from itertable import JsonFileIter, XmlFileIter
+from itertable.exceptions import MappingFailed
 from .base import IoTestCase
 
 
-class CustomJsonFileIO(JsonFileIO):
+class CustomJsonFileIter(JsonFileIter):
     namespace = "data.items"
 
 
-class ExtraJsonFileIO(CustomJsonFileIO):
+class ExtraJsonFileIter(CustomJsonFileIter):
     scan_fields = True
 
 
-class CustomXmlFileIO(XmlFileIO):
+class CustomXmlFileIter(XmlFileIter):
     root_tag = "items"
     item_tag = "item"
 
@@ -19,12 +19,12 @@ class CustomXmlFileIO(XmlFileIO):
 class CustomTestCase(IoTestCase):
     def test_custom_json(self):
         filename = self.get_filename("custom", "json")
-        instance = CustomJsonFileIO(filename=filename)
+        instance = CustomJsonFileIter(filename=filename)
         self.check_instance(instance)
 
     def test_scan_fields(self):
         filename = self.get_filename("custom2", "json")
-        instance = ExtraJsonFileIO(filename=filename)
+        instance = ExtraJsonFileIter(filename=filename)
         self.check_instance(instance)
         self.assertIn("four", instance.get_field_names())
         self.assertIsNone(instance[0].four)
@@ -32,7 +32,7 @@ class CustomTestCase(IoTestCase):
 
     def test_unexpected_field(self):
         filename = self.get_filename("custom2", "json")
-        instance = CustomJsonFileIO(filename=filename)
+        instance = CustomJsonFileIter(filename=filename)
         # Extra field in non-first row breaks namedtuple
         with self.assertRaises(MappingFailed) as e:
             instance[1]
@@ -40,5 +40,5 @@ class CustomTestCase(IoTestCase):
 
     def test_custom_xml(self):
         filename = self.get_filename("custom", "xml")
-        instance = CustomXmlFileIO(filename=filename)
+        instance = CustomXmlFileIter(filename=filename)
         self.check_instance(instance)

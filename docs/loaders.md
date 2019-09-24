@@ -1,12 +1,9 @@
----
-order: 3
----
+Loaders
+=======
 
-wq.io: Loaders
-==============
-[wq.io.loaders]
+> Source: [`itertable.loaders`][itertable.loaders]
 
-[wq.io]'s `Loader` [mixin classes] facilitate loading an external resource from the local filesystem or from the web into a file-like object.  A loader is essentially just a class with `load()` and `save()` methods defined.  The canonical example is `FileLoader`, represented in its entirely below:
+[IterTables]'s `Loader` [mixin classes][custom] facilitate loading an external resource from the local filesystem or from the web into a file-like object.  A loader is essentially just a class with `load()` and `save()` methods defined.  The canonical example is `FileLoader`, represented in its entirely below:
 
 ```python
 class FileLoader(BaseLoader):
@@ -18,8 +15,8 @@ class FileLoader(BaseLoader):
         try:
             self.file = open(self.filename, self.read_mode)
             self.empty_file = False
-        except IOError:
-            self.file = StringIO()
+        except IterError:
+            self.file = StringIter()
             self.empty_file = True
 
     def save(self):
@@ -28,7 +25,7 @@ class FileLoader(BaseLoader):
         file.close()
 ```
 
-As can be seen above, every `Loader`'s `load()` method should take no arguments, instead determining what to load based on properties on the class instance.  (Remember that the [BaseIO] class provides a convenient method for setting class properties on initialization).  `load()` should set two properties on the class:
+As can be seen above, every `Loader`'s `load()` method should take no arguments, instead determining what to load based on properties on the class instance.  (Remember that the [BaseIter][base] class provides a convenient method for setting class properties on initialization).  `load()` should set two properties on the class:
 
  * `file`, a file-like object that will be accessed by the parser
  * `empty_file`, a boolean indicating that the file was empty or nonexistent (used to short-circuit avoid parser errors)
@@ -37,7 +34,7 @@ To support file output, loaders should define a `save()` method, which should pr
 
 ### Built-In Loaders
 
-There are six built-in loader classes defined in [wq.io.loaders].
+There are six built-in loader classes defined in [itertable.loaders].
 
 name | purpose
 -----|---------
@@ -54,8 +51,14 @@ name | purpose
 
 The built in loaders should be enough for many use cases.  The most common use for a custom loader is to encapsulate a number of `NetLoader` options into a reusable mixin class.  For example, the [climata library] defines a `WebserviceLoader` for this purpose.
 
-[wq.io.loaders]: https://github.com/wq/wq.io/blob/master/loaders.py
-[wq.io]: https://wq.io/wq.io
-[mixin classes]: https://wq.io/docs/custom-io
-[BaseIO]: https://wq.io/docs/base-io
+[itertable.loaders]: https://github.com/wq/itertable/blob/master/itertable/loaders.py
+
+[IterTable]: https://github.com/wq/itertable
+[custom]: https://github.com/wq/itertable/blob/master/docs/about.md
+[base]: https://github.com/wq/itertable/blob/master/docs/base.md
+[loaders]: https://github.com/wq/itertable/blob/master/docs/loaders.md
+[parsers]: https://github.com/wq/itertable/blob/master/docs/parsers.md
+[mappers]: https://github.com/wq/itertable/blob/master/docs/mappers.md
+[gis]: https://github.com/wq/itertable/blob/master/docs/gis.md
+
 [climata library]: https://github.com/heigeo/climata

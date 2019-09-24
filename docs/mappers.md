@@ -1,27 +1,24 @@
----
-order: 5 
----
+Mappers
+=======
 
-wq.io: Mappers
-==============
-[wq.io.mappers]
+> Source: [`itertable.mappers`][itertable.mappers]
 
 
-[wq.io]'s `Mapper` [mixin classes] are used to make code for working with a loaded dataset more readable.  This is accomplished by "mapping" each item in the dataset to a "usable item".  Mappers are used during iteration, after the [parser] has created the `data` object as a `list` of `dicts`.  The primary mapper class is `TupleMapper`, which converts each `dict` in the dataset into a [namedtuple] so fields can be accessed as `row.name` instead of `row['name']`.
+[IterTable]'s `Mapper` [mixin classes][custom] are used to make code for working with a loaded dataset more readable.  This is accomplished by "mapping" each item in the dataset to a "usable item".  Mappers are used during iteration, after the [parser][parsers] has created the `data` object as a `list` of `dicts`.  The primary mapper class is `TupleMapper`, which converts each `dict` in the dataset into a [namedtuple] so fields can be accessed as `row.name` instead of `row['name']`.
 
 ```python
-from wq.io import ExcelFileIO
+from itertable import ExcelFileIter
 
 # Loader and Parser do their work here
-instance = ExcelFileIO(filename='example.xls')
+instance = ExcelFileIter(filename='example.xls')
 
 # Mapper does its work here
 for row in instance:
-    print row.name, row.date
+    print(row.name, row.date)
 
 # You can also access the unmapped data directly
 for row in instance.data:
-    print row['name'], row['date']
+    print(row['name'], row['date'])
 
 ``` 
     
@@ -32,7 +29,7 @@ name | purpose
 `usable_item(row)` | Convert the source `dict` into a "usable item", e.g. a `namedtuple`.  (This is just the method name, it's not meant to imply that dicts are unusable.)
 `parse_usable_item(item)` | Convert a usable item back into the source `dict` format.  This is needed for full read+write support.
 
-wq.io's [built-in mapper classes] build on this foundation and on each other.
+IterTable's [built-in mapper classes][mappers] build on this foundation and on each other.
 
 ### BaseMapper
 `BaseMapper` breaks down `usable_item` and `parse_usable_item` into functions that work on each field individually.  All of the functions are effectively no-ops and meant to be overridden.  The usable item `BaseMapper` returns is still a `dict`.
@@ -60,8 +57,8 @@ name | purpose
 `create(**kwargs)` | Create an instance of the internal `namedtuple` class with values for each field given as keyword arguments.  This can be passed to `append()` which will update the underlying dataset as shown in the example below.
 
 ```python
-from wq.io import CsvFileIO
-instance = CsvFileIO(filename="example.csv")
+from itertable import CsvFileIter
+instance = CsvFileIter(filename="example.csv")
 # len(instance) == len(instance.data) == 2
 
 record = instance.create(name='test', value=123)
@@ -81,11 +78,16 @@ name | purpose
 `date_formats` | A list of [format strings] to use when attempting to parse dates.
 `map_floats` | Whether to attempt to map string numbers into floats (default `True`)
 
-[wq.io.mappers]: https://github.com/wq/wq.io/blob/master/mappers.py
-[wq.io]: https://wq.io/wq.io
-[mixin classes]: https://wq.io/docs/custom-io
-[parser]: https://wq.io/docs/parsers
+[itertable.mappers]: https://github.com/wq/itertable/blob/master/itertable/mappers.py
+
+[IterTable]: https://github.com/wq/itertable
+[custom]: https://github.com/wq/itertable/blob/master/docs/about.md
+[base]: https://github.com/wq/itertable/blob/master/docs/base.md
+[loaders]: https://github.com/wq/itertable/blob/master/docs/loaders.md
+[parsers]: https://github.com/wq/itertable/blob/master/docs/parsers.md
+[mappers]: https://github.com/wq/itertable/blob/master/docs/mappers.md
+[gis]: https://github.com/wq/itertable/blob/master/docs/gis.md
+
 [namedtuple]: https://docs.python.org/3/library/collections.html#collections.namedtuple
-[built-in mapper classes]: https://github.com/wq/wq.io/blob/master/mappers.py
 [datetime]: https://docs.python.org/3/library/datetime.html
 [format strings]: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior

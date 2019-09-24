@@ -4,14 +4,14 @@ except ImportError:
     BeautifulSoup = None
 
 
-class IoException(Exception):
+class IterException(Exception):
     def __str__(self):
         if self.args and self.args[0]:
             return self.args[0]
         return self.__doc__
 
 
-class LoadFailed(IoException):
+class LoadFailed(IterException):
     """Error loading data!"""
 
     def __init__(self, message, path=None, code=None):
@@ -36,16 +36,16 @@ class LoadFailed(IoException):
         return super(LoadFailed, self).__str__()
 
 
-class ParseFailed(IoException):
+class ParseFailed(IterException):
     """Error parsing data!"""
     pass
 
 
-class MappingFailed(IoException):
+class MappingFailed(IterException):
     """Error processing data!"""
     pass
 
 
-class NoData(IoException):
+class NoData(IterException):
     """No data returned!"""
     pass

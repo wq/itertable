@@ -1,20 +1,19 @@
-from wq.core import wq
-from . import load_file, load_url, flattened, JsonStringIO, CsvStringIO
-from .exceptions import IoException
+from . import load_file, load_url, flattened, JsonStringIter, CsvStringIter
+from .exceptions import IterException
 import click
 import os
 import importlib
 
 
-@wq.command()
+@click.command()
 @click.argument('source')
 @click.argument('source_options', required=False)
 @click.option('--format', '-f', default='csv', help='Output format')
 def cat(source, source_options, format):
     """
-    Display contents of a file or wq.io class.  SOURCE can be either a filename
-    or a Python path.  SOURCE_OPTIONS is an optional string specifying init
-    options in "name=value" format, separated by commas.
+    Display contents of a file or IterTable class.  SOURCE can be either a
+    filename or a Python path.  SOURCE_OPTIONS is an optional string
+    specifying init options in "name=value" format, separated by commas.
 
     The data will be printed to the terminal in CSV form, unless the format is
     set to JSON.
@@ -22,10 +21,10 @@ def cat(source, source_options, format):
     Examples:
 
     \b
-    wq cat example.json
-    wq cat example.xlsx "start_row=5"
-    wq cat http://example.com/example.csv
-    wq cat wq.io.CsvNetIO "url=http://example.com/example.csv"
+    itcat example.json
+    itcat example.xlsx "start_row=5"
+    itcat http://example.com/example.csv
+    itcat itertable.CsvNetIter "url=http://example.com/example.csv"
     """
 
     # Parse option string
@@ -40,12 +39,12 @@ def cat(source, source_options, format):
     if os.path.exists(source):
         try:
             input = load_file(source, options=options)
-        except IoException as e:
+        except IterException as e:
             raise click.ClickException(str(e))
     elif 'http' in source and '://' in source:
         try:
             input = load_url(source, options=options)
-        except IoException as e:
+        except IterException as e:
             raise click.ClickException(str(e))
     else:
         parts = source.split('.')
@@ -53,18 +52,18 @@ def cat(source, source_options, format):
         module_name = ".".join(parts[:-1])
         try:
             module = importlib.import_module(module_name)
-            IO = getattr(module, class_name)
-            input = flattened(IO, **options)
-        except (ImportError, ValueError, AttributeError, IoException) as e:
+            Iter = getattr(module, class_name)
+            input = flattened(Iter, **options)
+        except (ImportError, ValueError, AttributeError, IterException) as e:
             raise click.ClickException(str(e))
 
     if format == "json":
-        OutputIO = JsonStringIO
+        OutputIter = JsonStringIter
         init = "[]"
     else:
-        OutputIO = CsvStringIO
+        OutputIter = CsvStringIter
         init = ""
-    output = OutputIO(data=input.data, string=init)
+    output = OutputIter(data=input.data, string=init)
     output.data = input.data
     output.save()
     result = output.string

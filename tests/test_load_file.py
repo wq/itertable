@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from wq.io import load_file
-from wq.io.exceptions import NoData
+from itertable import load_file
+from itertable.exceptions import NoData
 import unittest
 from .base import IoTestCase
 import pickle

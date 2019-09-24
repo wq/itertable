@@ -1,7 +1,7 @@
 from collections import namedtuple, OrderedDict
 import re
 from datetime import datetime
-from wq.io.exceptions import NoData, MappingFailed
+from .exceptions import NoData, MappingFailed
 from unicodedata import normalize
 
 
