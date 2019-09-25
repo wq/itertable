@@ -1,6 +1,6 @@
 set -e
 if [ "$LINT" ]; then
-    flake8 *.py parsers gis tests
+    flake8 setup.py itertable tests
 else
     python setup.py test
 fi

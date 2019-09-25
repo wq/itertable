@@ -114,7 +114,10 @@ class NetLoader(StringLoader):
 
     @property
     def user_agent(self):
-        return "IterTable/%s (%s)" % (VERSION, requests.utils.default_user_agent())
+        return "IterTable/%s (%s)" % (
+            VERSION,
+            requests.utils.default_user_agent()
+        )
 
     @property
     def headers(self):

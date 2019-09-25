@@ -18,7 +18,8 @@ PARSERS = {
 _iter_classes = {}
 
 
-def make_iter(loader, parser, mapper=TupleMapper, name=None, module="itertable"):
+def make_iter(loader, parser, mapper=TupleMapper,
+              name=None, module="itertable"):
     """
     Mix the specified loader, parser, and mapper classes into a usable Iter
     """

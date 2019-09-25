@@ -66,7 +66,7 @@ __all__ = (
     'guess_type',
     'flattened',
 
-    'VERSIterN',
+    'VERSION',
 
     'CsvFileIter',
     'CsvNetIter',
