@@ -19,7 +19,7 @@ setup(
     use_scm_version=True,
     author='S. Andrew Sheppard',
     author_email='andrew@wq.io',
-    url='https://wq.io/wq.io',
+    url='https://github.com/wq/itertable',
     license='MIT',
     packages=[
         'itertable',
@@ -35,6 +35,9 @@ setup(
         'pandas': ['pandas'],
         'write': ['xlwt', 'xlsxwriter'],
     },
+    setup_requires=[
+        'setuptools_scm',
+    ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',

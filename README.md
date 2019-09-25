@@ -1,4 +1,4 @@
-IterTable is a Pythonic API for iterating through tabular data formats, including CSV, XLS, XML, and JSON.
+**IterTable** is a Pythonic API for iterating through tabular data formats, including CSV, XLS, XML, and JSON.
 
 ```python
 from itertable import load_file
@@ -17,7 +17,7 @@ for row in load_file("example.xls"):
 [![Travis Build Status](https://img.shields.io/travis/wq/itertable.svg)](https://travis-ci.org/wq/itertable)
 [![Python Support](https://img.shields.io/pypi/pyversions/itertable.svg)](https://pypi.python.org/pypi/itertable)
 
-> **Note** Prior to version 2.0, IterTable was **wq.io**, a submodule of the [wq framework].  The package has been renamed to avoid confusion with the wq framework website (<https://wq.io>).
+> **Note:** Prior to version 2.0, IterTable was **wq.io**, a submodule of the [wq framework].  The package has been renamed to avoid confusion with the wq framework website (<https://wq.io>).
 Similarly, IterTable's `*IO` classes have been renamed to `*Iter`, as the API is not intended to match that of Python's `StringIO` or other `io` classes.
 
 ```diff
