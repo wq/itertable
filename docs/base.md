@@ -88,5 +88,5 @@ Note that none of the pre-mixed Iter classes in IterTable are nested.  The [clim
 [gis]: https://github.com/wq/itertable/blob/master/docs/gis.md
 
 [Pandas DataFrame]: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html
-[Django Data Wizard]: https://github.com/django-data-wizard
+[Django Data Wizard]: https://github.com/wq/django-data-wizard
 [climata library]: https://github.com/heigeo/climata
