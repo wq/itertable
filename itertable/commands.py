@@ -21,11 +21,12 @@ def cat(source, source_options, format):
     Examples:
 
     \b
-    itcat example.json
-    itcat example.xlsx "start_row=5"
-    itcat http://example.com/example.csv
-    itcat itertable.CsvNetIter "url=http://example.com/example.csv"
-    """
+    python3 -m itertable example.json         # JSON to CSV
+    python3 -m itertable -f json example.csv  # CSV to JSON
+    python3 -m itertable example.xlsx "start_row=5"
+    python3 -m itertable http://example.com/example.csv
+    python3 -m itertable itertable.CsvNetIter "url=http://example.com/example.csv"
+    """  # noqa
 
     # Parse option string
     options = {}

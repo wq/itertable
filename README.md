@@ -108,6 +108,18 @@ for id, site in data.items():
 
 More information on IterTable's gis support is available [here][gis].
 
+### Command-Line Interface
+
+IterTable provides a simple CLI for rendering the content of a file or Iter class.  This can be useful for e.g. inspecting a file or for integrating a shell automation workflow.  The default output is CSV, but can be changed to JSON by setting `-f json`.
+
+```bash
+python3 -m itertable example.json         # JSON to CSV
+python3 -m itertable -f json example.csv  # CSV to JSON
+python3 -m itertable example.xlsx "start_row=5"
+python3 -m itertable http://example.com/example.csv
+python3 -m itertable itertable.CsvNetIter "url=http://example.com/example.csv"
+```
+
 ### Extending IterTable
 
 It is straightforward to [extend IterTable][custom] to support arbitrary formats.   Each provided class is composed of a [BaseIter][base] class and mixin classes ([loaders], [parsers], and [mappers]) that handle the various steps of the process.
