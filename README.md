@@ -14,7 +14,7 @@ for row in load_file("example.xlsx"):
 [![GitHub Forks](https://img.shields.io/github/forks/wq/itertable.svg)](https://github.com/wq/itertable/network)
 [![GitHub Issues](https://img.shields.io/github/issues/wq/itertable.svg)](https://github.com/wq/itertable/issues)
 
-[![Travis Build Status](https://img.shields.io/travis/wq/itertable.svg)](https://travis-ci.org/wq/itertable)
+[![Tests](https://github.com/wq/itertable/actions/workflows/test.yml/badge.svg)](https://github.com/wq/itertable/actions/workflows/test.yml)
 [![Python Support](https://img.shields.io/pypi/pyversions/itertable.svg)](https://pypi.python.org/pypi/itertable)
 
 > **Note:** Prior to version 2.0, IterTable was **wq.io**, a submodule of the [wq framework].  The package has been renamed to avoid confusion with the wq framework website (<https://wq.io>).
