@@ -14,6 +14,7 @@ from .parsers import (
     CsvParser,
     JsonParser,
     XmlParser,
+    OldExcelParser,
     ExcelParser,
 )
 
@@ -52,6 +53,7 @@ __all__ = (
     'JsonParser',
     'XmlParser',
     'ExcelParser',
+    'OldExcelParser',
 
     'BaseMapper',
     'DictMapper',
@@ -80,6 +82,7 @@ __all__ = (
     'XmlNetIter',
     'XmlStringIter',
 
+    'OldExcelFileIter',
     'ExcelFileIter',
 )
 
@@ -96,7 +99,9 @@ XmlFileIter = make_iter(FileLoader, XmlParser)
 XmlNetIter = make_iter(NetLoader, XmlParser)
 XmlStringIter = make_iter(StringLoader, XmlParser)
 
+OldExcelFileIter = make_iter(FileLoader, OldExcelParser)
 ExcelFileIter = make_iter(FileLoader, ExcelParser)
+OldExcelNetIter = make_iter(NetLoader, OldExcelParser)
 ExcelNetIter = make_iter(NetLoader, ExcelParser)
 
 try:

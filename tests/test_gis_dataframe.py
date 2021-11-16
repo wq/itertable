@@ -1,8 +1,8 @@
 from itertable.gis import GisIter, WktIter, ShapeIter
-from .base import IoTestCase
+from .base import IterTestCase
 
 
-class GisDataFrameTestCase(IoTestCase):
+class GisDataFrameTestCase(IterTestCase):
     def test_gisio_dataframe(self):
         self.dataframe_test(GisIter)
 

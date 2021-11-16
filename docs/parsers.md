@@ -94,7 +94,9 @@ quotechar | Quotation character for text values containing spaces or delimiters,
 reader_class() | Method returning an uninstantiated `DictReader` class for use in parsing the data.  The default method returns a subclass of `SkipPreludeReader` that passes along the `max_header_row` option.
 
 #### [ExcelParser (`WorkbookParser`)[itertable.parsers.xls]
-`ExcelParser` provides support for both "old" (.xls) and "new" (.xlsx) files via the [xlrd] module.  Write support can be enabled by installing the [xlwt] and/or [xlsxwrite] modules.  `ExcelParser` extends a somewhat more generic `WorkbookParser`, with the idea that the latter could eventually be extended to other "workbook" style formats like ODS.
+`ExcelParser` provides support for `.xlsx` files via the [openpyxl] module, while `OldExcelParser` supports `.xls` if [xlrd] and [xlwt] are installed.  `ExcelParser` and `OldExcelParser` extend a somewhat more generic `WorkbookParser`, with the idea that the latter could eventually be extended to other "workbook" style formats like ODS.
+
+> Note: In previous versions of itertable, `ExcelParser` relied on [xlrd] to support both `.xlsx` and `.xls` formats.  Now that xlrd has dropped `.xlsx` support, `ExcelParser` has been rewritten to use [openpyxl], which only supports `.xlsx` files.  The old `xlrd`-based `ExcelParser` class has been renamed to `OldExcelParser`.  (In most cases you can just use `itertable.load_file()` which automatically determines whether to use `ExcelParser` or `OldExcelParser`).
 
 ##### Properties
 name | purpose
@@ -110,7 +112,7 @@ name | purpose
 `parse_row(row)` | Convert the given row object into a dict, usually by mapping the column header to the value in each cell
 `get_value(cell)` | Retrieve the actual value from the cell.
 
-The methods listed above are called in turn by `parse()`, which is defined by `WorkbookParser`.  Working implementations of the methods are defined in `ExcelParser`.
+The methods listed above are called in turn by `parse()`, which is defined by `WorkbookParser`.  Working implementations of the methods are defined in `ExcelParser` and `OldExcelParser`.
 
 [itertable.parsers]: https://github.com/wq/itertable/blob/master/itertable/parsers/
 [itertable.parsers.base]: https://github.com/wq/itertable/blob/master/itertable/parsers/base.py
@@ -133,4 +135,4 @@ The methods listed above are called in turn by `parse()`, which is defined by `W
 [Django Data Wizard]: https://github.com/wq/django-data-wizard
 [DictReader]: https://docs.python.org/3/library/csv.html#csv.DictReader
 [xlwt]: http://www.python-excel.org/
-[xlsxwrite]: https://xlsxwriter.readthedocs.org/
+[openpyxl]: https://openpyxl.readthedocs.io/en/stable/

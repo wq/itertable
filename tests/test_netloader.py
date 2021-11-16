@@ -2,14 +2,14 @@ import httpretty
 from itertable import CsvNetIter, load_url
 from itertable.exceptions import LoadFailed
 import pickle
-from .base import IoTestCase
+from .base import IterTestCase
 
 
 class TestIter(CsvNetIter):
     url = "http://example.com/test.csv"
 
 
-class NetLoaderTestCase(IoTestCase):
+class NetLoaderTestCase(IterTestCase):
     def setUp(self):
         httpretty.enable()
 

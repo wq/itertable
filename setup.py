@@ -29,11 +29,11 @@ setup(
     description=LONG_DESCRIPTION.strip(),
     long_description=readme(),
     long_description_content_type='text/markdown',
-    install_requires=['requests', 'xlrd', 'click'],
+    install_requires=['requests', 'openpyxl', 'click'],
     extras_require={
         'gis': ['Fiona', 'geopandas'],
         'pandas': ['pandas'],
-        'write': ['xlwt', 'xlsxwriter'],
+        'oldexcel': ['xlrd', 'xlwt'],
     },
     setup_requires=[
         'setuptools_scm',
@@ -54,6 +54,6 @@ setup(
         'Topic :: Utilities',
     ],
     tests_require=['httpretty', 'beautifulsoup4', 'Shapely', 'Fiona',
-                   'xlwt', 'xlsxwriter', 'pandas', 'geopandas'],
+                   'xlrd', 'xlwt', 'pandas', 'geopandas'],
     test_suite='tests',
 )

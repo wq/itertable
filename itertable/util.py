@@ -1,12 +1,14 @@
 from .base import BaseIter
 from .loaders import FileLoader, NetLoader, StringLoader
-from .parsers import CsvParser, JsonParser, XmlParser, ExcelParser
+from .parsers import (
+    CsvParser, JsonParser, XmlParser, ExcelParser, OldExcelParser
+)
 from .mappers import TupleMapper
 from .exceptions import ParseFailed
 import mimetypes
 
 PARSERS = {
-    'application/vnd.ms-excel': ExcelParser,
+    'application/vnd.ms-excel': OldExcelParser,
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
     ExcelParser,
     'text/csv': CsvParser,

@@ -1,9 +1,11 @@
 from itertable import load_file
-from itertable import CsvFileIter, JsonFileIter, XmlFileIter, ExcelFileIter
-from .base import IoTestCase
+from itertable import (
+    CsvFileIter, JsonFileIter, XmlFileIter, OldExcelFileIter, ExcelFileIter
+)
+from .base import IterTestCase
 
 
-class LoadFileTestCase(IoTestCase):
+class LoadFileTestCase(IterTestCase):
     def setUp(self):
         self.data = [{
             'one': 1,
@@ -19,7 +21,7 @@ class LoadFileTestCase(IoTestCase):
             CsvFileIter,
             JsonFileIter,
             XmlFileIter,
-            ExcelFileIter,
+            OldExcelFileIter,
             ExcelFileIter,
         )
 

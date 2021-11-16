@@ -1,4 +1,3 @@
-import xlrd
 import datetime
 import math
 from .base import TableParser
@@ -92,7 +91,9 @@ class WorkbookParser(TableParser):
         raise NotImplementedError
 
     def parse_row(self, row):
-        raise NotImplementedError
+        return {name: self.get_value(row[i])
+                for i, name in enumerate(self.get_field_names())
+                if i < len(row)}
 
     def get_value(self, cell):
         raise NotImplementedError
@@ -108,9 +109,29 @@ class WorkbookParser(TableParser):
                 write(r + 1, c, row[field])
         close()
 
+    def calc_width(self, val):
+        val = str(val) if val is not None else ""
+        size = 0
+        for c in val:
+            if c in ".,;:'\"iIlt1":
+                size += 0.5
+            elif c in 'MW':
+                size += 1.3
+            elif c.isupper():
+                size += 1.2
+            elif c.islower():
+                size += 1
+            else:
+                size += 1.1
+        return size * 1.4
 
-class ExcelParser(WorkbookParser):
+
+class OldExcelParser(WorkbookParser):
     def parse_workbook(self):
+        try:
+            import xlrd
+        except ImportError:
+            raise Exception("xlrd is required to load .xls files")
         self.workbook = xlrd.open_workbook(file_contents=self.file.read())
 
     @property
@@ -124,12 +145,8 @@ class ExcelParser(WorkbookParser):
         worksheet = self.get_sheet_by_name(name)
         self.worksheet = [worksheet.row(i) for i in range(worksheet.nrows)]
 
-    def parse_row(self, row):
-        return {name: self.get_value(row[i])
-                for i, name in enumerate(self.get_field_names())
-                if i < len(row)}
-
     def get_value(self, cell):
+        import xlrd
         if cell.ctype == xlrd.XL_CELL_DATE:
             time, date = math.modf(cell.value)
             tpl = xlrd.xldate_as_tuple(cell.value, self.workbook.datemode)
@@ -158,12 +175,6 @@ class ExcelParser(WorkbookParser):
         return size
 
     def open_worksheet(self, file):
-        if getattr(self, 'filename', '').endswith('.xls'):
-            return self._open_xls_worksheet(file)
-        else:
-            return self._open_xlsx_worksheet(file)
-
-    def _open_xls_worksheet(self, file):
         import xlwt
         workbook = xlwt.Workbook()
         worksheet = workbook.add_sheet('Sheet 1')
@@ -203,43 +214,71 @@ class ExcelParser(WorkbookParser):
 
         return write, close
 
-    def _open_xlsx_worksheet(self, file):
-        import xlsxwriter
-        workbook = xlsxwriter.Workbook(file)
-        worksheet = workbook.add_worksheet()
+
+class ExcelParser(WorkbookParser):
+    def parse_workbook(self):
+        import openpyxl
+        self.workbook = openpyxl.open(self.file, data_only=True)
+
+    @property
+    def sheet_names(self):
+        return self.workbook.sheetnames
+
+    def get_sheet_by_name(self, name):
+        return self.workbook[name]
+
+    def parse_worksheet(self, name):
+        worksheet = self.get_sheet_by_name(name)
+        self.worksheet = [row for row in worksheet.rows]
+
+    def get_value(self, cell):
+        value = cell.internal_value
+        if isinstance(value, datetime.datetime):
+            if value.time() == datetime.time(0, 0):
+                return value.date()
+        return value
+
+    def open_worksheet(self, file):
+        from openpyxl import Workbook, styles, utils
+        workbook = Workbook()
+        worksheet = workbook.active
 
         formats = {
-            datetime.date: workbook.add_format({
-                'num_format': self.date_format,
-            }),
-            datetime.time: workbook.add_format({
-                'num_format': self.time_format,
-            }),
-            datetime.datetime: workbook.add_format({
-                'num_format': self.datetime_format,
-            }),
-            'header': workbook.add_format({
-                'bold': True,
-                'bottom': 2,
-            }),
+            datetime.date: styles.NamedStyle(
+                name='date',
+                number_format=self.date_format,
+            ),
+            datetime.time: styles.NamedStyle(
+                name='time',
+                number_format=self.time_format,
+            ),
+            datetime.datetime: styles.NamedStyle(
+                name='datetime',
+                number_format=self.datetime_format,
+            ),
+            'header': styles.NamedStyle(
+                name='header',
+                font=styles.Font(bold=True),
+                border=styles.Border(bottom=styles.Side(style='thick'))
+            ),
         }
         widths = {}
 
         def write(r, c, val):
             widths.setdefault(c, 0)
             widths[c] = max(widths[c], self.calc_width(val))
+            cell = worksheet.cell(r + 1, c + 1, val)
 
             fmt = formats.get(type(val))
             if fmt:
-                worksheet.write_datetime(r, c, val, fmt)
+                cell.style = fmt
             elif r == 0:
-                worksheet.write(r, c, val, formats['header'])
-            else:
-                worksheet.write(r, c, val)
+                cell.style = formats['header']
 
         def close():
             for c, width in widths.items():
-                worksheet.set_column(c, c, width)
-            workbook.close()
+                col = utils.get_column_letter(c + 1)
+                worksheet.column_dimensions[col].width = width
+            workbook.save(self.filename)
 
         return write, close

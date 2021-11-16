@@ -3,7 +3,7 @@
 ```python
 from itertable import load_file
 
-for row in load_file("example.xls"):
+for row in load_file("example.xlsx"):
     print(row.date, row.name)
 ```
 
@@ -39,9 +39,9 @@ python3 -m pip install itertable
 # GIS support (Fiona & Shapely)
 python3 -m pip install itertable[gis]
 
-# Excel write support
-python3 -m pip install itertable[write]
-# (xls/xlsx read support is enabled by default)
+# Excel 97-2003 (.xls) support
+python3 -m pip install itertable[oldexcel]
+# (xlsx support is enabled by default)
 
 # Pandas integration
 python3 -m pip install itertable[pandas]
@@ -49,11 +49,11 @@ python3 -m pip install itertable[pandas]
 
 ## Overview
 
-IterTable provides a general purpose API for loading, iterating over, and writing tabular datasets.  The goal is to avoid needing to remember the unique usage of e.g. [csv], [xlrd], or [xml.etree] every time one needs to work with external data.  Instead, IterTable abstracts these libraries into a consistent interface that works as an [iterable] of [namedtuples].  Whenever possible, the field names for a dataset are automatically determined from the source file, e.g. the column headers in an Excel spreadsheet.
+IterTable provides a general purpose API for loading, iterating over, and writing tabular datasets.  The goal is to avoid needing to remember the unique usage of e.g. [csv], [openpyxl], or [xml.etree] every time one needs to work with external data.  Instead, IterTable abstracts these libraries into a consistent interface that works as an [iterable] of [namedtuples].  Whenever possible, the field names for a dataset are automatically determined from the source file, e.g. the column headers in an Excel spreadsheet.
 
 ```python
 from itertable import ExcelFileIter
-data = ExcelFileIter(filename='example.xls')
+data = ExcelFileIter(filename='example.xlsx')
 for row in data:
     print(row.name, row.date)
 ```
@@ -67,7 +67,7 @@ for row in data:
     print(row.name, row.date)
 ```
 
-All of the included `*FileIter` classes support both reading and writing to external files, though write support for Excel files requires `itertable[write]` (which installs `xlwt` and `xlswriter`).
+All of the included `*FileIter` classes support both reading and writing to external files.
 
 ### Network Client
 
@@ -126,13 +126,11 @@ It is straightforward to [extend IterTable][custom] to support arbitrary formats
 
 [wq framework]: https://wq.io/
 [csv]: https://docs.python.org/3/library/csv.html
-[xlrd]: http://www.python-excel.org/
+[openpyxl]: https://openpyxl.readthedocs.io/en/stable/
 [xml.etree]: https://docs.python.org/3/library/xml.etree.elementtree.html
 [iterable]: https://docs.python.org/3/glossary.html#term-iterable
 [namedtuples]: https://docs.python.org/3/library/collections.html#collections.namedtuple
 [requests]: http://python-requests.org/
-[xlwt]: http://www.python-excel.org/
-[xlsxwriter]: https://xlsxwriter.readthedocs.org/
 [Pandas]: http://pandas.pydata.org/
 [DataFrame]: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html
 [Fiona]: https://github.com/Toblerity/Fiona

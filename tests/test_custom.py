@@ -1,6 +1,6 @@
 from itertable import JsonFileIter, XmlFileIter
 from itertable.exceptions import MappingFailed
-from .base import IoTestCase
+from .base import IterTestCase
 
 
 class CustomJsonFileIter(JsonFileIter):
@@ -16,7 +16,7 @@ class CustomXmlFileIter(XmlFileIter):
     item_tag = "item"
 
 
-class CustomTestCase(IoTestCase):
+class CustomTestCase(IterTestCase):
     def test_custom_json(self):
         filename = self.get_filename("custom", "json")
         instance = CustomJsonFileIter(filename=filename)

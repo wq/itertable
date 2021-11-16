@@ -88,13 +88,9 @@ class TupleMapper(DictMapper):
     def tuple_field_name(self, field):
         field = self.clean_field_name(field)
         field = re.sub(r'\W', '', field.lower())
-        try:
-            # normalize identifiers for consistency with namedtuple
-            # http://bugs.python.org/issue23091
-            field = normalize('NFKC', field)
-        except TypeError:
-            # normalize doesn't work on Python 2 str() instances
-            pass
+        # normalize identifiers for consistency with namedtuple
+        # http://bugs.python.org/issue23091
+        field = normalize('NFKC', field)
         return field
 
     def clean_field_name(self, field):

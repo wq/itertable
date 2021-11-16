@@ -3,14 +3,14 @@
 from itertable import load_file
 from itertable.exceptions import NoData
 import unittest
-from .base import IoTestCase
+from .base import IterTestCase
 import pickle
 
 import sys
 PY3 = sys.version_info[0] >= 3
 
 
-class LoadFileTestCase(IoTestCase):
+class LoadFileTestCase(IterTestCase):
     def setUp(self):
         self.types = ('csv', 'json', 'xml', 'xls', 'xlsx')
 

@@ -1,8 +1,8 @@
 from itertable import load_string, BaseIter
-from .base import IoTestCase
+from .base import IterTestCase
 
 
-class LoadFileTestCase(IoTestCase):
+class LoadFileTestCase(IterTestCase):
     def setUp(self):
         self.csv_data = "one,two,three\n1,2,3\n4,5,6"
 
@@ -22,7 +22,7 @@ class LoadFileTestCase(IoTestCase):
         df = io.as_dataframe()
         self.assertEqual(len(df), 2)
 
-        val = df.ix[4].three
+        val = df.loc[4].three
         self.assertEqual(val, 6)
 
     def test_csv_dataframe(self):

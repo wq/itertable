@@ -1,5 +1,5 @@
 from itertable import ExcelFileIter
-from .base import IoTestCase
+from .base import IterTestCase
 from datetime import date
 
 
@@ -7,9 +7,9 @@ class ExtraDataIter(ExcelFileIter):
     start_row = 5
 
 
-class LoadFileTestCase(IoTestCase):
+class LoadFileTestCase(IterTestCase):
     def test_extra_data(self):
-        filename = self.get_filename("extra", "xls")
+        filename = self.get_filename("extra", "xlsx")
         instance = ExtraDataIter(filename=filename)
         self.check_instance(instance)
 
@@ -21,9 +21,9 @@ class LoadFileTestCase(IoTestCase):
         self.assertEqual(instance.extra_data[0][4], date(2014, 12, 12))
 
     def test_no_extra_data(self):
-        filename = self.get_filename("extra", "xls")
+        filename = self.get_filename("extra", "xlsx")
         ExtraDataIter(filename=filename)
-        filename = self.get_filename("noextra", "xls")
+        filename = self.get_filename("noextra", "xlsx")
         instance = ExtraDataIter(filename=filename)
         self.check_instance(instance)
         self.assertFalse(instance.extra_data)

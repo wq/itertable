@@ -1,21 +1,7 @@
-try:
-    import unicodecsv as csv
-    UNICODE_CSV = True
-except ImportError:
-    import csv
-    UNICODE_CSV = False
+import csv
 
 
-if issubclass(csv.DictReader, object):
-    # Python 3
-    DictReader = csv.DictReader
-else:
-    # Python 2
-    class DictReader(object, csv.DictReader):
-        pass
-
-
-class SkipPreludeReader(DictReader):
+class SkipPreludeReader(csv.DictReader):
     """
     A specialized version of DictReader that attempts to find where the "real"
     CSV data is in a file that may contain a prelude of non-CSV text.
@@ -32,8 +18,9 @@ class SkipPreludeReader(DictReader):
         readeropts = [f, dialect]
         readeropts.extend(args)
         self._readeropts = (readeropts, kwds)
-        csv.DictReader.__init__(self, f, fieldnames, restkey, restval,
-                                dialect, *args, **kwds)
+        super().__init__(
+            f, fieldnames, restkey, restval, dialect, *args, **kwds
+        )
 
     @property
     def fieldnames(self):

@@ -1,12 +1,6 @@
 from __future__ import print_function
 import requests
-try:
-    # Python 2 (uses str)
-    from StringIO import StringIO
-except ImportError:
-    # Python 3 (Python 2 equivalent uses unicode)
-    from io import StringIO
-from io import BytesIO
+from io import StringIO, BytesIO
 from .version import VERSION
 from .exceptions import LoadFailed
 from zipfile import ZipFile

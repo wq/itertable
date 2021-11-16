@@ -1,5 +1,6 @@
+import csv
 import json
-from .readers import csv, UNICODE_CSV, SkipPreludeReader
+from .readers import SkipPreludeReader
 from xml.etree import ElementTree as ET
 
 from .base import BaseParser, TableParser
@@ -10,7 +11,7 @@ class CsvParser(TableParser):
     delimiter = ","
     quotechar = '"'
     no_pickle_parser = ['csvdata']
-    binary = UNICODE_CSV
+    binary = False
 
     def parse(self):
         # Like DictReader, assume explicit field definition means CSV does not
@@ -48,11 +49,12 @@ class CsvParser(TableParser):
     def dump(self, file=None):
         if file is None:
             file = self.file
-        args = file, self.get_field_names()
-        kwargs = {'encoding': 'utf-8'} if UNICODE_CSV else {}
-        kwargs['delimiter'] = self.delimiter
-        kwargs['quotechar'] = self.quotechar
-        csvout = csv.DictWriter(*args, **kwargs)
+        csvout = csv.DictWriter(
+            file,
+            self.get_field_names(),
+            delimiter=self.delimiter,
+            quotechar=self.quotechar
+        )
         csvout.writeheader()
         for row in self.data:
             csvout.writerow(row)

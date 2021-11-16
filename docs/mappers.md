@@ -10,7 +10,7 @@ Mappers
 from itertable import ExcelFileIter
 
 # Loader and Parser do their work here
-instance = ExcelFileIter(filename='example.xls')
+instance = ExcelFileIter(filename='example.xlsx')
 
 # Mapper does its work here
 for row in instance:

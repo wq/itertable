@@ -3,7 +3,7 @@ from os import unlink
 import unittest
 
 
-class IoTestCase(unittest.TestCase):
+class IterTestCase(unittest.TestCase):
     data = [{
         'one': 1,
         'two': 2,

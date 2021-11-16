@@ -1,10 +1,10 @@
 from itertable.gis import ShapeIter
 from shapely.geometry import Point
-from .base import IoTestCase
+from .base import IterTestCase
 from os import unlink
 
 
-class GisTestCase(IoTestCase):
+class GisTestCase(IterTestCase):
     def setUp(self):
         self.points = [
             Point(-93.278, 44.976),
