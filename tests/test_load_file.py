@@ -1,13 +1,7 @@
-# coding=utf-8
-
 from itertable import load_file
 from itertable.exceptions import NoData
-import unittest
 from .base import IterTestCase
 import pickle
-
-import sys
-PY3 = sys.version_info[0] >= 3
 
 
 class LoadFileTestCase(IterTestCase):
@@ -25,15 +19,19 @@ class LoadFileTestCase(IterTestCase):
         instance = load_file(filename)
         self.check_instance(instance)
 
-    @unittest.skipUnless(PY3, "requires Python 3")
     def test_load_csv_unicode(self):
         filename = self.get_filename("test3", "csv")
         instance = load_file(filename)
         self.check_instance(instance)
         self.assertTrue(hasattr(instance[0], "μ"))
+        self.assertEqual(instance[0].μ, "test")
 
-        # Use getattr to avoid Python 2 compile error
-        self.assertEqual(getattr(instance[0], "μ"), "test")
+    def test_load_xlsx_sheets(self):
+        filename = self.get_filename("test", "xlsx")
+        instance = load_file(filename, options={'sheet_name': None})
+        self.assertEqual(len(instance), 1)
+        self.assertEqual(instance[0].name, 'Sheet1')
+        self.check_instance(instance[0].data)
 
     def test_load_nodata(self):
         filename = self.get_filename("nodata", "csv")

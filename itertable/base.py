@@ -7,19 +7,29 @@ class BaseIter(MutableMapping, MutableSequence):
     tabular = False
     nested = False
     binary = False
+    loaded = False
+    parsed = False
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.refresh()
 
     def refresh(self):
-        self.load()
+        if not self.loaded:
+            self.load()
+            self.loaded = True
+
+        if self.parsed:
+            return
+
         if getattr(self, 'empty_file', False):
             self.data = []
         else:
             self.parse()
             if hasattr(self, 'file') and not self.file.closed:
                 self.file.close()
+
+        self.parsed = True
 
     def load(self):
         "Open a resource (defined by loader mixins)"

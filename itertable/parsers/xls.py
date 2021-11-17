@@ -17,10 +17,19 @@ class WorkbookParser(TableParser):
     datetime_format = 'yyyy-mm-dd hh:mm:ss'
 
     def parse(self):
-        self.parse_workbook()
+        if not self.workbook:
+            self.parse_workbook()
+
         if self.sheet_name is None:
-            self.data = [{'name': name, 'data': self.get_sheet_by_name(name)}
-                         for name in self.sheet_names]
+            SpreadsheetIter = type(self)
+            self.data = [{
+                'name': name,
+                'data': SpreadsheetIter(
+                    loaded=True,
+                    workbook=self.workbook,
+                    sheet_name=name,
+                )
+            } for name in self.sheet_names]
             return
 
         sheet_name = self.sheet_name
