@@ -1,5 +1,5 @@
 from itertable import load_file
-from itertable.exceptions import NoData
+from itertable.exceptions import LoadFailed, NoData
 from .base import IterTestCase
 import pickle
 
@@ -36,6 +36,19 @@ class LoadFileTestCase(IterTestCase):
     def test_load_nodata(self):
         filename = self.get_filename("nodata", "csv")
         instance = load_file(filename)
+        with self.assertRaises(NoData) as cm:
+            instance[0]
+        self.assertEqual(str(cm.exception), "No data returned!")
+
+    def test_load_non_existing(self):
+        filename = self.get_filename("nonexisting", "csv")
+        with self.assertRaises(LoadFailed) as cm:
+            load_file(filename)
+        self.assertEqual(str(cm.exception), "No such file or directory")
+
+    def test_load_init_empty(self):
+        filename = self.get_filename("nonexisting", "csv")
+        instance = load_file(filename, options={'require_existing': False})
         with self.assertRaises(NoData) as cm:
             instance[0]
         self.assertEqual(str(cm.exception), "No data returned!")

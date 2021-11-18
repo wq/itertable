@@ -16,6 +16,7 @@ class BaseLoader(object):
 
 class FileLoader(BaseLoader):
     filename = None
+    require_existing = True
 
     @property
     def read_mode(self):
@@ -29,8 +30,14 @@ class FileLoader(BaseLoader):
         try:
             self.file = open(self.filename, self.read_mode)
             self.empty_file = False
-        except IOError:
-            if self.binary:
+        except OSError as e:
+            if self.require_existing:
+                raise LoadFailed(
+                    e.strerror,
+                    path=self.filename,
+                    code=e.errno,
+                )
+            elif self.binary:
                 self.file = BytesIO()
             else:
                 self.file = StringIO()

@@ -24,7 +24,9 @@ class GisTestCase(IterTestCase):
                 source_file = self.get_filename("test", source_ext)
                 dest_file = self.get_filename("sync", dest_ext, True)
                 source_instance = ShapeIter(filename=source_file)
-                dest_instance = ShapeIter(filename=dest_file)
+                dest_instance = ShapeIter(
+                    filename=dest_file, require_existing=False
+                )
                 source_instance.sync(dest_instance)
                 self.check_instance(ShapeIter(filename=dest_file))
 

@@ -1,6 +1,7 @@
 import fiona
 from shapely import wkt, geometry
 from ..loaders import FileLoader
+from ..exceptions import LoadFailed
 from ..parsers.base import BaseParser
 from ..mappers import TupleMapper
 
@@ -16,7 +17,22 @@ class FionaLoaderParser(FileLoader, BaseParser):
     def load(self):
         try:
             self.layers = fiona.listlayers(self.filename)
-        except (ValueError, IOError):
+        except OSError as e:
+            if self.require_existing:
+                raise LoadFailed(
+                    e.strerror,
+                    path=self.filename,
+                    code=e.errno,
+                )
+            else:
+                self.empty_file = True
+        except ValueError as e:
+            if self.require_existing:
+                raise LoadFailed(str(e))
+            else:
+                self.empty_file = True
+
+        if self.empty_file:
             driver = guess_driver(self.filename)
             self.meta = {'driver': driver}
             self.empty_file = True

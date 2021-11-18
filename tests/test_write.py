@@ -35,6 +35,7 @@ class LoadFileTestCase(IterTestCase):
             # Create an empty instance of the class
             instance = cls(
                 filename=filename,
+                require_existing=False,
                 field_names=['one', 'two', 'three'],
 
                 # These only apply to XmlFileIter, will be ignored by others
@@ -72,6 +73,7 @@ class LoadFileTestCase(IterTestCase):
                 # Create empty instance of the destination Iter class
                 dest_instance = dest_cls(
                     filename=dest_file,
+                    require_existing=False,
                     field_names=['one', 'two', 'three'],
                     root_tag="root",
                     item_tag="item",
