@@ -18,7 +18,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 httpretty beautifulsoup4
+        python -m pip install flake8 wheel httpretty beautifulsoup4
         python -m pip install requests openpyxl click
         python -m pip install Shapely Fiona pandas geopandas xlrd xlwt
     - name: Lint with flake8
