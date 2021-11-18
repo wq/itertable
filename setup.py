@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 LONG_DESCRIPTION = """
-Iterable API for tabular datasets including CSV, XLS, XML, & JSON.
+Iterable API for tabular datasets including CSV, XLSX, XML, & JSON.
 """
 
 

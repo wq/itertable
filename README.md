@@ -1,4 +1,4 @@
-**IterTable** is a Pythonic API for iterating through tabular data formats, including CSV, XLS, XML, and JSON.
+**IterTable** is a Pythonic API for iterating through tabular data formats, including CSV, XLSX, XML, and JSON.
 
 ```python
 from itertable import load_file
