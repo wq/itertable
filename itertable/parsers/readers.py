@@ -39,7 +39,8 @@ class SkipPreludeReader(csv.DictReader):
         header_row, field_names = self.choose_header(rows)
 
         # Reset file and advance reader so it starts in the right spot
-        self._file.seek(0)
+        if hasattr(self._file, 'seek'):
+            self._file.seek(0)
         for i in range(header_row + 1):
             try:
                 next(self.reader)

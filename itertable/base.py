@@ -26,8 +26,10 @@ class BaseIter(MutableMapping, MutableSequence):
             self.data = []
         else:
             self.parse()
-            if hasattr(self, 'file') and not self.file.closed:
-                self.file.close()
+            if hasattr(self, 'file'):
+                f = self.file
+                if hasattr(f, 'close') and not getattr(f, 'closed', False):
+                    f.close()
 
         self.parsed = True
 

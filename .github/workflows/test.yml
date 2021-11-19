@@ -4,11 +4,15 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: Python ${{ matrix.python-version }}
+    name: Python ${{ matrix.python-version }}, ${{ matrix.variant }}
     runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.9, 3.8, 3.7]
+        variant: [no-magic]
+        include:
+          - python-version: 3.9
+            variant: magic
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -21,6 +25,9 @@ jobs:
         python -m pip install flake8 wheel httpretty beautifulsoup4
         python -m pip install requests openpyxl click
         python -m pip install Shapely Fiona pandas geopandas xlrd xlwt
+    - name: Install python-magic
+      if: ${{ matrix.variant == 'magic' }}
+      run: python -m pip install python-magic
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

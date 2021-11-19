@@ -9,11 +9,14 @@ import mimetypes
 
 PARSERS = {
     'application/vnd.ms-excel': OldExcelParser,
+    'application/CDFV2': OldExcelParser,
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
     ExcelParser,
+    'application/octet-stream': ExcelParser,
     'text/csv': CsvParser,
     'application/json': JsonParser,
     'application/xml': XmlParser,
+    'text/xml': XmlParser,
 }
 
 # Save generated classes to avoid recreating them
@@ -50,6 +53,13 @@ def guess_type(filename, buffer=None):
             import magic
             if buffer:
                 mimetype = magic.from_buffer(buffer, mime=True)
+                if mimetype == 'text/plain':
+                    if buffer.startswith('{') or buffer.startswith('['):
+                        mimetype = "application/json"
+                    elif buffer.startswith('<'):
+                        mimetype = "application/xml"
+                    elif ',' in buffer:
+                        mimetype = "text/csv"
             else:
                 mimetype = magic.from_file(filename, mime=True)
         except ImportError:
@@ -57,8 +67,22 @@ def guess_type(filename, buffer=None):
     return mimetype
 
 
-def load_file(filename, mapper=TupleMapper, options={}):
-    mimetype = guess_type(filename)
+def load_file(filename, mapper=TupleMapper, options=None):
+    if options is None:
+        options = {}
+
+    if isinstance(filename, str):
+        mimetype = guess_type(filename)
+    else:
+        file = filename
+        assert hasattr(file, 'read'), "Use load_file() with path or file obj"
+        buffer = file.read(2048)
+        if hasattr(file, 'seek'):
+            file.seek(0)
+        filename = getattr(file, 'name', '__unknown__')
+        options.update(file=file, loaded=True)
+        mimetype = guess_type(filename, buffer=buffer)
+
     if mimetype not in PARSERS:
         raise ParseFailed("Could not determine parser for %s" % mimetype)
     parser = PARSERS[mimetype]
