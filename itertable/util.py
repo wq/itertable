@@ -14,6 +14,7 @@ PARSERS = {
     ExcelParser,
     'application/octet-stream': ExcelParser,
     'text/csv': CsvParser,
+    'application/csv': CsvParser,
     'application/json': JsonParser,
     'application/xml': XmlParser,
     'text/xml': XmlParser,
