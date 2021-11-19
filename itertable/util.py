@@ -6,6 +6,7 @@ from .parsers import (
 from .mappers import TupleMapper
 from .exceptions import ParseFailed
 import mimetypes
+import io
 
 PARSERS = {
     'application/vnd.ms-excel': OldExcelParser,
@@ -19,6 +20,9 @@ PARSERS = {
     'application/xml': XmlParser,
     'text/xml': XmlParser,
 }
+
+BINARY_TYPES = set(key for key, cls in PARSERS.items() if cls.binary)
+TEXT_TYPES = set(key for key, cls in PARSERS.items() if not cls.binary)
 
 # Save generated classes to avoid recreating them
 _iter_classes = {}
@@ -81,8 +85,14 @@ def load_file(filename, mapper=TupleMapper, options=None):
         if hasattr(file, 'seek'):
             file.seek(0)
         filename = getattr(file, 'name', '__unknown__')
-        options.update(file=file, loaded=True)
         mimetype = guess_type(filename, buffer=buffer)
+
+        if mimetype in TEXT_TYPES and getattr(file, 'mode', None) == 'rb':
+            bfile = file
+            file = io.StringIO(bfile.read().decode())
+            bfile.close()
+
+        options.update(file=file, loaded=True)
 
     if mimetype not in PARSERS:
         raise ParseFailed("Could not determine parser for %s" % mimetype)

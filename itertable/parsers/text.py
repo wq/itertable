@@ -63,6 +63,7 @@ class CsvParser(TableParser):
 class JsonParser(BaseParser):
     indent = None
     namespace = None
+    binary = False
 
     def parse(self):
         try:
@@ -93,6 +94,7 @@ class JsonParser(BaseParser):
 class XmlParser(BaseParser):
     root_tag = None
     item_tag = None
+    binary = False
 
     def parse(self):
         doc = ET.parse(self.file)

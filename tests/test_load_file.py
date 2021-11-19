@@ -32,6 +32,13 @@ class LoadFileTestCase(IterTestCase):
                 instance = load_file(f)
             self.check_instance(instance)
 
+    def test_load_file_object_binary(self):
+        for ext in self.types:
+            filename = self.get_filename("test", ext)
+            with open(filename, 'rb') as f:
+                instance = load_file(f)
+            self.check_instance(instance)
+
     @unittest.skipUnless(magic, "magic required for buffer-based detection")
     def test_load_file_object_no_name(self):
         for ext in self.types:
