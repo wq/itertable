@@ -99,6 +99,23 @@ class LoadFileTestCase(IterTestCase):
             instance[0]
         self.assertEqual(str(cm.exception), "No data returned!")
 
+    def test_load_nodata_excel(self):
+        filename = self.get_filename("nodata", "xlsx")
+        instance = load_file(filename)
+        with self.assertRaises(NoData) as cm:
+            instance[0]
+        self.assertEqual(str(cm.exception), "No data returned!")
+
+    def test_load_nodata_excel_sheets(self):
+        filename = self.get_filename("nodata", "xlsx")
+        instance = load_file(filename, options={'sheet_name': None})
+        self.assertEqual(len(instance), 1)
+        self.assertEqual(instance[0].name, 'Sheet1')
+        sheet = instance[0].data
+        with self.assertRaises(NoData) as cm:
+            sheet[0]
+        self.assertEqual(str(cm.exception), "No data returned!")
+
     def test_load_non_existing(self):
         filename = self.get_filename("nonexisting", "csv")
         with self.assertRaises(LoadFailed) as cm:

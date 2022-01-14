@@ -56,6 +56,9 @@ class WorkbookParser(TableParser):
                         self.column_count = count
                         self.header_row = row
 
+        if self.header_row is None:
+            return
+
         if self.start_row is None:
             self.start_row = self.header_row + 1
 

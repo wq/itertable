@@ -87,7 +87,7 @@ def load_file(filename, mapper=TupleMapper, options=None):
         filename = getattr(file, 'name', '__unknown__')
         mimetype = guess_type(filename, buffer=buffer)
 
-        if mimetype in TEXT_TYPES and getattr(file, 'mode', None) == 'rb':
+        if mimetype in TEXT_TYPES and isinstance(buffer, bytes):
             bfile = file
             file = io.StringIO(bfile.read().decode())
             bfile.close()
