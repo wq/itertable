@@ -1,4 +1,4 @@
-from collections import MutableMapping, MutableSequence
+from collections.abc import MutableMapping, MutableSequence
 
 
 class BaseIter(MutableMapping, MutableSequence):
