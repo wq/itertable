@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+
+[project]
+name = "itertable"
+dynamic = ["version"]
+authors = [
+    {name = "S. Andrew Sheppard", email = "andrew@wq.io"},
+]
+description = "Iterable API for tabular datasets including CSV, XLSX, XML, & JSON."
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Text Processing :: Markup :: XML",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "requests",
+    "openpyxl",
+    "click"
+]
+
+[project.urls]
+Homepage = "https://django-data-wizard.wq.io/itertable/"
+Documentation = "https://django-data-wizard.wq.io/itertable/"
+Source = "https://github.com/wq/itertable/"
+"Release Notes" = "https://github.com/wq/itertable/releases"
+Issues = "https://github.com/wq/itertable/issues"
+CI = "https://github.com/wq/itertable/actions/workflows/test.yml"
+
+[project.optional-dependencies]
+gis = ["Fiona", "geopandas"]
+pandas = ["pandas"]
+oldexel = ["xlrd", "xlwt"]
+
+[tool.setuptools]
+packages = ["itertable", "itertable.parsers", "itertable.gis"]
+
+[tool.setuptools_scm]
+write_to = "itertable/version.py"

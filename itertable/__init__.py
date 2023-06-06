@@ -35,7 +35,10 @@ from .util import (
     flattened
 )
 
-from .version import VERSION
+try:
+    from .version import __version__ as VERSION
+except ImportError:
+    VERSION = "0.0.0"
 
 
 __all__ = (

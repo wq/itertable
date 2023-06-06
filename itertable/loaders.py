@@ -1,9 +1,13 @@
 from __future__ import print_function
 import requests
 from io import StringIO, BytesIO
-from .version import VERSION
 from .exceptions import LoadFailed
 from zipfile import ZipFile
+
+try:
+    from .version import VERSION
+except ImportError:
+    VERSION = "0.0.0"
 
 
 class BaseLoader(object):
