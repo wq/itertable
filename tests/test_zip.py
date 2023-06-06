@@ -1,6 +1,10 @@
 from itertable import (
-    ZipFileLoader, ZipNetLoader,
-    CsvParser, ExcelParser, TupleMapper, BaseIter
+    ZipFileLoader,
+    ZipNetLoader,
+    CsvParser,
+    ExcelParser,
+    TupleMapper,
+    BaseIter,
 )
 from .base import IterTestCase
 from itertable.exceptions import LoadFailed
@@ -63,7 +67,7 @@ class NetZipFileTestCase(IterTestCase):
             httpretty.GET,
             "http://example.com/%s.zip" % name,
             body=zipdata,
-            content_type="application/zip"
+            content_type="application/zip",
         )
 
     def tearDown(self):

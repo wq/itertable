@@ -17,7 +17,7 @@ class NetLoaderTestCase(IterTestCase):
             httpretty.GET,
             "http://example.com/test.csv",
             body="one,two,three\n1,2,3\n4,5,6",
-            content_type="text/csv"
+            content_type="text/csv",
         )
         httpretty.register_uri(
             httpretty.GET,
@@ -45,13 +45,13 @@ class NetLoaderTestCase(IterTestCase):
         self.check_instance(load_url("http://example.com/test.csv"))
 
     def test_load_csv_params(self):
-        self.check_instance(TestIter(params={'test': 1}))
+        self.check_instance(TestIter(params={"test": 1}))
         qs = httpretty.last_request().querystring
-        self.assertEqual(qs, {'test': ['1']})
+        self.assertEqual(qs, {"test": ["1"]})
 
         self.check_instance(TestIter(params="test=1"))
         qs = httpretty.last_request().querystring
-        self.assertEqual(qs, {'test': ['1']})
+        self.assertEqual(qs, {"test": ["1"]})
 
         self.check_instance(TestIter(params=None))
         qs = httpretty.last_request().querystring
@@ -62,7 +62,7 @@ class NetLoaderTestCase(IterTestCase):
         self.assertEqual(
             instance.debug_string, "GET: http://example.com/test.csv"
         )
-        instance = TestIter(params={'test': 1}, debug=True)
+        instance = TestIter(params={"test": 1}, debug=True)
         self.assertEqual(
             instance.debug_string, "GET: http://example.com/test.csv?test=1"
         )
@@ -72,10 +72,11 @@ class NetLoaderTestCase(IterTestCase):
             url = "http://example.com/test.csv"
             username = "user"
             password = "pass"
+
         self.check_instance(AuthTestIter())
         headers = httpretty.last_request().headers
         auth = "Basic dXNlcjpwYXNz"  # b64encode("user:pass")
-        self.assertEqual(headers.get('Authorization', None), auth)
+        self.assertEqual(headers.get("Authorization", None), auth)
 
     def test_load_csv_pickle(self):
         instance = TestIter()
@@ -86,6 +87,7 @@ class NetLoaderTestCase(IterTestCase):
     def test_load_fail(self):
         class TestIter(CsvNetIter):
             url = "http://example.com/fail.txt"
+
         with self.assertRaises(LoadFailed) as cm:
             TestIter()
         self.assertEqual(str(cm.exception), "Not Found")
@@ -93,6 +95,7 @@ class NetLoaderTestCase(IterTestCase):
     def test_load_fail_html(self):
         class TestIter(CsvNetIter):
             url = "http://example.com/fail.html"
+
         with self.assertRaises(LoadFailed) as cm:
             TestIter()
         self.assertEqual(str(cm.exception), "Not Found")

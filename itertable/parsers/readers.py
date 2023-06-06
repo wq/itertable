@@ -9,8 +9,16 @@ class SkipPreludeReader(csv.DictReader):
 
     max_header_row = 20
 
-    def __init__(self, f, fieldnames=None, restkey=None, restval=None,
-                 dialect="excel", *args, **kwds):
+    def __init__(
+        self,
+        f,
+        fieldnames=None,
+        restkey=None,
+        restval=None,
+        dialect="excel",
+        *args,
+        **kwds
+    ):
         # Preserve file since we're going to start reading it
         self._file = f
 
@@ -39,7 +47,7 @@ class SkipPreludeReader(csv.DictReader):
         header_row, field_names = self.choose_header(rows)
 
         # Reset file and advance reader so it starts in the right spot
-        if hasattr(self._file, 'seek'):
+        if hasattr(self._file, "seek"):
             self._file.seek(0)
         for i in range(header_row + 1):
             try:

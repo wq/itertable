@@ -9,12 +9,12 @@ class WorkbookParser(TableParser):
     sheet_name = 0
     start_row = None
     column_count = None
-    no_pickle_parser = ['workbook', 'worksheet']
+    no_pickle_parser = ["workbook", "worksheet"]
     binary = True
 
-    date_format = 'yyyy-mm-dd'
-    time_format = 'hh:mm:ss'
-    datetime_format = 'yyyy-mm-dd hh:mm:ss'
+    date_format = "yyyy-mm-dd"
+    time_format = "hh:mm:ss"
+    datetime_format = "yyyy-mm-dd hh:mm:ss"
 
     def parse(self):
         if not self.workbook:
@@ -22,14 +22,17 @@ class WorkbookParser(TableParser):
 
         if self.sheet_name is None:
             SpreadsheetIter = type(self)
-            self.data = [{
-                'name': name,
-                'data': SpreadsheetIter(
-                    loaded=True,
-                    workbook=self.workbook,
-                    sheet_name=name,
-                )
-            } for name in self.sheet_names]
+            self.data = [
+                {
+                    "name": name,
+                    "data": SpreadsheetIter(
+                        loaded=True,
+                        workbook=self.workbook,
+                        sheet_name=name,
+                    ),
+                }
+                for name in self.sheet_names
+            ]
             return
 
         sheet_name = self.sheet_name
@@ -45,7 +48,7 @@ class WorkbookParser(TableParser):
                 self.column_count = 0
 
                 def checkval(cell):
-                    if cell.value is not None and cell.value != '':
+                    if cell.value is not None and cell.value != "":
                         return True
                     return False
 
@@ -63,9 +66,9 @@ class WorkbookParser(TableParser):
             self.start_row = self.header_row + 1
 
         if self.field_names is None:
-            rows = self.worksheet[self.header_row:self.start_row]
+            rows = self.worksheet[self.header_row : self.start_row]
             self.field_names = [
-                str(c.value) or 'c%s' % i for i, c in enumerate(rows[0])
+                str(c.value) or "c%s" % i for i, c in enumerate(rows[0])
             ]
             for row in rows[1:]:
                 for i, c in enumerate(row):
@@ -78,14 +81,14 @@ class WorkbookParser(TableParser):
                     self.field_names[i] = field
                 seen_fields.add(field)
 
-        self.data = list(map(self.parse_row, self.worksheet[self.start_row:]))
+        self.data = list(map(self.parse_row, self.worksheet[self.start_row :]))
 
         self.extra_data = {}
         if self.header_row > 0:
             for r in range(0, self.header_row):
                 for c, cell in enumerate(self.worksheet[r]):
                     val = self.get_value(cell)
-                    if val is not None and val != '':
+                    if val is not None and val != "":
                         self.extra_data.setdefault(r, {})
                         self.extra_data[r][c] = val
 
@@ -103,9 +106,11 @@ class WorkbookParser(TableParser):
         raise NotImplementedError
 
     def parse_row(self, row):
-        return {name: self.get_value(row[i])
-                for i, name in enumerate(self.get_field_names())
-                if i < len(row)}
+        return {
+            name: self.get_value(row[i])
+            for i, name in enumerate(self.get_field_names())
+            if i < len(row)
+        }
 
     def get_value(self, cell):
         raise NotImplementedError
@@ -127,7 +132,7 @@ class WorkbookParser(TableParser):
         for c in val:
             if c in ".,;:'\"iIlt1":
                 size += 0.5
-            elif c in 'MW':
+            elif c in "MW":
                 size += 1.3
             elif c.isupper():
                 size += 1.2
@@ -159,6 +164,7 @@ class OldExcelParser(WorkbookParser):
 
     def get_value(self, cell):
         import xlrd
+
         if cell.ctype == xlrd.XL_CELL_DATE:
             time, date = math.modf(cell.value)
             tpl = xlrd.xldate_as_tuple(cell.value, self.workbook.datemode)
@@ -176,7 +182,7 @@ class OldExcelParser(WorkbookParser):
         for c in val:
             if c in ".,;:'\"iIlt1":
                 size += 0.5
-            elif c in 'MW':
+            elif c in "MW":
                 size += 1.3
             elif c.isupper():
                 size += 1.2
@@ -188,8 +194,9 @@ class OldExcelParser(WorkbookParser):
 
     def open_worksheet(self, file):
         import xlwt
+
         workbook = xlwt.Workbook()
-        worksheet = workbook.add_sheet('Sheet 1')
+        worksheet = workbook.add_sheet("Sheet 1")
 
         formats = {
             datetime.date: xlwt.Style.easyxf(
@@ -201,7 +208,7 @@ class OldExcelParser(WorkbookParser):
             datetime.datetime: xlwt.Style.easyxf(
                 num_format_str=self.datetime_format,
             ),
-            'header': xlwt.Style.easyxf(
+            "header": xlwt.Style.easyxf(
                 "font: bold on; borders: bottom thick;"
             ),
         }
@@ -213,7 +220,7 @@ class OldExcelParser(WorkbookParser):
             widths[c] = max(widths[c], self.calc_width(val))
             fmt = formats.get(type(val))
             if not fmt and r == 0:
-                fmt = formats['header']
+                fmt = formats["header"]
             if fmt:
                 worksheet.write(r, c, val, fmt)
             else:
@@ -230,6 +237,7 @@ class OldExcelParser(WorkbookParser):
 class ExcelParser(WorkbookParser):
     def parse_workbook(self):
         import openpyxl
+
         self.workbook = openpyxl.open(self.file, data_only=True)
 
     @property
@@ -252,26 +260,27 @@ class ExcelParser(WorkbookParser):
 
     def open_worksheet(self, file):
         from openpyxl import Workbook, styles, utils
+
         workbook = Workbook()
         worksheet = workbook.active
 
         formats = {
             datetime.date: styles.NamedStyle(
-                name='date',
+                name="date",
                 number_format=self.date_format,
             ),
             datetime.time: styles.NamedStyle(
-                name='time',
+                name="time",
                 number_format=self.time_format,
             ),
             datetime.datetime: styles.NamedStyle(
-                name='datetime',
+                name="datetime",
                 number_format=self.datetime_format,
             ),
-            'header': styles.NamedStyle(
-                name='header',
+            "header": styles.NamedStyle(
+                name="header",
                 font=styles.Font(bold=True),
-                border=styles.Border(bottom=styles.Side(style='thick'))
+                border=styles.Border(bottom=styles.Side(style="thick")),
             ),
         }
         widths = {}
@@ -285,7 +294,7 @@ class ExcelParser(WorkbookParser):
             if fmt:
                 cell.style = fmt
             elif r == 0:
-                cell.style = formats['header']
+                cell.style = formats["header"]
 
         def close():
             for c, width in widths.items():

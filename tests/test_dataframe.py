@@ -30,5 +30,5 @@ class LoadFileTestCase(IterTestCase):
         df = io.as_dataframe()
         self.assertEqual(len(df), 2)
 
-        val = df[df.two == '2'].three[0]
-        self.assertEqual(val, '3')
+        val = df[df.two == "2"].three[0]
+        self.assertEqual(val, "3")

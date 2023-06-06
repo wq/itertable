@@ -32,7 +32,7 @@ from .util import (
     load_url,
     load_string,
     guess_type,
-    flattened
+    flattened,
 )
 
 try:
@@ -42,51 +42,42 @@ except ImportError:
 
 
 __all__ = (
-    'BaseIter',
-
-    'BaseLoader',
-    'FileLoader',
-    'Zipper',
-    'ZipFileLoader',
-    'StringLoader',
-    'NetLoader',
-    'ZipNetLoader',
-
-    'CsvParser',
-    'JsonParser',
-    'XmlParser',
-    'ExcelParser',
-    'OldExcelParser',
-
-    'BaseMapper',
-    'DictMapper',
-    'TupleMapper',
-    'TimeSeriesMapper',
-    'make_date_mapper',
-
-    'make_iter',
-    'load_file',
-    'load_url',
-    'load_string',
-    'guess_type',
-    'flattened',
-
-    'VERSION',
-
-    'CsvFileIter',
-    'CsvNetIter',
-    'CsvStringIter',
-
-    'JsonFileIter',
-    'JsonNetIter',
-    'JsonStringIter',
-
-    'XmlFileIter',
-    'XmlNetIter',
-    'XmlStringIter',
-
-    'OldExcelFileIter',
-    'ExcelFileIter',
+    "BaseIter",
+    "BaseLoader",
+    "FileLoader",
+    "Zipper",
+    "ZipFileLoader",
+    "StringLoader",
+    "NetLoader",
+    "ZipNetLoader",
+    "CsvParser",
+    "JsonParser",
+    "XmlParser",
+    "ExcelParser",
+    "OldExcelParser",
+    "BaseMapper",
+    "DictMapper",
+    "TupleMapper",
+    "TimeSeriesMapper",
+    "make_date_mapper",
+    "make_iter",
+    "load_file",
+    "load_url",
+    "load_string",
+    "guess_type",
+    "flattened",
+    "VERSION",
+    "CsvFileIter",
+    "CsvNetIter",
+    "CsvStringIter",
+    "JsonFileIter",
+    "JsonNetIter",
+    "JsonStringIter",
+    "XmlFileIter",
+    "XmlNetIter",
+    "XmlStringIter",
+    "OldExcelFileIter",
+    "ExcelFileIter",
 )
 
 # Some useful pre-mixed classes
@@ -109,10 +100,11 @@ ExcelNetIter = make_iter(NetLoader, ExcelParser)
 
 try:
     from .gis import GisIter, ShapeIter, WktIter
+
     __all__ += (
-        'GisIter',
-        'ShapeIter',
-        'WktIter',
+        "GisIter",
+        "ShapeIter",
+        "WktIter",
     )
 except ImportError:
     pass

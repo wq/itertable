@@ -11,7 +11,7 @@ except ImportError:
 
 
 class BaseLoader(object):
-    no_pickle_loader = ['file']
+    no_pickle_loader = ["file"]
     empty_file = None
 
     def load(self):
@@ -24,11 +24,11 @@ class FileLoader(BaseLoader):
 
     @property
     def read_mode(self):
-        return 'rb' if self.binary else 'r'
+        return "rb" if self.binary else "r"
 
     @property
     def write_mode(self):
-        return 'wb+' if self.binary else 'w+'
+        return "wb+" if self.binary else "w+"
 
     def load(self):
         try:
@@ -59,13 +59,11 @@ class Zipper(object):
 
     def unzip_file(self):
         zipfile = ZipFile(self.file)
-        inner_file = zipfile.read(
-            self.get_inner_filename(zipfile)
-        )
+        inner_file = zipfile.read(self.get_inner_filename(zipfile))
         if self.inner_binary:
             self.file = BytesIO(inner_file)
         else:
-            self.file = StringIO(inner_file.decode('utf-8'))
+            self.file = StringIO(inner_file.decode("utf-8"))
         zipfile.fp.close()
         zipfile.close()
 
@@ -98,7 +96,7 @@ class StringLoader(BaseLoader):
 
     def load(self):
         if self.binary and not self.string:
-            self.string = b''
+            self.string = b""
         self.file = self._io_class(self.string)
 
     def save(self):
@@ -121,13 +119,13 @@ class NetLoader(StringLoader):
     def user_agent(self):
         return "IterTable/%s (%s)" % (
             VERSION,
-            requests.utils.default_user_agent()
+            requests.utils.default_user_agent(),
         )
 
     @property
     def headers(self):
         return {
-            'User-Agent': self.user_agent,
+            "User-Agent": self.user_agent,
         }
 
     def load(self, **kwargs):
@@ -141,16 +139,17 @@ class NetLoader(StringLoader):
                 raise LoadFailed("No URL provided")
 
         if params is None:
-            params = getattr(self, 'params', None)
+            params = getattr(self, "params", None)
 
         if isinstance(params, str):
-            url += '?' + params
+            url += "?" + params
             params = None
 
         if self.debug:
             if params:
                 from requests.compat import urlencode
-                debug_url = url + '?' + urlencode(params, doseq=True)
+
+                debug_url = url + "?" + urlencode(params, doseq=True)
             else:
                 debug_url = url
             self.debug_string = "%s: %s" % (method, debug_url)
@@ -165,7 +164,8 @@ class NetLoader(StringLoader):
         all_headers.update(headers)
 
         resp = self.client.request(
-            method, url,
+            method,
+            url,
             params=params,
             headers=all_headers,
             auth=auth,
@@ -186,16 +186,16 @@ class NetLoader(StringLoader):
             return resp.text
 
     def GET(self, **kwargs):
-        return self.req(method='GET', **kwargs)
+        return self.req(method="GET", **kwargs)
 
     def POST(self, **kwargs):
-        return self.req(method='POST', **kwargs)
+        return self.req(method="POST", **kwargs)
 
     def PUT(self, **kwargs):
-        return self.req(method='PUT', **kwargs)
+        return self.req(method="PUT", **kwargs)
 
     def DELETE(self, **kwargs):
-        return self.req(method='DELETE', **kwargs)
+        return self.req(method="DELETE", **kwargs)
 
 
 class ZipNetLoader(Zipper, NetLoader):

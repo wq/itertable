@@ -68,29 +68,28 @@ class DictMapper(BaseMapper):
 
 
 class TupleMapper(DictMapper):
-    no_pickle_mapper = ['_tuple_class', '_tuple_prototype']
+    no_pickle_mapper = ["_tuple_class", "_tuple_prototype"]
 
     @property
     def field_map(self):
         field_names = self.get_field_names()
-        if not field_names and not getattr(self, 'data', None):
+        if not field_names and not getattr(self, "data", None):
             raise NoData
 
         # FIXME: check for duplicates
-        if not hasattr(self, '_field_map'):
+        if not hasattr(self, "_field_map"):
             items = [
-                (field, self.tuple_field_name(field))
-                for field in field_names
+                (field, self.tuple_field_name(field)) for field in field_names
             ]
             self._field_map = OrderedDict(items)
         return self._field_map
 
     def tuple_field_name(self, field):
         field = self.clean_field_name(field)
-        field = re.sub(r'\W', '', field.lower())
+        field = re.sub(r"\W", "", field.lower())
         # normalize identifiers for consistency with namedtuple
         # http://bugs.python.org/issue23091
-        field = normalize('NFKC', field)
+        field = normalize("NFKC", field)
         return field
 
     def clean_field_name(self, field):
@@ -100,10 +99,10 @@ class TupleMapper(DictMapper):
     def tuple_class(self):
         "Returns a class to use for individual items"
 
-        if not hasattr(self, '_tuple_class'):
+        if not hasattr(self, "_tuple_class"):
             cls = namedtuple(
-                self.__class__.__name__ + 'Tuple',
-                list(self.field_map.values())
+                self.__class__.__name__ + "Tuple",
+                list(self.field_map.values()),
             )
             self._tuple_class = cls
 
@@ -111,7 +110,7 @@ class TupleMapper(DictMapper):
 
     @property
     def tuple_prototype(self):
-        if not hasattr(self, '_tuple_prototype'):
+        if not hasattr(self, "_tuple_prototype"):
             vals = {field: None for field in self.field_map.values()}
             self._tuple_prototype = self.tuple_class(**vals)
         return self._tuple_prototype
@@ -136,7 +135,7 @@ class TupleMapper(DictMapper):
 
 def parse_iso8601(val):
     # See http://bugs.python.org/issue15873
-    if hasattr(datetime, 'fromisoformat'):
+    if hasattr(datetime, "fromisoformat"):
         return datetime.fromisoformat(val)
     try:
         from django.utils.dateparse import parse_datetime
@@ -144,7 +143,7 @@ def parse_iso8601(val):
         try:
             from iso8601 import parse_date as parse_datetime
         except ImportError:
-            raise Exception('No suitable iso8601 parser found!')
+            raise Exception("No suitable iso8601 parser found!")
     try:
         result = parse_datetime(val)
     except Exception:
@@ -158,14 +157,16 @@ def make_date_mapper(fmt):
     """
     Generate functions to use for mapping strings to dates
     """
+
     def mapper(val):
-        if fmt == 'iso8601':
+        if fmt == "iso8601":
             return parse_iso8601(val)
         val = datetime.strptime(val, fmt)
-        if '%Y' in fmt or '%y' in fmt:
+        if "%Y" in fmt or "%y" in fmt:
             return val
         else:
             return val.time()
+
     return mapper
 
 

@@ -10,7 +10,10 @@ class GisTestCase(IterTestCase):
             Point(-93.278, 44.976),
             Point(-93.247, 44.973),
         ]
-        self.types = ('geojson', 'shp',)
+        self.types = (
+            "geojson",
+            "shp",
+        )
 
     def test_shapeio(self):
         for ext in self.types:
@@ -47,10 +50,10 @@ class GisTestCase(IterTestCase):
         filename = super(GisTestCase, self).get_filename(
             filename, ext, remove_existing
         )
-        if ext == 'shp' and remove_existing:
-            for ext in ('dbf', 'shx', 'prj'):
+        if ext == "shp" and remove_existing:
+            for ext in ("dbf", "shx", "prj"):
                 try:
-                    unlink(filename.replace('shp', ext))
+                    unlink(filename.replace("shp", ext))
                 except OSError:
                     pass
         return filename

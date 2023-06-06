@@ -10,7 +10,7 @@ from ..exceptions import ParseFailed
 class CsvParser(TableParser):
     delimiter = ","
     quotechar = '"'
-    no_pickle_parser = ['csvdata']
+    no_pickle_parser = ["csvdata"]
     binary = False
 
     def parse(self):
@@ -44,6 +44,7 @@ class CsvParser(TableParser):
     def reader_class(self):
         class Reader(SkipPreludeReader):
             max_header_row = self.max_header_row
+
         return Reader
 
     def dump(self, file=None):
@@ -53,7 +54,7 @@ class CsvParser(TableParser):
             file,
             self.get_field_names(),
             delimiter=self.delimiter,
-            quotechar=self.quotechar
+            quotechar=self.quotechar,
         )
         csvout.writeheader()
         for row in self.data:
@@ -69,7 +70,7 @@ class JsonParser(BaseParser):
         try:
             obj = json.load(self.file)
             if self.namespace:
-                for key in self.namespace.split('.'):
+                for key in self.namespace.split("."):
                     obj = obj[key]
             self.data = list(map(self.parse_item, obj))
         except ValueError:
@@ -83,7 +84,7 @@ class JsonParser(BaseParser):
             file = self.file
         obj = list(map(self.dump_item, self.data))
         if self.namespace:
-            for key in reversed(self.namespace.split('.')):
+            for key in reversed(self.namespace.split(".")):
                 obj = {key: obj}
         json.dump(obj, file, indent=self.indent)
 
@@ -120,7 +121,7 @@ class XmlParser(BaseParser):
         root = ET.Element(self.root_tag)
         for item in self.data:
             root.append(self.dump_item(item))
-        output = ET.tostring(root).decode('utf-8')
+        output = ET.tostring(root).decode("utf-8")
         file.write(output)
 
     def dump_item(self, item):

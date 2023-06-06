@@ -13,7 +13,7 @@ except ImportError:
 
 class LoadFileTestCase(IterTestCase):
     def setUp(self):
-        self.types = ('csv', 'json', 'xml', 'xls', 'xlsx')
+        self.types = ("csv", "json", "xml", "xls", "xlsx")
 
     def test_load_file(self):
         for ext in self.types:
@@ -24,10 +24,10 @@ class LoadFileTestCase(IterTestCase):
     def test_load_file_object(self):
         for ext in self.types:
             filename = self.get_filename("test", ext)
-            if ext in ('xls', 'xlsx'):
-                mode = 'rb'
+            if ext in ("xls", "xlsx"):
+                mode = "rb"
             else:
-                mode = 'r'
+                mode = "r"
             with open(filename, mode) as f:
                 instance = load_file(f)
             self.check_instance(instance)
@@ -35,7 +35,7 @@ class LoadFileTestCase(IterTestCase):
     def test_load_file_object_binary(self):
         for ext in self.types:
             filename = self.get_filename("test", ext)
-            with open(filename, 'rb') as f:
+            with open(filename, "rb") as f:
                 instance = load_file(f)
             self.check_instance(instance)
 
@@ -43,11 +43,11 @@ class LoadFileTestCase(IterTestCase):
     def test_load_file_object_no_name(self):
         for ext in self.types:
             filename = self.get_filename("test", ext)
-            if ext in ('xls', 'xlsx'):
-                mode = 'rb'
+            if ext in ("xls", "xlsx"):
+                mode = "rb"
                 IO = io.BytesIO
             else:
-                mode = 'r'
+                mode = "r"
                 IO = io.StringIO
 
             with open(filename, mode) as f:
@@ -64,7 +64,7 @@ class LoadFileTestCase(IterTestCase):
                 return "one,two,three\n1,2,3\n4,5,6"
 
             def __iter__(self):
-                yield from self.read().split('\n')
+                yield from self.read().split("\n")
 
         instance = load_file(FileLike())
         self.check_instance(instance)
@@ -87,9 +87,9 @@ class LoadFileTestCase(IterTestCase):
 
     def test_load_xlsx_sheets(self):
         filename = self.get_filename("test", "xlsx")
-        instance = load_file(filename, options={'sheet_name': None})
+        instance = load_file(filename, options={"sheet_name": None})
         self.assertEqual(len(instance), 1)
-        self.assertEqual(instance[0].name, 'Sheet1')
+        self.assertEqual(instance[0].name, "Sheet1")
         self.check_instance(instance[0].data)
 
     def test_load_nodata(self):
@@ -108,9 +108,9 @@ class LoadFileTestCase(IterTestCase):
 
     def test_load_nodata_excel_sheets(self):
         filename = self.get_filename("nodata", "xlsx")
-        instance = load_file(filename, options={'sheet_name': None})
+        instance = load_file(filename, options={"sheet_name": None})
         self.assertEqual(len(instance), 1)
-        self.assertEqual(instance[0].name, 'Sheet1')
+        self.assertEqual(instance[0].name, "Sheet1")
         sheet = instance[0].data
         with self.assertRaises(NoData) as cm:
             sheet[0]
@@ -124,7 +124,7 @@ class LoadFileTestCase(IterTestCase):
 
     def test_load_init_empty(self):
         filename = self.get_filename("nonexisting", "csv")
-        instance = load_file(filename, options={'require_existing': False})
+        instance = load_file(filename, options={"require_existing": False})
         with self.assertRaises(NoData) as cm:
             instance[0]
         self.assertEqual(str(cm.exception), "No data returned!")

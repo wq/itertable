@@ -3,9 +3,9 @@ from .xls import OldExcelParser, ExcelParser
 
 
 __all__ = (
-    'CsvParser',
-    'JsonParser',
-    'XmlParser',
-    'OldExcelParser',
-    'ExcelParser',
+    "CsvParser",
+    "JsonParser",
+    "XmlParser",
+    "OldExcelParser",
+    "ExcelParser",
 )

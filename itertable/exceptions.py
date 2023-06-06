@@ -23,13 +23,13 @@ class LoadFailed(IterException):
         if self.args and self.args[0]:
             text = self.args[0]
             has_html = False
-            for tag in '<html', '<body', '<div':
+            for tag in "<html", "<body", "<div":
                 if tag in text or tag.upper() in text:
                     has_html = True
             if has_html and BeautifulSoup:
                 html = BeautifulSoup(text).body
                 if html:
-                    text = html.get_text('\n')
+                    text = html.get_text("\n")
             return text
         elif self.code is not None:
             return "%s Error" % self.code
@@ -38,14 +38,17 @@ class LoadFailed(IterException):
 
 class ParseFailed(IterException):
     """Error parsing data!"""
+
     pass
 
 
 class MappingFailed(IterException):
     """Error processing data!"""
+
     pass
 
 
 class NoData(IterException):
     """No data returned!"""
+
     pass

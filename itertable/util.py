@@ -1,24 +1,29 @@
 from .base import BaseIter
 from .loaders import FileLoader, NetLoader, StringLoader
 from .parsers import (
-    CsvParser, JsonParser, XmlParser, ExcelParser, OldExcelParser
+    CsvParser,
+    JsonParser,
+    XmlParser,
+    ExcelParser,
+    OldExcelParser,
 )
 from .mappers import TupleMapper
 from .exceptions import ParseFailed
 import mimetypes
 import io
 
+xlsx = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
 PARSERS = {
-    'application/vnd.ms-excel': OldExcelParser,
-    'application/CDFV2': OldExcelParser,
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-    ExcelParser,
-    'application/octet-stream': ExcelParser,
-    'text/csv': CsvParser,
-    'application/csv': CsvParser,
-    'application/json': JsonParser,
-    'application/xml': XmlParser,
-    'text/xml': XmlParser,
+    "application/vnd.ms-excel": OldExcelParser,
+    "application/CDFV2": OldExcelParser,
+    xlsx: ExcelParser,
+    "application/octet-stream": ExcelParser,
+    "text/csv": CsvParser,
+    "application/csv": CsvParser,
+    "application/json": JsonParser,
+    "application/xml": XmlParser,
+    "text/xml": XmlParser,
 }
 
 BINARY_TYPES = set(key for key, cls in PARSERS.items() if cls.binary)
@@ -28,8 +33,9 @@ TEXT_TYPES = set(key for key, cls in PARSERS.items() if not cls.binary)
 _iter_classes = {}
 
 
-def make_iter(loader, parser, mapper=TupleMapper,
-              name=None, module="itertable"):
+def make_iter(
+    loader, parser, mapper=TupleMapper, name=None, module="itertable"
+):
     """
     Mix the specified loader, parser, and mapper classes into a usable Iter
     """
@@ -38,12 +44,12 @@ def make_iter(loader, parser, mapper=TupleMapper,
         return _iter_classes[key]
 
     if name is None:
-        lname = parser.__name__.replace('Parser', '')
-        pname = loader.__name__.replace('Loader', '')
+        lname = parser.__name__.replace("Parser", "")
+        pname = loader.__name__.replace("Loader", "")
         if mapper == TupleMapper:
             mname = ""
         else:
-            mname = mapper.__name__.replace('Mapper', '')
+            mname = mapper.__name__.replace("Mapper", "")
         name = lname + pname + mname + "Iter"
     cls = type(name, (loader, parser, mapper, BaseIter), {})
     cls.__module__ = module
@@ -56,14 +62,15 @@ def guess_type(filename, buffer=None):
     if mimetype is None:
         try:
             import magic
+
             if buffer:
                 mimetype = magic.from_buffer(buffer, mime=True)
-                if mimetype == 'text/plain':
-                    if buffer.startswith('{') or buffer.startswith('['):
+                if mimetype == "text/plain":
+                    if buffer.startswith("{") or buffer.startswith("["):
                         mimetype = "application/json"
-                    elif buffer.startswith('<'):
+                    elif buffer.startswith("<"):
                         mimetype = "application/xml"
-                    elif ',' in buffer:
+                    elif "," in buffer:
                         mimetype = "text/csv"
             else:
                 mimetype = magic.from_file(filename, mime=True)
@@ -80,11 +87,11 @@ def load_file(filename, mapper=TupleMapper, options=None):
         mimetype = guess_type(filename)
     else:
         file = filename
-        assert hasattr(file, 'read'), "Use load_file() with path or file obj"
+        assert hasattr(file, "read"), "Use load_file() with path or file obj"
         buffer = file.read(2048)
-        if hasattr(file, 'seek'):
+        if hasattr(file, "seek"):
             file.seek(0)
-        filename = getattr(file, 'name', '__unknown__')
+        filename = getattr(file, "name", "__unknown__")
         mimetype = guess_type(filename, buffer=buffer)
 
         if mimetype in TEXT_TYPES and isinstance(buffer, bytes):
@@ -113,12 +120,13 @@ def load_url(url, mapper=TupleMapper, options={}):
 
 
 def load_string(string, mapper=TupleMapper, options={}):
-    if string.startswith('<'):
+    if string.startswith("<"):
         parser = XmlParser
-    elif string.startswith('[') or (
-            string.startswith('{') and 'namespace' in options):
+    elif string.startswith("[") or (
+        string.startswith("{") and "namespace" in options
+    ):
         parser = JsonParser
-    elif ',' in string:
+    elif "," in string:
         parser = CsvParser
     else:
         raise Exception("Could not determine parser for string!")
@@ -126,7 +134,7 @@ def load_string(string, mapper=TupleMapper, options={}):
     loader = StringLoader
     Iter = make_iter(loader, parser, mapper)
     if Iter.binary:
-        string = string.encode('utf-8')
+        string = string.encode("utf-8")
     return Iter(string=string, **options)
 
 
@@ -139,11 +147,11 @@ class FlatIter(TupleMapper, BaseIter):
     """
 
     iter_class = None
-    inner_attr = 'data'
+    inner_attr = "data"
 
     def __init__(self, *args, **kwargs):
-        self.iter_class = kwargs.pop('iter_class', self.iter_class)
-        self.inner_attr = kwargs.pop('inner_attr', self.inner_attr)
+        self.iter_class = kwargs.pop("iter_class", self.iter_class)
+        self.inner_attr = kwargs.pop("inner_attr", self.inner_attr)
         if self.iter_class is None:
             raise Exception("An Iter class must be specified")
 

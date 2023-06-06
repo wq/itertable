@@ -1,22 +1,29 @@
 from itertable import load_file
 from itertable import (
-    CsvFileIter, JsonFileIter, XmlFileIter, OldExcelFileIter, ExcelFileIter
+    CsvFileIter,
+    JsonFileIter,
+    XmlFileIter,
+    OldExcelFileIter,
+    ExcelFileIter,
 )
 from .base import IterTestCase
 
 
 class LoadFileTestCase(IterTestCase):
     def setUp(self):
-        self.data = [{
-            'one': 1,
-            'two': 2,
-            'three': 3,
-        }, {
-            'one': 4,
-            'two': 5,
-            'three': 6,
-        }]
-        self.types = ('csv', 'json', 'xml', 'xls', 'xlsx')
+        self.data = [
+            {
+                "one": 1,
+                "two": 2,
+                "three": 3,
+            },
+            {
+                "one": 4,
+                "two": 5,
+                "three": 6,
+            },
+        ]
+        self.types = ("csv", "json", "xml", "xls", "xlsx")
         self.classes = (
             CsvFileIter,
             JsonFileIter,
@@ -36,11 +43,10 @@ class LoadFileTestCase(IterTestCase):
             instance = cls(
                 filename=filename,
                 require_existing=False,
-                field_names=['one', 'two', 'three'],
-
+                field_names=["one", "two", "three"],
                 # These only apply to XmlFileIter, will be ignored by others
                 root_tag="root",
-                item_tag="item"
+                item_tag="item",
             )
 
             # Add rows to the instance using list-style BaseIter.append()
@@ -74,7 +80,7 @@ class LoadFileTestCase(IterTestCase):
                 dest_instance = dest_cls(
                     filename=dest_file,
                     require_existing=False,
-                    field_names=['one', 'two', 'three'],
+                    field_names=["one", "two", "three"],
                     root_tag="root",
                     item_tag="item",
                 )
@@ -86,13 +92,14 @@ class LoadFileTestCase(IterTestCase):
                 self.check_instance(load_file(dest_file))
 
     def test_copy_io(self):
-        self.duplicate('copy', lambda d: d)
+        self.duplicate("copy", lambda d: d)
 
     def test_sync_io(self):
-        self.duplicate('sync', self.with_key_field)
+        self.duplicate("sync", self.with_key_field)
 
     def with_key_field(self, cls):
         class new_class(cls):
             key_field = "one"
+
         new_class.__name__ = "Dict" + cls.__name__
         return new_class

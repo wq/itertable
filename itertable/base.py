@@ -22,13 +22,13 @@ class BaseIter(MutableMapping, MutableSequence):
         if self.parsed:
             return
 
-        if getattr(self, 'empty_file', False):
+        if getattr(self, "empty_file", False):
             self.data = []
         else:
             self.parse()
-            if hasattr(self, 'file'):
+            if hasattr(self, "file"):
                 f = self.file
-                if hasattr(f, 'close') and not getattr(f, 'closed', False):
+                if hasattr(f, "close") and not getattr(f, "closed", False):
                     f.close()
 
         self.parsed = True
@@ -47,13 +47,13 @@ class BaseIter(MutableMapping, MutableSequence):
         pass
 
     def dump(self, file=None):
-        ""
+        """"""
         if file is None:
             file = self.file
         file.write(str(self.data))
 
     def save(self):
-        ""
+        """"""
         self.dump(self.file)
 
     field_names = None
@@ -65,12 +65,12 @@ class BaseIter(MutableMapping, MutableSequence):
         if self.field_names is not None:
             # Support specifying field_names as string (like namedtuple does)
             if isinstance(self.field_names, str):
-                return self.field_names.replace(',', ' ').split()
+                return self.field_names.replace(",", " ").split()
             else:
                 return self.field_names
 
         # If no defined field names, try to retrieve from data
-        if not getattr(self, 'data', None):
+        if not getattr(self, "data", None):
             return None
 
         if self._auto_field_names:
@@ -110,7 +110,7 @@ class BaseIter(MutableMapping, MutableSequence):
         if key_field is None:
             return None
 
-        if getattr(self, '_index_cache', None) is not None and not recompute:
+        if getattr(self, "_index_cache", None) is not None and not recompute:
             return self._index_cache
 
         index = {}
@@ -202,10 +202,10 @@ class BaseIter(MutableMapping, MutableSequence):
 
     def get_no_pickle(self):
         return (
-            self.no_pickle +
-            self.no_pickle_loader +
-            self.no_pickle_mapper +
-            self.no_pickle_parser
+            self.no_pickle
+            + self.no_pickle_loader
+            + self.no_pickle_mapper
+            + self.no_pickle_parser
         )
 
     def __getstate__(self):
@@ -222,6 +222,7 @@ class BaseIter(MutableMapping, MutableSequence):
 
     def as_dataframe(self):
         from pandas import DataFrame
+
         key = self.get_key_field()
         if key:
             data = [self.item_dict(row) for row in self.values()]

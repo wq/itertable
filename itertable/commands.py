@@ -6,9 +6,9 @@ import importlib
 
 
 @click.command()
-@click.argument('source')
-@click.argument('source_options', required=False)
-@click.option('--format', '-f', default='csv', help='Output format')
+@click.argument("source")
+@click.argument("source_options", required=False)
+@click.option("--format", "-f", default="csv", help="Output format")
 def cat(source, source_options, format):
     """
     Display contents of a file or IterTable class.  SOURCE can be either a
@@ -31,8 +31,8 @@ def cat(source, source_options, format):
     # Parse option string
     options = {}
     if source_options:
-        for opt in source_options.split(','):
-            key, val = opt.split('=')
+        for opt in source_options.split(","):
+            key, val = opt.split("=")
             if val.isdigit():
                 val = int(val)
             options[key] = val
@@ -42,13 +42,13 @@ def cat(source, source_options, format):
             input = load_file(source, options=options)
         except IterException as e:
             raise click.ClickException(str(e))
-    elif 'http' in source and '://' in source:
+    elif "http" in source and "://" in source:
         try:
             input = load_url(source, options=options)
         except IterException as e:
             raise click.ClickException(str(e))
     else:
-        parts = source.split('.')
+        parts = source.split(".")
         class_name = parts[-1]
         module_name = ".".join(parts[:-1])
         try:
@@ -69,5 +69,5 @@ def cat(source, source_options, format):
     output.save()
     result = output.string
     if output.binary:
-        result = result.decode('utf-8')
+        result = result.decode("utf-8")
     print(result)
